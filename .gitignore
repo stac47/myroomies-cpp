@@ -1,0 +1,7 @@
+.sconsign.dblite
+*.a
+*.o
+tags
+cscope*
+backend/myroomies-server
+backend/myroomies-unittest
