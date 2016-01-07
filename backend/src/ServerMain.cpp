@@ -1,66 +1,56 @@
-/*
-     This file is part of libhttpserver
-     Copyright (C) 2011, 2012, 2013, 2014, 2015 Sebastiano Merlino
-
-     This library is free software; you can redistribute it and/or
-     modify it under the terms of the GNU Lesser General Public
-     License as published by the Free Software Foundation; either
-     version 2.1 of the License, or (at your option) any later version.
-
-     This library is distributed in the hope that it will be useful,
-     but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-     Lesser General Public License for more details.
-
-     You should have received a copy of the GNU Lesser General Public
-     License along with this library; if not, write to the Free Software
-     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-     USA
-*/
-
-#include <httpserver.hpp>
 #include <iostream>
 
-using namespace httpserver;
+#include <boost/log/trivial.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 
-class hello_world_resource : public http_resource {
-	public:
-        void render(const http_request&, http_response**);
-        void set_some_data(const std::string &s) {data = s;}
-        std::string data;
-};
+#include <httpserver.hpp>
 
-//using the render method you are able to catch each type of request you receive
-void hello_world_resource::render(const http_request& req, http_response** res)
+#include <myroomies/resources/StaticResource.h>
+
+namespace po = boost::program_options;
+
+using httpserver::webserver;
+using myroomies::resources::StaticResource;
+
+int main(int argc, const char* argv[])
 {
-    //it is possible to store data inside the resource object that can be altered
-    //through the requests
-    std::cout << "Data was: " << data << std::endl;
-    std::string datapar = req.get_arg("data");
-    set_some_data(datapar == "" ? "no data passed!!!" : datapar);
-    std::cout << "Now data is:" << data << std::endl;
+    po::options_description desc("Allowed options");
+    desc.add_options()
+        ("help", "produce help message")
+        ("development", "start the server in development mode")
+    ;
 
-    //it is possible to send a response initializing an http_string_response
-    //that reads the content to send in response from a string.
-    *res = new http_response(http_response_builder("Hello World!!!", 200).string_response());
-}
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
 
-int main()
-{
-    //it is possible to create a webserver passing a great number of parameters.
-    //In this case we are just passing the port and the number of thread running.
-    webserver ws = create_webserver(8080).start_method(http::http_utils::INTERNAL_SELECT).max_threads(5);
+    if (vm.count("help"))
+    {
+        std::cout << desc << std::endl;
+        return 1;
+    }
 
-    hello_world_resource hwr;
-    //this way we are registering the hello_world_resource to answer for the endpoint
-    //"/hello". The requested method is called (if the request is a GET we call the render_GET
-    //method. In case that the specific render method is not implemented, the generic "render"
-    //method is called.
-    ws.register_resource("/hello", &hwr, true);
+    BOOST_LOG_TRIVIAL(info) << "MyRoomies server is starting...";
+    boost::filesystem::path programPath = argv[0];
+    BOOST_LOG_TRIVIAL(info) << "Binary: " << boost::filesystem::absolute(programPath).native();
+    BOOST_LOG_TRIVIAL(info) << "Working directory: " << boost::filesystem::current_path().native();
 
-    //This way we are putting the created webserver in listen. We pass true in order to have
-    //a blocking call; if we want the call to be non-blocking we can just pass false to the
-    //method.
+    webserver ws = httpserver::create_webserver(8080)
+                   .start_method(httpserver::http::http_utils::INTERNAL_SELECT)
+                   .max_threads(5);
+
+    BOOST_LOG_TRIVIAL(info) << "Registering resources...";
+    if (vm.count("development"))
+    {
+        BOOST_LOG_TRIVIAL(warning) << "Development mode activated. DO NOT USE IT IN PRODUCTION.";
+        static StaticResource staticResource(programPath.parent_path());
+        ws.register_resource("/static", &staticResource, true);
+    }
+    BOOST_LOG_TRIVIAL(info) << "Resources registered";
+    BOOST_LOG_TRIVIAL(info) << "Server up and running";
+
+    // Blocking call
     ws.start(true);
     return 0;
 }

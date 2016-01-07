@@ -3,6 +3,9 @@ import os
 libs = ['pthread',
         'boost_thread',
         'boost_log',
+        'boost_system',
+        'boost_filesystem',
+        'boost_program_options',
         'httpserver']
 
 cxx_flags = ['--std=c++14',
@@ -12,18 +15,26 @@ cxx_flags = ['--std=c++14',
              '-Wpedantic',
              '-DBOOST_LOG_DYN_LINK']
 
-base_env = Environment(CXXFLAGS=cxx_flags, LIBS=libs)
+base_env = Environment(CXXFLAGS=cxx_flags,
+                       LIBS=libs,
+                       LIBPATH='.',
+                       CPPPATH='#include')
 
 base_env['ENV']['CPATH'] = os.environ['CPATH']
 base_env['ENV']['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
 
+src_files = Glob('src/resources/*.cpp')
+src_files += Glob('src/utils/*.cpp')
+
+base_env.StaticLibrary('myroomies-server', src_files)
+base_env.AppendUnique(LIBS=['myroomies-server'])
+base_env.Program('myroomies-server', 'src/ServerMain.cpp')
+
 test_env = base_env.Clone()
 test_env.AppendUnique(LIBS=['gtest'])
 
-src_files = Glob('src/*.cpp')
 test_files = Glob('test/unit/*.cpp')
-
-base_env.Program('myroomies-server', src_files)
+test_files += Glob('test/unit/resources/*.cpp')
 test_env.Program('myroomies-unittest', test_files)
 
 
