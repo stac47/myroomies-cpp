@@ -15,7 +15,8 @@ cxx_flags = ['--std=c++14',
              '-Wpedantic',
              '-DBOOST_LOG_DYN_LINK']
 
-base_env = Environment(CXXFLAGS=cxx_flags,
+base_env = Environment(#CXX='clang++',
+                       CXXFLAGS=cxx_flags,
                        LIBS=libs,
                        LIBPATH='.',
                        CPPPATH='#include')

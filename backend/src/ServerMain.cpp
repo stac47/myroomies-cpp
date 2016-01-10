@@ -7,11 +7,13 @@
 #include <httpserver.hpp>
 
 #include <myroomies/resources/StaticResource.h>
+#include <myroomies/resources/MoneyResource.h>
 
 namespace po = boost::program_options;
 
 using httpserver::webserver;
 using myroomies::resources::StaticResource;
+using myroomies::resources::MoneyResource;
 
 int main(int argc, const char* argv[])
 {
@@ -45,7 +47,9 @@ int main(int argc, const char* argv[])
     {
         BOOST_LOG_TRIVIAL(warning) << "Development mode activated. DO NOT USE IT IN PRODUCTION.";
         static StaticResource staticResource(programPath.parent_path());
+        static MoneyResource moneyResource;
         ws.register_resource("/static", &staticResource, true);
+        ws.register_resource("/money", &moneyResource, true);
     }
     BOOST_LOG_TRIVIAL(info) << "Resources registered";
     BOOST_LOG_TRIVIAL(info) << "Server up and running";
