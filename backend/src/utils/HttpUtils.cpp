@@ -1,8 +1,8 @@
 #include <string>
 
 #include <boost/filesystem.hpp>
-#include <boost/log/trivial.hpp>
 
+#include <myroomies/utils/LoggingMacros.h>
 #include <myroomies/utils/HttpUtils.h>
 
 using boost::filesystem::path;
@@ -26,9 +26,9 @@ const std::string HttpUtils::getContentType(const boost::filesystem::path& iFile
     {
         return "text/css";
     }
-    BOOST_LOG_TRIVIAL(warning) << "Unknown filename extension: " << extension;
+    MYROOMIES_LOG_WARNING("Unknown filename extension: " << extension);
     return "text/plain";
 }
 
-} // namespace utils
-} // namespace myroomies
+} /* namespace utils */
+} /* namespace myroomies */

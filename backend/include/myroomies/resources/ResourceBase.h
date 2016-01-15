@@ -1,5 +1,4 @@
-#ifndef __RESOURCEBASE_H__
-#define __RESOURCEBASE_H__
+#pragma once
 
 #include <httpserver.hpp>
 
@@ -44,7 +43,5 @@ private:
     bool secured_;
 };
 
-} // namespace resources
-} // namespace myroomies
-
-#endif /* __RESOURCEBASE_H__ */
+} /* namespace resources */
+} /* namespace myroomies */

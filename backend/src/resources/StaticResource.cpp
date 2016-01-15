@@ -1,8 +1,8 @@
 #include <boost/filesystem.hpp>
-#include <boost/log/trivial.hpp>
 
 #include <httpserver.hpp>
 
+#include <myroomies/utils/LoggingMacros.h>
 #include <myroomies/utils/HttpUtils.h>
 
 #include <myroomies/resources/StaticResource.h>
@@ -26,6 +26,13 @@ StaticResource::StaticResource(const boost::filesystem::path& iBackendPath)
 void StaticResource::render(const httpserver::http_request& iRequest,
                             httpserver::http_response** oResponse)
 {
+    if (iRequest.get_user().empty())
+    {
+        *oResponse = new http_response(
+            http_response_builder("Authenticate").basic_auth_fail_response()
+        );
+        return;
+    }
     auto requestPath = iRequest.get_path_pieces();
     boost::filesystem::path staticResourcePath = staticRootPath_;
     if (requestPath.size() > 1)
@@ -39,21 +46,20 @@ void StaticResource::render(const httpserver::http_request& iRequest,
     if (boost::filesystem::exists(staticResourcePath))
     {
         std::string contentType = HttpUtils::getContentType(staticResourcePath);
-        BOOST_LOG_TRIVIAL(info) << "Serving static file: " << staticResourcePath
-                                << " [Content-Type= " << contentType << "]";
+        MYROOMIES_LOG_INFO("Serving static file: " << staticResourcePath <<
+                           " [Content-Type= " << contentType << "]");
         *oResponse = new http_response(
             http_response_builder(staticResourcePath.native(), 200, contentType).file_response()
         );
     }
     else
     {
-        BOOST_LOG_TRIVIAL(error) << "Static file [" << staticResourcePath << "] "
-                                 << "does not exists";
+        MYROOMIES_LOG_ERROR("Static file [" << staticResourcePath << "] " << "does not exists");
         *oResponse = new http_response(
             http_response_builder("Not found", 404, "text/plain").string_response()
         );
     }
 }
 
-} // namespace resources
-} // namespace myroomies
+} /* namespace resources */
+} /* namespace myroomies */

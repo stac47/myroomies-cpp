@@ -5,15 +5,13 @@
 namespace myroomies {
 namespace resources {
 
-class MoneyResource : public ResourceBase
+class BalanceResource : public ResourceBase
 {
 public:
-    MoneyResource() : ResourceBase(true) {}
+    BalanceResource() : ResourceBase(true) {}
 
     void onGET(const httpserver::http_request& iRequest,
                httpserver::http_response**) override;
-    void onPOST(const httpserver::http_request& iRequest,
-                httpserver::http_response**) override;
 };
 
 } /* namespace resources */

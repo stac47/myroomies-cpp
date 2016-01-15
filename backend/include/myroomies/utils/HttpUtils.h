@@ -1,5 +1,4 @@
-#ifndef __HTTPUTILS_H__
-#define __HTTPUTILS_H__
+#pragma once
 
 #include <string>
 
@@ -14,6 +13,5 @@ public:
     static const std::string getContentType(const boost::filesystem::path&);
 };
 
-} // namespace utils
-} // namespace myroomies
-#endif /* __HTTPUTILS_H__ */
+} /* namespace utils */
+} /* namespace myroomies */

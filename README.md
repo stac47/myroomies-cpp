@@ -62,3 +62,15 @@ cause a linkage error.
      make
      make install
      make doxygen-doc # if you want to build the code reference
+
+#### rapidjson
+
+    git clone https://github.com/miloyip/rapidjson.git
+    cd ~/local
+    ln -s $HOME/rapidjson/include/rapidjson rapidjson
+
+#### spdlog
+
+    git clone https://github.com/gabime/spdlog.git
+    cd ~/local
+    ln -s $HOME/spdlog/include/spdlog spdlog

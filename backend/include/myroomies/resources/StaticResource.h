@@ -1,5 +1,4 @@
-#ifndef __STATICRESOURCE_H__
-#define __STATICRESOURCE_H__
+#pragma once
 
 #include <boost/filesystem.hpp>
 
@@ -20,7 +19,5 @@ private:
     boost::filesystem::path staticRootPath_;
 };
 
-} // namespace resources
-} // namespace myroomies
-
-#endif /* __STATICRESOURCE_H__ */
+} /* namespace resources */
+} /* namespace myroomies */
