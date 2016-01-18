@@ -4,13 +4,18 @@
 #include <vector>
 #include <chrono>
 
+#include <myroomies/bom/Marshaller.h>
+#include <myroomies/bom/Unmarshaller.h>
+
+#include <myroomies/model/ModelObject.h>
+
 namespace myroomies {
 namespace model {
 
 struct Expense
 {
-    uint32_t id;
-    uint32_t userId;
+    Key_t id;
+    ForeignKey_t userId;
     std::chrono::time_point<std::chrono::system_clock> date;
     double amount;
     std::string title;

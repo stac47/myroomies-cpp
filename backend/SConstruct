@@ -26,6 +26,7 @@ base_env['ENV']['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
 src_files = Glob('src/resources/*.cpp')
 src_files += Glob('src/utils/*.cpp')
 src_files += Glob('src/services/*.cpp')
+src_files += Glob('src/bom/*.cpp')
 
 base_env.StaticLibrary('myroomies-server', src_files)
 base_env.AppendUnique(LIBS=['myroomies-server'])
