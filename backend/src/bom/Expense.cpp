@@ -15,7 +15,7 @@ namespace myroomies {
 namespace bom {
 
 template<>
-void Marshaller<Expense>::marshall(Expense& iObject, std::string& oStr)
+void Marshaller<Expense>::marshallObject(const Expense& iObject, std::string& oStr)
 {
     Document o;
     o.SetObject();

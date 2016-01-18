@@ -1,14 +1,38 @@
 #pragma once
 
+#include <functional>
+
 #include <httpserver.hpp>
+
+#include <myroomies/model/User.h>
+#include <myroomies/resources/TransactionHandler.h>
 
 namespace myroomies {
 namespace resources {
 
-class ResourceBase : public httpserver::http_resource
+class ResourceBase: public httpserver::http_resource
 {
 public:
     ResourceBase(bool iSecured);
+    virtual ~ResourceBase();
+
+protected:
+    bool performSecurity(const httpserver::http_request& iRequest,
+                         myroomies::model::User& oLoggedUser);
+    bool isSecured() const
+    {
+        return secured_;
+    }
+
+private:
+    bool secured_;
+};
+
+template<typename TH>
+class Resource : public ResourceBase
+{
+public:
+    Resource(bool iSecured) : ResourceBase(iSecured) {}
 
     void render_GET(const httpserver::http_request& iRequest,
                     httpserver::http_response**) override final;
@@ -29,19 +53,104 @@ public:
     void render(const httpserver::http_request& iRequest,
                 httpserver::http_response**) override final;
 
-protected:
-    virtual void onGET(const httpserver::http_request& iRequest,
-                       httpserver::http_response**);
-    virtual void onPOST(const httpserver::http_request& iRequest,
-                        httpserver::http_response**);
-    virtual void onPUT(const httpserver::http_request& iRequest,
-                       httpserver::http_response**);
-    virtual void onDELETE(const httpserver::http_request& iRequest,
-                          httpserver::http_response**);
-
 private:
-    bool secured_;
+    typedef std::function<void(TH&, const HttpRequest&, HttpResponse&)> HandlerFunction;
+    void commonRender(const httpserver::http_request& iRequest,
+                      httpserver::http_response** oResponse,
+                      const HandlerFunction& iFunc);
+
 };
+
+template<typename TH>
+void Resource<TH>::commonRender(const httpserver::http_request& iRequest,
+                                httpserver::http_response** oResponse,
+                                const HandlerFunction& iFunc)
+{
+    TH transactionHandler;
+    myroomies::resources::HttpResponse response;
+    if (isSecured())
+    {
+        myroomies::model::User loggedUser;
+        if (performSecurity(iRequest, loggedUser))
+        {
+            transactionHandler.setLoggedUser(loggedUser);
+            myroomies::resources::HttpRequest request;
+            request.setPayload(iRequest.get_content());
+            iFunc(transactionHandler, request, response);
+        }
+        else
+        {
+            *oResponse = new httpserver::http_response(
+                httpserver::http_response_builder("").basic_auth_fail_response()
+            );
+            return;
+        }
+    }
+    *oResponse = new httpserver::http_response(
+        httpserver::http_response_builder(response.getPayload(), 200, "application/json; charset=utf-8").string_response()
+    );
+}
+
+template<typename TH>
+void Resource<TH>::render_GET(const httpserver::http_request& iRequest,
+                              httpserver::http_response** oResponse)
+{
+    commonRender(iRequest, oResponse, &TH::handleGET);
+}
+
+template<typename TH>
+void Resource<TH>::render_POST(const httpserver::http_request& iRequest,
+                 httpserver::http_response** oResponse)
+{
+    commonRender(iRequest, oResponse, &TH::handlePOST);
+}
+
+template<typename TH>
+void Resource<TH>::render_PUT(const httpserver::http_request& iRequest,
+                httpserver::http_response** oResponse)
+{
+    commonRender(iRequest, oResponse, &TH::handlePUT);
+}
+
+template<typename TH>
+void Resource<TH>::render_DELETE(const httpserver::http_request& iRequest,
+                   httpserver::http_response** oResponse)
+{
+    commonRender(iRequest, oResponse, &TH::handleDELETE);
+}
+
+template<typename TH>
+void Resource<TH>::render_HEAD(const httpserver::http_request& iRequest,
+                 httpserver::http_response** oResponse)
+{
+}
+
+template<typename TH>
+void Resource<TH>::render_CONNECT(const httpserver::http_request& iRequest,
+                    httpserver::http_response** oResponse)
+{
+    render(iRequest, oResponse);
+}
+
+template<typename TH>
+void Resource<TH>::render_TRACE(const httpserver::http_request& iRequest,
+                  httpserver::http_response** oResponse)
+{
+    render(iRequest, oResponse);
+}
+
+template<typename TH>
+void Resource<TH>::render_OPTIONS(const httpserver::http_request& iRequest,
+                                  httpserver::http_response** oResponse)
+{
+    render(iRequest, oResponse);
+}
+
+template<typename TH>
+void Resource<TH>::render(const httpserver::http_request& iRequest,
+                          httpserver::http_response** oResponse)
+{
+}
 
 } /* namespace resources */
 } /* namespace myroomies */

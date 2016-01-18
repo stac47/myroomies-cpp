@@ -76,5 +76,9 @@ if __name__ == '__main__':
         print("Status {}: {}".format(response.status, data))
         expenses = json.loads(str(data, 'utf-8'))
         print("Expenses number= {}".format(len(expenses)))
+        conn.request('HEAD', '/money', headers=headers)
+        response = conn.getresponse()
+        data = response.read()
+        print("Status {}: {}".format(response.status, data))
         conn.close()
 

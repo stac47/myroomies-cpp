@@ -9,17 +9,18 @@
 #include <myroomies/utils/LoggingMacros.h>
 
 #include <myroomies/resources/StaticResource.h>
-#include <myroomies/resources/MoneyResource.h>
-#include <myroomies/resources/BalanceResource.h>
+#include <myroomies/resources/ResourceBase.h>
+#include <myroomies/resources/MoneyHandler.h>
 
 namespace po = boost::program_options;
 
 using std::placeholders::_1;
 
 using httpserver::webserver;
+
 using myroomies::resources::StaticResource;
-using myroomies::resources::MoneyResource;
-using myroomies::resources::BalanceResource;
+using myroomies::resources::Resource;
+using myroomies::resources::MoneyHandler;
 
 namespace {
 
@@ -74,10 +75,8 @@ int main(int argc, const char* argv[])
         static StaticResource staticResource(programPath.parent_path());
         ws.register_resource("/static", &staticResource, true);
     }
-    static MoneyResource moneyResource;
-    static BalanceResource balanceResource;
+    static Resource<MoneyHandler> moneyResource(true);
     ws.register_resource("/money", &moneyResource, true);
-    ws.register_resource("/money/balance", &balanceResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
     MYROOMIES_LOG_INFO("Server up and running");
 

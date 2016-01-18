@@ -2,20 +2,19 @@
 #include <vector>
 #include <chrono>
 
-#include <httpserver.hpp>
-
 #include <myroomies/bom/Marshaller.h>
 #include <myroomies/bom/Unmarshaller.h>
 
 #include <myroomies/model/Expense.h>
 
-#include <myroomies/resources/MoneyResource.h>
+#include <myroomies/resources/MoneyHandler.h>
 
-using httpserver::http_response_builder;
-using httpserver::http_response;
 
 using myroomies::bom::Marshaller;
 using myroomies::bom::Unmarshaller;
+
+using myroomies::resources::HttpRequest;
+using myroomies::resources::HttpResponse;
 
 using myroomies::model::Expense;
 
@@ -44,30 +43,23 @@ std::vector<Expense>& GetExpenses()
 namespace myroomies {
 namespace resources {
 
-void MoneyResource::onGET(const httpserver::http_request& iRequest,
-                          httpserver::http_response** oResponse)
+void MoneyHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
     std::string response;
 
     Marshaller<Expense> m;
-    m.marshall(GetExpenses()[0], response);
-    *oResponse = new http_response(
-        http_response_builder(response, 200, "application/json; charset=utf-8").string_response()
-    );
+    m.marshallCollection(GetExpenses(), response);
+    oResponse.setPayload(response);
 }
 
-void MoneyResource::onPOST(const httpserver::http_request& iRequest,
-                           httpserver::http_response** oResponse)
+void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
-    std::string content;
-    iRequest.get_content(content);
+    std::string content = iRequest.getPayload();
     Unmarshaller<Expense> unmarshaller;
     Expense e;
     unmarshaller.unmarshall(content, e);
     GetExpenses().push_back(e);
-    *oResponse = new http_response(
-        http_response_builder("Hello POST", 200, "application/json; charset=utf-8").string_response()
-    );
+    oResponse.setPayload("");
 }
 
 } /* namespace resources */
