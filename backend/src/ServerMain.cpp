@@ -9,7 +9,7 @@
 #include <myroomies/utils/LoggingMacros.h>
 
 #include <myroomies/resources/StaticResource.h>
-#include <myroomies/resources/ResourceBase.h>
+#include <myroomies/resources/Resource.h>
 #include <myroomies/resources/MoneyHandler.h>
 
 namespace po = boost::program_options;

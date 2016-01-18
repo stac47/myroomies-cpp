@@ -5,7 +5,8 @@
 
 #include <myroomies/model/User.h>
 #include <myroomies/services/LoginService.h>
-#include <myroomies/resources/ResourceBase.h>
+
+#include <myroomies/resources/Resource.h>
 
 using httpserver::http_response;
 using httpserver::http_response_builder;
