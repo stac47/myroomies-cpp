@@ -5,11 +5,13 @@
 
 #include <boost/algorithm/string/join.hpp>
 
+#include <myroomies/bom/MarshallerBase.h>
+
 namespace myroomies {
 namespace bom {
 
 template<typename ObjectType>
-class Marshaller
+class Marshaller : public MarshallerBase
 {
 public:
     void marshallObject(const ObjectType& iObject, std::string& oStr);

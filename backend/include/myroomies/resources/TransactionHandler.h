@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+#include <map>
 
 #include <myroomies/model/User.h>
 
@@ -28,7 +30,27 @@ private:
     std::string payload_;
 };
 
-class HttpRequest : public HttpMessage {
+class HttpRequest : public HttpMessage
+{
+public:
+    HttpRequest(const std::string& iPath)
+      : HttpMessage(),
+        path_(iPath) {}
+
+    std::vector<std::string> getPathPieces() const
+    {
+        std::vector<std::string> ret;
+        return ret;
+    }
+
+    std::map<std::string, std::string> getParameters() const
+    {
+        std::map<std::string, std::string> ret;
+        return ret;
+    }
+
+private:
+    std::string path_;
 };
 
 class HttpResponse : public HttpMessage {};

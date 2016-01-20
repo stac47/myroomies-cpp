@@ -11,8 +11,7 @@ cxx_flags = ['--std=c++14',
              '-g',
              '-Wall',
              '-Werror',
-             '-Wpedantic',
-             '-DRAPIDJSON_HAS_STDSTRING=1']
+             '-Wpedantic']
 
 base_env = Environment(#CXX='clang++',
                        CXXFLAGS=cxx_flags,

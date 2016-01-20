@@ -18,8 +18,9 @@ using myroomies::services::LoginService;
 namespace myroomies {
 namespace resources {
 
-ResourceBase::ResourceBase(bool iSecured)
-  : secured_(iSecured)
+ResourceBase::ResourceBase(const std::string& iUri, bool iSecured)
+  : secured_(iSecured),
+    uri_(iUri)
 {
     disallow_all();
     set_allowing(http_utils::http_method_get, true);
@@ -29,6 +30,11 @@ ResourceBase::ResourceBase(bool iSecured)
 }
 
 ResourceBase::~ResourceBase() {}
+
+const std::string& ResourceBase::getUri() const
+{
+    return uri_;
+}
 
 bool ResourceBase::performSecurity(const httpserver::http_request& iRequest,
                                    myroomies::model::User& oLoggedUser)

@@ -75,8 +75,8 @@ int main(int argc, const char* argv[])
         static StaticResource staticResource(programPath.parent_path());
         ws.register_resource("/static", &staticResource, true);
     }
-    static Resource<MoneyHandler> moneyResource(true);
-    ws.register_resource("/money", &moneyResource, true);
+    static Resource<MoneyHandler> moneyResource("/money", true);
+    ws.register_resource(moneyResource.getUri(), &moneyResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
     MYROOMIES_LOG_INFO("Server up and running");
 

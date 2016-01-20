@@ -13,8 +13,10 @@ namespace resources {
 class ResourceBase: public httpserver::http_resource
 {
 public:
-    ResourceBase(bool iSecured);
+    ResourceBase(const std::string& iUri, bool iSecured);
     virtual ~ResourceBase();
+
+    const std::string& getUri() const;
 
 protected:
     bool performSecurity(const httpserver::http_request& iRequest,
@@ -26,13 +28,15 @@ protected:
 
 private:
     bool secured_;
+    std::string uri_;
 };
 
 template<typename TH>
 class Resource : public ResourceBase
 {
 public:
-    Resource(bool iSecured) : ResourceBase(iSecured) {}
+    Resource(const std::string& iUri, bool iSecured)
+      : ResourceBase(iUri, iSecured) {}
 
     void render_GET(const httpserver::http_request& iRequest,
                     httpserver::http_response**) override final;
@@ -74,7 +78,7 @@ void Resource<TH>::commonRender(const httpserver::http_request& iRequest,
         if (performSecurity(iRequest, loggedUser))
         {
             transactionHandler.setLoggedUser(loggedUser);
-            myroomies::resources::HttpRequest request;
+            myroomies::resources::HttpRequest request(iRequest.get_path().substr(getUri().size()));
             request.setPayload(iRequest.get_content());
             iFunc(transactionHandler, request, response);
         }

@@ -64,8 +64,12 @@ if __name__ == '__main__':
         expenses = json.loads(str(data, 'utf-8'))
         print(expenses[0]['amount'])
         new_expense = expenses[1]
-        new_expense['amount'] = 666
-        conn.request('POST', '/money', json.dumps(new_expense),
+        new_expense['amount'] += 6.0
+        new_expense['comment'] = "new comment"
+        new_expense['id'] = 14
+        new_expense_str =  json.dumps(new_expense)
+        print(new_expense_str)
+        conn.request('POST', '/money', new_expense_str,
                 headers=headers)
         response = conn.getresponse()
         data = response.read()

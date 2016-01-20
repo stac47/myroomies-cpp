@@ -59,7 +59,10 @@ void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oRespon
     Expense e;
     unmarshaller.unmarshall(content, e);
     GetExpenses().push_back(e);
-    oResponse.setPayload("");
+    std::string responsePayload;
+    Marshaller<Expense> m;
+    m.marshallObject(e, responsePayload);
+    oResponse.setPayload(responsePayload);
 }
 
 } /* namespace resources */

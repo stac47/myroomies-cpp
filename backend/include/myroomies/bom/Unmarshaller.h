@@ -1,11 +1,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+#include <myroomies/bom/UnmarshallerBase.h>
 
 namespace myroomies {
 namespace bom {
-
-class UnmarshallerBase {};
 
 template<typename ObjectType>
 class Unmarshaller : public UnmarshallerBase
