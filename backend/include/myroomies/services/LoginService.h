@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <myroomies/services/UserService.h>
+
 namespace myroomies {
 namespace services {
 
