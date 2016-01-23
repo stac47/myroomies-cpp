@@ -1,15 +1,6 @@
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
-
 #include <myroomies/bom/Unmarshaller.h>
 #include <myroomies/bom/Marshaller.h>
 #include <myroomies/bom/Expense.h>
-
-using rapidjson::Document;
-using rapidjson::Value;
-using rapidjson::Writer;
-using rapidjson::StringBuffer;
 
 namespace myroomies {
 namespace bom {

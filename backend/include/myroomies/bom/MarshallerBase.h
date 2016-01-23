@@ -2,7 +2,8 @@
 
 #include <string>
 #include <memory>
-#include <chrono>
+
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 namespace myroomies {
 namespace bom {
@@ -19,9 +20,8 @@ protected:
     void putValue(const std::string& iKey, int iIint);
     void putValue(const std::string& iKey, const std::string& iString);
     void putValue(const std::string& iKey, double iDouble);
-    void putValue(
-        const std::string& iKey,
-        const std::chrono::time_point<std::chrono::system_clock>& iDate);
+    void putValue(const std::string& iKey, const boost::gregorian::date& iDate);
+
     void marshall(std::string& oStr);
 
 private:

@@ -2,7 +2,8 @@
 
 #include <string>
 #include <memory>
-#include <chrono>
+
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 namespace myroomies {
 namespace bom {
@@ -24,7 +25,7 @@ protected:
     void extractValue(
         const std::string& iStr,
         bool iOptional,
-        std::chrono::time_point<std::chrono::system_clock>& oDate);
+        boost::gregorian::date& oDate);
 
 private:
     class Impl;

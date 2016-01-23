@@ -1,9 +1,7 @@
 #include <string>
 #include <memory>
-#include <chrono>
-#include <ctime>
 
-#include <time.h>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/document.h>
@@ -90,7 +88,7 @@ public:
     void extractValue(
         const std::string& iStr,
         bool iOptional,
-        std::chrono::time_point<std::chrono::system_clock>& oDate)
+        boost::gregorian::date& oDate)
     {
         const char* key = iStr.c_str();
         if (!json_.HasMember(key) && !iOptional)
@@ -100,12 +98,7 @@ public:
         else
         {
             std::string dateStr = json_[key].GetString();
-            std::tm tm = {};
-            if (nullptr == ::strptime(dateStr.c_str(), kCommonDateFormat.c_str(), &tm))
-            {
-                // TODO hadle error
-            }
-            oDate = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+            oDate = boost::gregorian::from_string(dateStr);
         }
     }
 
@@ -153,7 +146,7 @@ void UnmarshallerBase::extractValue(const std::string& iStr, bool iOptional, dou
 void UnmarshallerBase::extractValue(
     const std::string& iStr,
     bool iOptional,
-    std::chrono::time_point<std::chrono::system_clock>& oDate)
+    boost::gregorian::date& oDate)
 {
     pImpl_->extractValue(iStr, iOptional, oDate);
 }

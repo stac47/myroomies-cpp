@@ -10,5 +10,8 @@ namespace bom {
 
 using myroomies::model::Expense;
 
+template class Marshaller<Expense>;
+template class Unmarshaller<Expense>;
+
 } /* namespace bom */
 } /* namespace myroomies */

@@ -5,6 +5,7 @@ libs = ['pthread',
         'boost_system',
         'boost_filesystem',
         'boost_program_options',
+        'boost_date_time',
         'httpserver']
 
 cxx_flags = ['--std=c++14',

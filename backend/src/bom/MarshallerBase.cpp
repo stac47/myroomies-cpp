@@ -1,9 +1,9 @@
 #include <string>
 #include <sstream>
 #include <memory>
-#include <chrono>
-#include <ctime>
 #include <iomanip>
+
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/document.h>
@@ -66,14 +66,10 @@ public:
 
     void putValue(
         const std::string& iKey,
-        const std::chrono::time_point<std::chrono::system_clock>& iDate)
+        const boost::gregorian::date& iDate)
     {
-        const std::time_t cdate = std::chrono::system_clock::to_time_t(iDate);
-        char buffer[20];
-        size_t length = std::strftime(buffer, 20, kCommonDateFormat.c_str(), std::gmtime(&cdate));
-        std::string dateStr(buffer, length);
         Value key(iKey.c_str(), json_.GetAllocator());
-        Value value(dateStr, json_.GetAllocator());
+        Value value(boost::gregorian::to_iso_extended_string(iDate), json_.GetAllocator());
         json_.AddMember(key, value, json_.GetAllocator());
     }
 
@@ -123,7 +119,7 @@ void MarshallerBase::putValue(const std::string& iKey, double iDouble)
 
 void MarshallerBase::putValue(
     const std::string& iKey,
-    const std::chrono::time_point<std::chrono::system_clock>& iDate)
+    const boost::gregorian::date& iDate)
 {
     pImpl_->putValue(iKey, iDate);
 }

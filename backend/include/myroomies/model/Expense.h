@@ -2,10 +2,8 @@
 
 #include <string>
 #include <vector>
-#include <chrono>
 
-#include <myroomies/bom/Marshaller.h>
-#include <myroomies/bom/Unmarshaller.h>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 #include <myroomies/model/ModelObject.h>
 
@@ -16,7 +14,7 @@ struct Expense
 {
     Key_t id;
     ForeignKey_t userId;
-    std::chrono::time_point<std::chrono::system_clock> date;
+    boost::gregorian::date date;
     double amount;
     std::string title;
     std::string comment;

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <chrono>
+
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 #include <myroomies/model/ModelObject.h>
 
@@ -14,7 +15,7 @@ struct User
     std::string login;
     std::string firstname;
     std::string lastname;
-    std::chrono::time_point<std::chrono::system_clock> dateOfBirth;
+    boost::gregorian::date dateOfBirth;
     std::string email;
     ForeignKey_t houseshareId;
 };

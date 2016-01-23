@@ -1,6 +1,7 @@
 #include <sstream>
 #include <vector>
-#include <chrono>
+
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 #include <myroomies/bom/Marshaller.h>
 #include <myroomies/bom/Unmarshaller.h>
@@ -28,7 +29,7 @@ std::vector<Expense>& GetExpenses()
         Expense e;
         e.id = 1;
         e.userId = 1;
-        e.date = std::chrono::system_clock::now();
+        e.date = boost::gregorian::date(boost::gregorian::day_clock::universal_day());
         e.amount = 12.5;
         e.title = "test1";
         e.comment = "comment 1";
