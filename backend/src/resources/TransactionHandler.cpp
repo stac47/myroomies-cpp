@@ -1,6 +1,7 @@
 #include <string>
 #include <memory>
 
+#include <myroomies/services/ServiceRegistry.h>
 #include <myroomies/resources/TransactionHandler.h>
 
 namespace myroomies {
@@ -11,6 +12,17 @@ TransactionHandler::TransactionHandler()
 
 TransactionHandler::~TransactionHandler()
 {}
+
+std::shared_ptr<myroomies::services::ServiceRegistry> TransactionHandler::getServiceRegistry() const
+{
+    return serviceRegistry_.lock();
+}
+
+void TransactionHandler::setServiceRegistry(
+    const std::weak_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry)
+{
+    serviceRegistry_ = iServiceRegistry;
+}
 
 const std::unique_ptr<const myroomies::model::User>& TransactionHandler::getLoggedUser() const
 {

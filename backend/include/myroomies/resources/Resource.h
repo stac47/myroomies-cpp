@@ -98,6 +98,7 @@ void Resource<TH>::commonRender(const httpserver::http_request& iRequest,
         if (performSecurity(iRequest, loggedUser))
         {
             transactionHandler.setLoggedUser(loggedUser);
+            transactionHandler.setServiceRegistry(getServiceRegistry());
             myroomies::resources::HttpRequest request(iRequest.get_path().substr(getUri().size()));
             request.setPayload(iRequest.get_content());
             iFunc(transactionHandler, request, response);

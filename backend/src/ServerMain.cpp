@@ -88,6 +88,7 @@ int main(int argc, const char* argv[])
 
     // Create the ServiceRegistry
     auto serviceRegistry = std::make_shared<ServiceRegistry>(config);
+
     Resource<MoneyHandler> moneyResource(serviceRegistry, "/money", true);
     ws.register_resource(moneyResource.getUri(), &moneyResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
@@ -95,5 +96,7 @@ int main(int argc, const char* argv[])
 
     // Blocking call
     ws.start(true);
+
+    serviceRegistry->cleanUp();
     return 0;
 }

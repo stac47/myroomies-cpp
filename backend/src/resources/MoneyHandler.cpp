@@ -1,12 +1,12 @@
 #include <sstream>
 #include <vector>
 
-#include <boost/date_time/gregorian/gregorian.hpp>
-
 #include <myroomies/bom/Marshaller.h>
 #include <myroomies/bom/Unmarshaller.h>
+#include <myroomies/bom/Expense.h>
 
-#include <myroomies/model/Expense.h>
+
+#include <myroomies/services/MoneyService.h>
 
 #include <myroomies/resources/MoneyHandler.h>
 
@@ -19,27 +19,7 @@ using myroomies::resources::HttpResponse;
 
 using myroomies::model::Expense;
 
-namespace {
-
-std::vector<Expense>& GetExpenses()
-{
-    static std::vector<Expense> ExpensesVector;
-    if (ExpensesVector.empty())
-    {
-        Expense e;
-        e.id = 1;
-        e.userId = 1;
-        e.date = boost::gregorian::date(boost::gregorian::day_clock::universal_day());
-        e.amount = 12.5;
-        e.title = "test1";
-        e.comment = "comment 1";
-        ExpensesVector.push_back(e);
-        ExpensesVector.push_back(e);
-    }
-    return ExpensesVector;
-}
-
-} // namespace
+using myroomies::services::MoneyService;
 
 namespace myroomies {
 namespace resources {
@@ -49,7 +29,7 @@ void MoneyHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oRespons
     std::string response;
 
     Marshaller<Expense> m;
-    m.marshallCollection(GetExpenses(), response);
+    m.marshallCollection(getServiceRegistry()->get<MoneyService>()->getExpenses(), response);
     oResponse.setPayload(response);
 }
 
@@ -59,10 +39,10 @@ void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oRespon
     Unmarshaller<Expense> unmarshaller;
     Expense e;
     unmarshaller.unmarshall(content, e);
-    GetExpenses().push_back(e);
+    Expense newExpense = getServiceRegistry()->get<MoneyService>()->addExpense(e);
     std::string responsePayload;
     Marshaller<Expense> m;
-    m.marshallObject(e, responsePayload);
+    m.marshallObject(newExpense, responsePayload);
     oResponse.setPayload(responsePayload);
 }
 
