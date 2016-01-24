@@ -7,6 +7,9 @@
 #include <httpserver.hpp>
 
 #include <myroomies/utils/LoggingMacros.h>
+#include <myroomies/utils/Configuration.h>
+
+#include <myroomies/services/ServiceRegistry.h>
 
 #include <myroomies/resources/StaticResource.h>
 #include <myroomies/resources/Resource.h>
@@ -17,6 +20,10 @@ namespace po = boost::program_options;
 using std::placeholders::_1;
 
 using httpserver::webserver;
+
+using myroomies::utils::Configuration;
+
+using myroomies::services::ServiceRegistry;
 
 using myroomies::resources::StaticResource;
 using myroomies::resources::Resource;
@@ -75,7 +82,13 @@ int main(int argc, const char* argv[])
         static StaticResource staticResource(programPath.parent_path());
         ws.register_resource("/static", &staticResource, true);
     }
-    static Resource<MoneyHandler> moneyResource("/money", true);
+
+    // TODO fill the configuration object
+    Configuration config;
+
+    // Create the ServiceRegistry
+    auto serviceRegistry = std::make_shared<ServiceRegistry>(config);
+    Resource<MoneyHandler> moneyResource(serviceRegistry, "/money", true);
     ws.register_resource(moneyResource.getUri(), &moneyResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
     MYROOMIES_LOG_INFO("Server up and running");

@@ -4,6 +4,8 @@
 #include <httpserver.hpp>
 
 #include <myroomies/model/User.h>
+
+#include <myroomies/services/ServiceRegistry.h>
 #include <myroomies/services/LoginService.h>
 
 #include <myroomies/resources/Resource.h>
@@ -18,8 +20,12 @@ using myroomies::services::LoginService;
 namespace myroomies {
 namespace resources {
 
-ResourceBase::ResourceBase(const std::string& iUri, bool iSecured)
-  : secured_(iSecured),
+ResourceBase::ResourceBase(
+    const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry,
+    const std::string& iUri,
+    bool iSecured)
+  : serviceRegistry_(iServiceRegistry),
+    secured_(iSecured),
     uri_(iUri)
 {
     disallow_all();
@@ -49,8 +55,7 @@ bool ResourceBase::performSecurity(const httpserver::http_request& iRequest,
     iRequest.get_pass(password);
     if (!user.empty() && !password.empty())
     {
-        LoginService service;
-        return service.login(user, password);
+        return getServiceRegistry()->get<LoginService>()->login(user, password);
     }
     return false;
 }

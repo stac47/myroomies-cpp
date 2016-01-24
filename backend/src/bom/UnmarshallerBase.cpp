@@ -6,7 +6,6 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/document.h>
 
-#include <myroomies/bom/MarshallCommon.h>
 #include <myroomies/bom/UnmarshallerBase.h>
 
 namespace myroomies {

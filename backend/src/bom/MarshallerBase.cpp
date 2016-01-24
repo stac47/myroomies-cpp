@@ -10,7 +10,6 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
-#include <myroomies/bom/MarshallCommon.h>
 #include <myroomies/bom/MarshallerBase.h>
 
 using rapidjson::Document;

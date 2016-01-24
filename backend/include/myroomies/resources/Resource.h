@@ -1,11 +1,20 @@
 #pragma once
 
+#include <memory>
 #include <functional>
 
 #include <httpserver.hpp>
 
-#include <myroomies/model/User.h>
+#include <myroomies/bom/User.h>
 #include <myroomies/resources/TransactionHandler.h>
+
+namespace myroomies {
+namespace services {
+
+class ServiceRegistry;
+
+} /* namespace services */
+} /* namespace myroomies */
 
 namespace myroomies {
 namespace resources {
@@ -13,7 +22,10 @@ namespace resources {
 class ResourceBase: public httpserver::http_resource
 {
 public:
-    ResourceBase(const std::string& iUri, bool iSecured);
+    ResourceBase(const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry,
+                 const std::string& iUri,
+                 bool iSecured);
+
     virtual ~ResourceBase();
 
     const std::string& getUri() const;
@@ -26,7 +38,13 @@ protected:
         return secured_;
     }
 
+    std::shared_ptr<myroomies::services::ServiceRegistry> getServiceRegistry() const
+    {
+        return serviceRegistry_.lock();
+    }
+
 private:
+    std::weak_ptr<myroomies::services::ServiceRegistry> serviceRegistry_;
     bool secured_;
     std::string uri_;
 };
@@ -35,8 +53,10 @@ template<typename TH>
 class Resource : public ResourceBase
 {
 public:
-    Resource(const std::string& iUri, bool iSecured)
-      : ResourceBase(iUri, iSecured) {}
+    Resource(const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry,
+             const std::string& iUri,
+             bool iSecured)
+      : ResourceBase(iServiceRegistry, iUri, iSecured) {}
 
     void render_GET(const httpserver::http_request& iRequest,
                     httpserver::http_response**) override final;

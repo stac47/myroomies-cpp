@@ -1,18 +1,28 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
-#include <myroomies/services/UserService.h>
+#include <myroomies/utils/Configuration.h>
+
+#include <myroomies/services/ServiceInterface.h>
 
 namespace myroomies {
 namespace services {
 
-class LoginService
+class ServiceRegistry;
+
+class LoginService : public ServiceInterface
 {
 public:
+    static std::shared_ptr<LoginService> BuildFromConfig(
+        const std::shared_ptr<ServiceRegistry>& iServiceRegistry,
+        const myroomies::utils::Configuration&);
+
     bool login(const std::string& iUser,
                const std::string& iPassword);
-    void logout(const std::string& iUser);
+private:
+    LoginService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry);
 };
 
 } /* namespace services */
