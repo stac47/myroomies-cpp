@@ -19,7 +19,7 @@ std::shared_ptr<LoginService> LoginService::BuildFromConfig(
 }
 
 LoginService::LoginService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry)
-  : ServiceInterface(),
+  : ServiceInterface("Login"),
     userService_(iServiceRegistry->get<UserService>())
 {}
 

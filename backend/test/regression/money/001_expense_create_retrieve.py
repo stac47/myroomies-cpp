@@ -25,7 +25,7 @@ class MyRoomiesServer(object):
 
 
     def stop(self):
-        self.server_process.kill()
+        self.server_process.terminate()
         print("Server stopped")
 
     def __wait_for_connection(self):

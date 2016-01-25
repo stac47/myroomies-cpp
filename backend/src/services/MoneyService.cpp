@@ -49,7 +49,7 @@ std::shared_ptr<MoneyService> MoneyService::BuildFromConfig(
 }
 
 MoneyService::MoneyService(const std::shared_ptr<ServiceRegistry>&)
-  : ServiceInterface()
+  : ServiceInterface("Money")
 {}
 
 std::vector<Expense> MoneyService::getExpenses()

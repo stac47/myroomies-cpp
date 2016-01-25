@@ -1,3 +1,4 @@
+#include <csignal>
 #include <iostream>
 #include <functional>
 
@@ -16,8 +17,6 @@
 #include <myroomies/resources/MoneyHandler.h>
 
 namespace po = boost::program_options;
-
-using std::placeholders::_1;
 
 using httpserver::webserver;
 
@@ -39,6 +38,14 @@ void LogAccess(const std::string& iLog)
 void LogError(const std::string& iLog)
 {
     spdlog::get("error")->error() << iLog;
+}
+
+webserver* gWebServer;
+
+void signalHandler(int signal)
+{
+    MYROOMIES_LOG_INFO("Stopping server because signal " << signal);
+    gWebServer->stop();
 }
 
 } // namespace
@@ -67,13 +74,21 @@ int main(int argc, const char* argv[])
     MYROOMIES_LOG_INFO("Binary: " << boost::filesystem::absolute(programPath).native());
     MYROOMIES_LOG_INFO("Working directory: " << boost::filesystem::current_path().native());
 
-    /* auto log_access = std::bind(&Log, "ACCESS", _1); */
+
+    // TODO fill the configuration object
+    Configuration config;
+
+    // Create the ServiceRegistry
+    auto serviceRegistry = std::make_shared<ServiceRegistry>(config);
+
     webserver ws = httpserver::create_webserver(8080)
                    .start_method(httpserver::http::http_utils::INTERNAL_SELECT)
                    .max_threads(5)
                    .max_connections(5)
                    .log_access(LogAccess)
                    .log_error(LogError);
+
+    gWebServer = &ws;
 
     MYROOMIES_LOG_INFO("Registering resources...");
     if (vm.count("development"))
@@ -83,19 +98,18 @@ int main(int argc, const char* argv[])
         ws.register_resource("/static", &staticResource, true);
     }
 
-    // TODO fill the configuration object
-    Configuration config;
-
-    // Create the ServiceRegistry
-    auto serviceRegistry = std::make_shared<ServiceRegistry>(config);
-
     Resource<MoneyHandler> moneyResource(serviceRegistry, "/money", true);
     ws.register_resource(moneyResource.getUri(), &moneyResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
     MYROOMIES_LOG_INFO("Server up and running");
 
+    std::signal(SIGINT, &signalHandler);
+    std::signal(SIGTERM, &signalHandler);
+    std::signal(SIGKILL, &signalHandler);
+
     // Blocking call
     ws.start(true);
 
+    MYROOMIES_LOG_INFO("Exit process");
     return 0;
 }

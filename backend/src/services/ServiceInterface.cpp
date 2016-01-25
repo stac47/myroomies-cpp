@@ -1,6 +1,5 @@
 #include <memory>
-#include <typeinfo>
-#include <typeindex>
+#include <string>
 
 #include <myroomies/utils/LoggingMacros.h>
 
@@ -11,14 +10,15 @@ namespace services {
 
 class ServiceRegistry;
 
-ServiceInterface::ServiceInterface()
+ServiceInterface::ServiceInterface(const std::string& iName)
+  : name_(iName)
 {
-    MYROOMIES_LOG_INFO("Service construction: " << std::type_index(typeid(this)).name());
+    MYROOMIES_LOG_INFO("Service construction: " << name_);
 }
 
 ServiceInterface::~ServiceInterface()
 {
-    MYROOMIES_LOG_INFO("Service destruction: " << std::type_index(typeid(this)).name());
+    MYROOMIES_LOG_INFO("Service destruction: " << name_);
 }
 
 } /* namespace services */

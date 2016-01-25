@@ -8,17 +8,20 @@
 #include <myroomies/services/ServiceRegistry.h>
 #include <myroomies/services/UserService.h>
 
+using myroomies::utils::Configuration;
+
 namespace myroomies {
 namespace services {
 
 std::shared_ptr<UserService> UserService::BuildFromConfig(
     const std::shared_ptr<ServiceRegistry>& iServiceRegistry,
-    const myroomies::utils::Configuration&)
+    const Configuration&)
 {
     return std::make_shared<UserService>();
 }
 
 UserService::UserService()
+  : ServiceInterface("Users")
 {}
 
 std::vector<myroomies::bom::User> UserService::getUsers() const
