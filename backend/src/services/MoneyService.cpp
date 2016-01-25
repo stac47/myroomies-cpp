@@ -48,8 +48,8 @@ std::shared_ptr<MoneyService> MoneyService::BuildFromConfig(
     return std::shared_ptr<MoneyService>(new MoneyService(iServiceRegistry));
 }
 
-MoneyService::MoneyService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry)
-  : ServiceInterface(iServiceRegistry)
+MoneyService::MoneyService(const std::shared_ptr<ServiceRegistry>&)
+  : ServiceInterface()
 {}
 
 std::vector<Expense> MoneyService::getExpenses()

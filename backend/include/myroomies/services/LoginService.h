@@ -12,6 +12,8 @@ namespace services {
 
 class ServiceRegistry;
 
+class UserService;
+
 class LoginService : public ServiceInterface
 {
 public:
@@ -23,6 +25,8 @@ public:
                const std::string& iPassword);
 private:
     LoginService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry);
+
+    std::shared_ptr<UserService> userService_;
 };
 
 } /* namespace services */

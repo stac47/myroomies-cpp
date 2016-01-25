@@ -4,7 +4,9 @@
 #include <myroomies/utils/Configuration.h>
 
 #include <myroomies/services/ServiceInterface.h>
+#include <myroomies/services/UserService.h>
 #include <myroomies/services/LoginService.h>
+#include <myroomies/services/ServiceRegistry.h>
 
 namespace myroomies {
 namespace services {
@@ -17,7 +19,8 @@ std::shared_ptr<LoginService> LoginService::BuildFromConfig(
 }
 
 LoginService::LoginService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry)
-  : ServiceInterface(iServiceRegistry)
+  : ServiceInterface(),
+    userService_(iServiceRegistry->get<UserService>())
 {}
 
 bool LoginService::login(const std::string& iUser,

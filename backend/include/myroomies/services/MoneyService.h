@@ -8,11 +8,12 @@
 
 #include <myroomies/bom/Expense.h>
 
-#include <myroomies/services/ServiceRegistry.h>
 #include <myroomies/services/ServiceInterface.h>
 
 namespace myroomies {
 namespace services {
+
+class ServiceRegistry;
 
 class MoneyService : public ServiceInterface
 {
@@ -27,6 +28,7 @@ public:
 
 private:
     MoneyService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry);
+
 };
 
 } /* namespace services */

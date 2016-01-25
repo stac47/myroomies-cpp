@@ -65,8 +65,8 @@ public:
     const std::unique_ptr<const myroomies::model::User>& getLoggedUser() const;
     void setLoggedUser(const myroomies::model::User& iLoggedUser);
 
-    std::shared_ptr<myroomies::services::ServiceRegistry> getServiceRegistry() const;
-    void setServiceRegistry(const std::weak_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry);
+    const std::shared_ptr<myroomies::services::ServiceRegistry>& getServiceRegistry() const;
+    void setServiceRegistry(const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry);
 
     virtual void handleGET(const HttpRequest& iRequest, HttpResponse& oResponse);
     virtual void handlePOST(const HttpRequest& iRequest, HttpResponse& oResponse);
@@ -75,7 +75,7 @@ public:
 
 private:
     std::unique_ptr<const myroomies::model::User> loggedUser_;
-    std::weak_ptr<myroomies::services::ServiceRegistry> serviceRegistry_;
+    std::shared_ptr<myroomies::services::ServiceRegistry> serviceRegistry_;
 };
 
 } /* namespace resources */

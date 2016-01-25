@@ -97,6 +97,5 @@ int main(int argc, const char* argv[])
     // Blocking call
     ws.start(true);
 
-    serviceRegistry->cleanUp();
     return 0;
 }

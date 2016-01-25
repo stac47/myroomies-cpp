@@ -38,13 +38,13 @@ protected:
         return secured_;
     }
 
-    std::shared_ptr<myroomies::services::ServiceRegistry> getServiceRegistry() const
+    const std::shared_ptr<myroomies::services::ServiceRegistry>& getServiceRegistry() const
     {
-        return serviceRegistry_.lock();
+        return serviceRegistry_;
     }
 
 private:
-    std::weak_ptr<myroomies::services::ServiceRegistry> serviceRegistry_;
+    const std::shared_ptr<myroomies::services::ServiceRegistry>& serviceRegistry_;
     bool secured_;
     std::string uri_;
 };

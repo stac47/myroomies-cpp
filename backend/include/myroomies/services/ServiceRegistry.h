@@ -22,8 +22,6 @@ public:
     template<typename T>
     std::shared_ptr<T> get();
 
-    void cleanUp();
-
 private:
     template<typename T>
     void registerService(const std::shared_ptr<T>& iService);
@@ -35,7 +33,6 @@ private:
 template<typename T>
 void ServiceRegistry::registerService(const std::shared_ptr<T>& iService)
 {
-    // TODO mutex here
     services_[std::type_index(typeid(T))] = std::shared_ptr<T>(iService);
 }
 
