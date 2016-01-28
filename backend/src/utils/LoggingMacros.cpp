@@ -8,7 +8,7 @@
 namespace myroomies {
 namespace utils {
 
-void InitLoggers(const std::string& iLoggingFolder)
+void Logger::Init(const std::string& iLoggingFolder)
 {
     if (iLoggingFolder.empty())
     {
@@ -20,6 +20,27 @@ void InitLoggers(const std::string& iLoggingFolder)
     else
     {
     }
+}
+
+
+void Logger::Debug(const std::string& iLoggerName, const std::string& iMsg)
+{
+    spdlog::get(iLoggerName)->debug() << iMsg;
+}
+
+void Logger::Info(const std::string& iLoggerName, const std::string& iMsg)
+{
+    spdlog::get(iLoggerName)->info() << iMsg;
+}
+
+void Logger::Warn(const std::string& iLoggerName, const std::string& iMsg)
+{
+    spdlog::get(iLoggerName)->warn() << iMsg;
+}
+
+void Logger::Error(const std::string& iLoggerName, const std::string& iMsg)
+{
+    spdlog::get(iLoggerName)->error() << iMsg;
 }
 
 } /* namespace utils */

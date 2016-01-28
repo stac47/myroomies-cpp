@@ -32,12 +32,12 @@ namespace {
 
 void LogAccess(const std::string& iLog)
 {
-    spdlog::get("access")->info() << iLog;
+    MYROOMIES_LOG_HTTPSERVER_ACCESS(iLog);
 }
 
 void LogError(const std::string& iLog)
 {
-    spdlog::get("error")->error() << iLog;
+    MYROOMIES_LOG_HTTPSERVER_ERROR(iLog);
 }
 
 webserver* gWebServer;
@@ -52,7 +52,7 @@ void signalHandler(int signal)
 
 int main(int argc, const char* argv[])
 {
-    myroomies::utils::InitLoggers();
+    myroomies::utils::Logger::Init();
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
@@ -93,7 +93,7 @@ int main(int argc, const char* argv[])
     MYROOMIES_LOG_INFO("Registering resources...");
     if (vm.count("development"))
     {
-        MYROOMIES_LOG_WARNING("Development mode activated. DO NOT USE IT IN PRODUCTION.");
+        MYROOMIES_LOG_WARN("Development mode activated. DO NOT USE IT IN PRODUCTION.");
         static StaticResource staticResource(programPath.parent_path());
         ws.register_resource("/static", &staticResource, true);
     }

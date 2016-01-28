@@ -26,7 +26,7 @@ const std::string HttpUtils::getContentType(const boost::filesystem::path& iFile
     {
         return "text/css";
     }
-    MYROOMIES_LOG_WARNING("Unknown filename extension: " << extension);
+    MYROOMIES_LOG_WARN("Unknown filename extension: " << extension);
     return "text/plain";
 }
 
