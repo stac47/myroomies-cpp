@@ -5,15 +5,15 @@
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 
-#include <myroomies/model/ModelObject.h>
+#include <myroomies/utils/db/Def.h>
 
 namespace myroomies {
 namespace model {
 
 struct Expense
 {
-    Key_t id;
-    ForeignKey_t userId;
+    myroomies::utils::db::Key_t id;
+    myroomies::utils::db::ForeignKey_t userId;
     boost::gregorian::date date;
     double amount;
     std::string title;

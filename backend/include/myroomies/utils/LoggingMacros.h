@@ -24,7 +24,7 @@ public:
 #define MYROOMIES_LOG(_level_, _msg_)                               \
 {                                                                   \
     std::stringstream ss;                                           \
-    ss << " <" << __FILE__ << ":" << __LINE__<< "> " << _msg_;      \
+    ss << "<" << __FILE__ << ":" << __LINE__<< "> " << _msg_;      \
     myroomies::utils::Logger::_level_("myroomies", ss.str());       \
 }
 
@@ -43,13 +43,13 @@ public:
 #define MYROOMIES_LOG_HTTPSERVER_ACCESS(_msg_)                      \
 {                                                                   \
     std::stringstream ss;                                           \
-    ss << " <" << __FILE__ << ":" << __LINE__<< "> " << _msg_;      \
+    ss << "<" << __FILE__ << ":" << __LINE__<< "> " << _msg_;      \
     myroomies::utils::Logger::Info("access", ss.str());             \
 }
 
 #define MYROOMIES_LOG_HTTPSERVER_ERROR(_msg_)                       \
 {                                                                   \
     std::stringstream ss;                                           \
-    ss << " <" << __FILE__ << ":" << __LINE__<< "> " << _msg_;      \
+    ss << "<" << __FILE__ << ":" << __LINE__<< "> " << _msg_;      \
     myroomies::utils::Logger::Error("error", ss.str());           \
 }

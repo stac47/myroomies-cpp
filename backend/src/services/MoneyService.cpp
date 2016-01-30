@@ -1,17 +1,25 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 #include <myroomies/utils/Configuration.h>
+#include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/Expense.h>
+#include <myroomies/bom/User.h>
 
 #include <myroomies/services/ServiceRegistry.h>
 #include <myroomies/services/ServiceInterface.h>
 #include <myroomies/services/MoneyService.h>
+#include <myroomies/services/Exception.h>
 
 using myroomies::utils::Configuration;
+using myroomies::utils::db::Key_t;
+
 using myroomies::bom::Expense;
+using myroomies::bom::User;
+
 using myroomies::services::ServiceRegistry;
 using myroomies::services::ServiceInterface;
 
@@ -20,18 +28,6 @@ namespace {
 std::vector<Expense>& GetExpenses()
 {
     static std::vector<Expense> ExpensesVector;
-    if (ExpensesVector.empty())
-    {
-        Expense e;
-        e.id = 1;
-        e.userId = 1;
-        e.date = boost::gregorian::date(boost::gregorian::day_clock::universal_day());
-        e.amount = 12.5;
-        e.title = "test1";
-        e.comment = "comment 1";
-        ExpensesVector.push_back(e);
-        ExpensesVector.push_back(e);
-    }
     return ExpensesVector;
 }
 
@@ -61,6 +57,21 @@ const Expense MoneyService::addExpense(const Expense& iExpense)
 {
     GetExpenses().push_back(iExpense);
     return iExpense;
+}
+
+void MoneyService::removeExpense(const User& iLoggedUser, Key_t iExpenseId)
+{
+    auto it = std::find_if(GetExpenses().begin(), GetExpenses().end(),
+                           [iExpenseId](const Expense& e) {return e.id == iExpenseId;});
+    if (it == std::end(GetExpenses()))
+    {
+        throw ResourceNotFoundException();
+    }
+    if (it->userId != iLoggedUser.user.id)
+    {
+        throw ForbiddenResourceException();
+    }
+    GetExpenses().erase(it);
 }
 
 } /* namespace services */

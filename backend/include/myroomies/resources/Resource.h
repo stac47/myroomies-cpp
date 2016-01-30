@@ -5,6 +5,7 @@
 
 #include <httpserver.hpp>
 
+#include <myroomies/model/User.h>
 #include <myroomies/bom/User.h>
 #include <myroomies/resources/TransactionHandler.h>
 
@@ -94,8 +95,8 @@ void Resource<TH>::commonRender(const httpserver::http_request& iRequest,
     myroomies::resources::HttpResponse response;
     if (isSecured())
     {
-        myroomies::model::User loggedUser;
-        if (performSecurity(iRequest, loggedUser))
+        myroomies::bom::User loggedUser;
+        if (performSecurity(iRequest, loggedUser.user))
         {
             transactionHandler.setLoggedUser(loggedUser);
             transactionHandler.setServiceRegistry(getServiceRegistry());
@@ -112,7 +113,10 @@ void Resource<TH>::commonRender(const httpserver::http_request& iRequest,
         }
     }
     *oResponse = new httpserver::http_response(
-        httpserver::http_response_builder(response.getPayload(), 200, "application/json; charset=utf-8").string_response()
+        httpserver::http_response_builder(
+            response.getPayload(),
+            response.getStatus(),
+            "application/json; charset=utf-8").string_response()
     );
 }
 

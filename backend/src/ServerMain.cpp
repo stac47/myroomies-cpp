@@ -52,10 +52,10 @@ void signalHandler(int signal)
 
 int main(int argc, const char* argv[])
 {
-    myroomies::utils::Logger::Init();
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
+        ("logging-path", po::value<std::string>(), "set the logging files location")
         ("development", "start the server in development mode")
     ;
 
@@ -67,6 +67,15 @@ int main(int argc, const char* argv[])
     {
         std::cout << desc << std::endl;
         return 1;
+    }
+
+    if (vm.count("logging-path"))
+    {
+        myroomies::utils::Logger::Init(vm["logging-path"].as<std::string>());
+    }
+    else
+    {
+        myroomies::utils::Logger::Init();
     }
 
     MYROOMIES_LOG_INFO("MyRoomies server is starting...");

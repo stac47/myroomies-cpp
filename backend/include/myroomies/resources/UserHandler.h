@@ -1,6 +1,6 @@
 #pragma once
 
-#include <myroomies/resource/TransactionHandler.h>
+#include <myroomies/resources/TransactionHandler.h>
 
 namespace myroomies {
 namespace resources {

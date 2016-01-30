@@ -19,6 +19,13 @@ void Logger::Init(const std::string& iLoggingFolder)
     }
     else
     {
+        auto myroomiesLogger =
+            spdlog::rotating_logger_mt("myroomies", iLoggingFolder + "/myroomies.log", 1048576 * 5, 3);
+        myroomiesLogger->info() << "File logging activated";
+        auto accessLogger =
+            spdlog::rotating_logger_mt("access", iLoggingFolder + "/access.log", 1048576 * 5, 3);
+        auto errorLogger =
+            spdlog::rotating_logger_mt("error", iLoggingFolder + "/error.log", 1048576 * 5, 3);
     }
 }
 

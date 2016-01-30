@@ -5,7 +5,9 @@
 #include <vector>
 #include <map>
 
-#include <myroomies/model/User.h>
+#include <boost/algorithm/string.hpp>
+
+#include <myroomies/bom/User.h>
 #include <myroomies/services/ServiceRegistry.h>
 
 namespace myroomies {
@@ -41,6 +43,7 @@ public:
     std::vector<std::string> getPathPieces() const
     {
         std::vector<std::string> ret;
+        boost::split(ret, path_, boost::is_any_of("/"));
         return ret;
     }
 
@@ -54,7 +57,21 @@ private:
     std::string path_;
 };
 
-class HttpResponse : public HttpMessage {};
+class HttpResponse : public HttpMessage
+{
+public:
+    void setStatus(unsigned int iStatus)
+    {
+        status_ = iStatus;
+    }
+
+    unsigned int getStatus() const
+    {
+        return status_;
+    }
+private:
+    unsigned int status_;
+};
 
 class TransactionHandler
 {
@@ -62,8 +79,8 @@ public:
     TransactionHandler();
     virtual ~TransactionHandler();
 
-    const std::unique_ptr<const myroomies::model::User>& getLoggedUser() const;
-    void setLoggedUser(const myroomies::model::User& iLoggedUser);
+    const std::unique_ptr<const myroomies::bom::User>& getLoggedUser() const;
+    void setLoggedUser(const myroomies::bom::User& iLoggedUser);
 
     const std::shared_ptr<myroomies::services::ServiceRegistry>& getServiceRegistry() const;
     void setServiceRegistry(const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry);
@@ -74,7 +91,7 @@ public:
     virtual void handleDELETE(const HttpRequest& iRequest, HttpResponse& oResponse);
 
 private:
-    std::unique_ptr<const myroomies::model::User> loggedUser_;
+    std::unique_ptr<const myroomies::bom::User> loggedUser_;
     std::shared_ptr<myroomies::services::ServiceRegistry> serviceRegistry_;
 };
 

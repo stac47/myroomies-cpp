@@ -25,14 +25,14 @@ void TransactionHandler::setServiceRegistry(const std::shared_ptr<ServiceRegistr
     serviceRegistry_ = iServiceRegistry;
 }
 
-const std::unique_ptr<const myroomies::model::User>& TransactionHandler::getLoggedUser() const
+const std::unique_ptr<const myroomies::bom::User>& TransactionHandler::getLoggedUser() const
 {
     return loggedUser_;
 }
 
-void TransactionHandler::setLoggedUser(const myroomies::model::User& iLoggedUser)
+void TransactionHandler::setLoggedUser(const myroomies::bom::User& iLoggedUser)
 {
-    loggedUser_ = std::make_unique<const myroomies::model::User>(iLoggedUser);
+    loggedUser_ = std::make_unique<const myroomies::bom::User>(iLoggedUser);
 }
 
 void TransactionHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse) {}

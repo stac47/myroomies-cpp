@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <myroomies/utils/Configuration.h>
+#include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/User.h>
 
@@ -23,7 +24,10 @@ public:
 
     UserService();
 
-    std::vector<myroomies::bom::User> getUsers() const;
+    std::vector<myroomies::bom::User> getUsersFromHouseshare(
+        myroomies::utils::db::Key_t iHouseshareId) const;
+
+    myroomies::bom::User createUser(const myroomies::bom::User& iUser);
 
 };
 } /* namespace services */

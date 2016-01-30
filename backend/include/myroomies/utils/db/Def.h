@@ -1,10 +1,12 @@
 #pragma once
 
 namespace myroomies {
-namespace model {
+namespace utils {
+namespace db {
 
 typedef uint32_t Key_t;
 typedef Key_t ForeignKey_t;
 
-} /* namespace model */
+} /* namespace db */
+} /* namespace utils */
 } /* namespace myroomies */
