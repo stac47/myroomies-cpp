@@ -7,3 +7,4 @@ backend/myroomies-server
 backend/myroomies-unittest
 __pycache__
 *.log.txt
+*.log
