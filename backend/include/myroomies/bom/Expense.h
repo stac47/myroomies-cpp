@@ -8,7 +8,9 @@
 namespace myroomies {
 namespace bom {
 
-using myroomies::model::Expense;
+// using myroomies::model::Expense;
+class Expense : public myroomies::model::Expense
+{};
 
 template class Marshaller<Expense>;
 template class Unmarshaller<Expense>;

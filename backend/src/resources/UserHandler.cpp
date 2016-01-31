@@ -4,6 +4,7 @@
 #include <myroomies/bom/Marshaller.h>
 #include <myroomies/bom/Unmarshaller.h>
 #include <myroomies/bom/User.h>
+#include <myroomies/bom/NewUserRequest.h>
 
 
 #include <myroomies/services/UserService.h>
@@ -16,6 +17,7 @@ using myroomies::resources::HttpResponse;
 using myroomies::bom::Marshaller;
 using myroomies::bom::Unmarshaller;
 using myroomies::bom::User;
+using myroomies::bom::NewUserRequest;
 
 using myroomies::services::UserService;
 
@@ -26,7 +28,7 @@ void UserHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse
 {
     std::string response;
     Marshaller<User> m;
-    uint32_t houseshareId = getLoggedUser()->user.houseshareId;
+    uint32_t houseshareId = getLoggedUser()->houseshareId;
     m.marshallCollection(
         getServiceRegistry()->get<UserService>()->getUsersFromHouseshare(houseshareId),
         response);
@@ -36,10 +38,10 @@ void UserHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse
 void UserHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
     std::string content = iRequest.getPayload();
-    Unmarshaller<User> unmarshaller;
-    User user;
+    Unmarshaller<NewUserRequest> unmarshaller;
+    NewUserRequest user;
     unmarshaller.unmarshall(content, user);
-    User newUser = getServiceRegistry()->get<UserService>()->createUser(user);
+    User newUser = getServiceRegistry()->get<UserService>()->createUser(getLoggedUser()->id, user);
     std::string responsePayload;
     Marshaller<User> m;
     m.marshallObject(newUser, responsePayload);

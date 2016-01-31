@@ -14,6 +14,7 @@ struct Expense
 {
     myroomies::utils::db::Key_t id;
     myroomies::utils::db::ForeignKey_t userId;
+    myroomies::utils::db::ForeignKey_t houseshareId;
     boost::gregorian::date date;
     double amount;
     std::string title;

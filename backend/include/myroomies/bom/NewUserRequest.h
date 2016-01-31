@@ -7,13 +7,13 @@
 #include <myroomies/utils/db/Def.h>
 
 namespace myroomies {
-namespace model {
+namespace bom {
 
-struct User
+struct NewUserRequest
 {
     myroomies::utils::db::Key_t id;
     std::string login;
-    std::string passwordHash;
+    std::string password;
     std::string firstname;
     std::string lastname;
     boost::gregorian::date dateOfBirth;
@@ -21,5 +21,7 @@ struct User
     myroomies::utils::db::ForeignKey_t houseshareId;
 };
 
-} /* namespace model */
+template class Unmarshaller<NewUserRequest>;
+
+} /* namespace bom */
 } /* namespace myroomies */

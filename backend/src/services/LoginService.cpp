@@ -2,11 +2,17 @@
 #include <memory>
 
 #include <myroomies/utils/Configuration.h>
+#include <myroomies/utils/LoggingMacros.h>
 
+#include <myroomies/bom/User.h>
+
+#include <myroomies/services/Exception.h>
 #include <myroomies/services/ServiceInterface.h>
 #include <myroomies/services/UserService.h>
 #include <myroomies/services/LoginService.h>
 #include <myroomies/services/ServiceRegistry.h>
+
+using myroomies::bom::User;
 
 namespace myroomies {
 namespace services {
@@ -23,10 +29,25 @@ LoginService::LoginService(const std::shared_ptr<ServiceRegistry>& iServiceRegis
     userService_(iServiceRegistry->get<UserService>())
 {}
 
-bool LoginService::login(const std::string& iUser,
-                         const std::string& iPassword)
+std::unique_ptr<const User> LoginService::login(
+    const std::string& iLogin,
+    const std::string& iPassword)
 {
-    return true;
+    std::unique_ptr<const User> ret;
+    try
+    {
+        const User user = userService_->getUserByLogin(iLogin);
+        if (user.passwordHash == iPassword)
+        {
+            ret = std::make_unique<const User>(user);
+        }
+    }
+    catch(const ResourceNotFoundException&)
+    {
+        MYROOMIES_LOG_WARN("User provided wrong credentials ["
+                           << iLogin << ":" << iPassword);
+    }
+    return ret;
 }
 
 } /* namespace services */

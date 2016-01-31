@@ -33,7 +33,7 @@ public:
 
 protected:
     bool performSecurity(const httpserver::http_request& iRequest,
-                         myroomies::model::User& oLoggedUser);
+                         myroomies::bom::User& oLoggedUser);
     bool isSecured() const
     {
         return secured_;
@@ -96,7 +96,7 @@ void Resource<TH>::commonRender(const httpserver::http_request& iRequest,
     if (isSecured())
     {
         myroomies::bom::User loggedUser;
-        if (performSecurity(iRequest, loggedUser.user))
+        if (performSecurity(iRequest, loggedUser))
         {
             transactionHandler.setLoggedUser(loggedUser);
             transactionHandler.setServiceRegistry(getServiceRegistry());

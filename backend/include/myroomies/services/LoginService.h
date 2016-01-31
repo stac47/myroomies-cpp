@@ -5,6 +5,8 @@
 
 #include <myroomies/utils/Configuration.h>
 
+#include <myroomies/bom/User.h>
+
 #include <myroomies/services/ServiceInterface.h>
 
 namespace myroomies {
@@ -21,8 +23,9 @@ public:
         const std::shared_ptr<ServiceRegistry>& iServiceRegistry,
         const myroomies::utils::Configuration&);
 
-    bool login(const std::string& iUser,
-               const std::string& iPassword);
+    std::unique_ptr<const myroomies::bom::User> login(
+        const std::string& iUser,
+        const std::string& iPassword);
 private:
     LoginService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry);
 

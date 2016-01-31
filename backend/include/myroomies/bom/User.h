@@ -8,14 +8,9 @@
 namespace myroomies {
 namespace bom {
 
-struct User
-{
-    myroomies::model::User user;
-    std::string password;
-};
+using myroomies::model::User;
 
 template class Marshaller<User>;
-template class Unmarshaller<User>;
 
 } /* namespace bom */
 } /* namespace myroomies */

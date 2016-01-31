@@ -15,6 +15,7 @@
 #include <myroomies/resources/StaticResource.h>
 #include <myroomies/resources/Resource.h>
 #include <myroomies/resources/MoneyHandler.h>
+#include <myroomies/resources/UserHandler.h>
 
 namespace po = boost::program_options;
 
@@ -27,6 +28,7 @@ using myroomies::services::ServiceRegistry;
 using myroomies::resources::StaticResource;
 using myroomies::resources::Resource;
 using myroomies::resources::MoneyHandler;
+using myroomies::resources::UserHandler;
 
 namespace {
 
@@ -109,6 +111,8 @@ int main(int argc, const char* argv[])
 
     Resource<MoneyHandler> moneyResource(serviceRegistry, "/money", true);
     ws.register_resource(moneyResource.getUri(), &moneyResource, true);
+    Resource<UserHandler> userResource(serviceRegistry, "/user", true);
+    ws.register_resource(userResource.getUri(), &userResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
     MYROOMIES_LOG_INFO("Server up and running");
 

@@ -10,6 +10,7 @@ void Marshaller<Expense>::marshallObject(const Expense& iObject, std::string& oS
 {
     putValue("id", iObject.id);
     putValue("userId", iObject.userId);
+    putValue("houseshareId", iObject.houseshareId);
     putValue("date", iObject.date);
     putValue("amount", iObject.amount);
     putValue("title", iObject.title);
@@ -21,12 +22,13 @@ template<>
 void Unmarshaller<Expense>::unmarshall(const std::string& iStr, Expense& oObject)
 {
     parse(iStr);
-    extractValue("id", true, oObject.id);
+    extractValue("id", false, oObject.id);
     extractValue("userId", false, oObject.userId);
-    extractValue("amount", false, oObject.amount);
-    extractValue("date", false, oObject.date);
-    extractValue("title", false, oObject.title);
-    extractValue("comment", false, oObject.comment);
+    extractValue("houseshareId", false, oObject.houseshareId);
+    extractValue("amount", true, oObject.amount);
+    extractValue("date", true, oObject.date);
+    extractValue("title", true, oObject.title);
+    extractValue("comment", true, oObject.comment);
 }
 } /* namespace bom */
 } /* namespace myroomies */

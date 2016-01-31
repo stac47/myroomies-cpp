@@ -17,14 +17,14 @@ public:
 protected:
     void parse(const std::string& iStr);
 
-    void extractValue(const std::string& iStr, bool iOptional, bool& oBool);
-    void extractValue(const std::string& iStr, bool iOptional, unsigned int& oUInt);
-    void extractValue(const std::string& iStr, bool iOptional, int& oInt);
-    void extractValue(const std::string& iStr, bool iOptional, std::string& oString);
-    void extractValue(const std::string& iStr, bool iOptional, double& oDouble);
+    void extractValue(const std::string& iStr, bool iMandatory, bool& oBool);
+    void extractValue(const std::string& iStr, bool iMandatory, unsigned int& oUInt);
+    void extractValue(const std::string& iStr, bool iMandatory, int& oInt);
+    void extractValue(const std::string& iStr, bool iMandatory, std::string& oString);
+    void extractValue(const std::string& iStr, bool iMandatory, double& oDouble);
     void extractValue(
         const std::string& iStr,
-        bool iOptional,
+        bool iMandatory,
         boost::gregorian::date& oDate);
 
 private:

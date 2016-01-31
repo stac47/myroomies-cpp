@@ -34,7 +34,7 @@ void MoneyHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oRespons
 {
     std::string response;
     Marshaller<Expense> m;
-    m.marshallCollection(getServiceRegistry()->get<MoneyService>()->getExpenses(), response);
+    m.marshallCollection(getServiceRegistry()->get<MoneyService>()->getExpenses(getLoggedUser()->houseshareId), response);
     oResponse.setPayload(response);
 }
 
@@ -42,9 +42,9 @@ void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oRespon
 {
     std::string content = iRequest.getPayload();
     Unmarshaller<Expense> unmarshaller;
-    Expense e;
+    myroomies::bom::Expense e;
     unmarshaller.unmarshall(content, e);
-    Expense newExpense = getServiceRegistry()->get<MoneyService>()->addExpense(e);
+    const Expense newExpense = getServiceRegistry()->get<MoneyService>()->addExpense(getLoggedUser(), e);
     std::string responsePayload;
     Marshaller<Expense> m;
     m.marshallObject(newExpense, responsePayload);
@@ -56,8 +56,8 @@ void MoneyHandler::handleDELETE(const HttpRequest& iRequest, HttpResponse& oResp
     std::string expenseId = iRequest.getPathPieces()[0];
     try
     {
-        Key_t id = boost::lexical_cast<Key_t>(expenseId);
-        getServiceRegistry()->get<MoneyService>()->removeExpense(*getLoggedUser(), id);
+        Key_t expenseId = boost::lexical_cast<Key_t>(expenseId);
+        getServiceRegistry()->get<MoneyService>()->removeExpense(getLoggedUser()->id, expenseId);
         oResponse.setStatus(200);
     }
     catch (const boost::bad_lexical_cast&)

@@ -9,7 +9,10 @@ class MyRoomiesServer(object):
         self.path = '../../myroomies-server'
 
     def start(self):
-        self.server_process = subprocess.Popen([self.path, "--logging-path=."])
+        cmd = []
+        cmd.append(self.path)
+        cmd.append("--logging-path=.")
+        self.server_process = subprocess.Popen(cmd)
         logging.info("Server started [pid={}]".format(self.server_process.pid))
         self.__wait_for_connection()
         logging.info("Server ready to accept connection")

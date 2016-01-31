@@ -48,18 +48,23 @@ MoneyService::MoneyService(const std::shared_ptr<ServiceRegistry>&)
   : ServiceInterface("Money")
 {}
 
-std::vector<Expense> MoneyService::getExpenses()
+std::vector<Expense> MoneyService::getExpenses(Key_t iHouseshareId) const
 {
     return GetExpenses();
 }
 
-const Expense MoneyService::addExpense(const Expense& iExpense)
+const Expense MoneyService::addExpense(
+    const std::unique_ptr<const User>& iLoggedUser,
+    Expense iExpense)
 {
+    iExpense.id = GetExpenses().size() + 1;
+    iExpense.userId = iLoggedUser->id;
+    iExpense.houseshareId = iLoggedUser->houseshareId;
     GetExpenses().push_back(iExpense);
     return iExpense;
 }
 
-void MoneyService::removeExpense(const User& iLoggedUser, Key_t iExpenseId)
+void MoneyService::removeExpense(Key_t iLoggedUserId, Key_t iExpenseId)
 {
     auto it = std::find_if(GetExpenses().begin(), GetExpenses().end(),
                            [iExpenseId](const Expense& e) {return e.id == iExpenseId;});
@@ -67,7 +72,7 @@ void MoneyService::removeExpense(const User& iLoggedUser, Key_t iExpenseId)
     {
         throw ResourceNotFoundException();
     }
-    if (it->userId != iLoggedUser.user.id)
+    if (it->userId != iLoggedUserId)
     {
         throw ForbiddenResourceException();
     }

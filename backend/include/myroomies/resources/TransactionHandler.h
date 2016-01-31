@@ -60,6 +60,10 @@ private:
 class HttpResponse : public HttpMessage
 {
 public:
+    HttpResponse()
+      : status_(200)
+    {}
+
     void setStatus(unsigned int iStatus)
     {
         status_ = iStatus;

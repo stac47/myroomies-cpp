@@ -3,7 +3,7 @@
 
 #include <httpserver.hpp>
 
-#include <myroomies/model/User.h>
+#include <myroomies/bom/User.h>
 
 #include <myroomies/services/ServiceRegistry.h>
 #include <myroomies/services/LoginService.h>
@@ -43,7 +43,7 @@ const std::string& ResourceBase::getUri() const
 }
 
 bool ResourceBase::performSecurity(const httpserver::http_request& iRequest,
-                                   myroomies::model::User& oLoggedUser)
+                                   myroomies::bom::User& oLoggedUser)
 {
     if (!secured_)
     {
@@ -55,7 +55,12 @@ bool ResourceBase::performSecurity(const httpserver::http_request& iRequest,
     iRequest.get_pass(password);
     if (!user.empty() && !password.empty())
     {
-        return getServiceRegistry()->get<LoginService>()->login(user, password);
+        auto userPtr = getServiceRegistry()->get<LoginService>()->login(user, password);
+        if (userPtr)
+        {
+            oLoggedUser = *userPtr;
+            return true;
+        }
     }
     return false;
 }

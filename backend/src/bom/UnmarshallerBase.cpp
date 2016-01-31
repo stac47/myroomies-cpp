@@ -19,10 +19,10 @@ public:
         json_.Parse(iStr.c_str());
     }
 
-    void extractValue(const std::string& iStr, bool iOptional, bool& oBool)
+    void extractValue(const std::string& iStr, bool iMandatory, bool& oBool)
     {
         const char* key = iStr.c_str();
-        if (!json_.HasMember(key) && !iOptional)
+        if (!json_.HasMember(key) && !iMandatory)
         {
             return;
         }
@@ -32,10 +32,10 @@ public:
         }
     }
 
-    void extractValue(const std::string& iStr, bool iOptional, unsigned int& oUInt)
+    void extractValue(const std::string& iStr, bool iMandatory, unsigned int& oUInt)
     {
         const char* key = iStr.c_str();
-        if (!json_.HasMember(key) && !iOptional)
+        if (!json_.HasMember(key) && !iMandatory)
         {
             return;
         }
@@ -45,10 +45,10 @@ public:
         }
     }
 
-    void extractValue(const std::string& iStr, bool iOptional, int& oInt)
+    void extractValue(const std::string& iStr, bool iMandatory, int& oInt)
     {
         const char* key = iStr.c_str();
-        if (!json_.HasMember(key) && !iOptional)
+        if (!json_.HasMember(key) && !iMandatory)
         {
             return;
         }
@@ -58,10 +58,10 @@ public:
         }
     }
 
-    void extractValue(const std::string& iStr, bool iOptional, std::string& oString)
+    void extractValue(const std::string& iStr, bool iMandatory, std::string& oString)
     {
         const char* key = iStr.c_str();
-        if (!json_.HasMember(key) && !iOptional)
+        if (!json_.HasMember(key) && !iMandatory)
         {
             return;
         }
@@ -71,10 +71,10 @@ public:
         }
     }
 
-    void extractValue(const std::string& iStr, bool iOptional, double& oDouble)
+    void extractValue(const std::string& iStr, bool iMandatory, double& oDouble)
     {
         const char* key = iStr.c_str();
-        if (!json_.HasMember(key) && !iOptional)
+        if (!json_.HasMember(key) && !iMandatory)
         {
             return;
         }
@@ -86,11 +86,11 @@ public:
 
     void extractValue(
         const std::string& iStr,
-        bool iOptional,
+        bool iMandatory,
         boost::gregorian::date& oDate)
     {
         const char* key = iStr.c_str();
-        if (!json_.HasMember(key) && !iOptional)
+        if (!json_.HasMember(key) && !iMandatory)
         {
             return;
         }
@@ -117,37 +117,37 @@ void UnmarshallerBase::parse(const std::string& oStr)
     pImpl_->parse(oStr);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iOptional, bool& oBool)
+void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, bool& oBool)
 {
-    pImpl_->extractValue(iStr, iOptional, oBool);
+    pImpl_->extractValue(iStr, iMandatory, oBool);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iOptional, unsigned int& oUInt)
+void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, unsigned int& oUInt)
 {
-    pImpl_->extractValue(iStr, iOptional, oUInt);
+    pImpl_->extractValue(iStr, iMandatory, oUInt);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iOptional, int& oInt)
+void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, int& oInt)
 {
-    pImpl_->extractValue(iStr, iOptional, oInt);
+    pImpl_->extractValue(iStr, iMandatory, oInt);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iOptional, std::string& oString)
+void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, std::string& oString)
 {
-    pImpl_->extractValue(iStr, iOptional, oString);
+    pImpl_->extractValue(iStr, iMandatory, oString);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iOptional, double& oDouble)
+void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, double& oDouble)
 {
-    pImpl_->extractValue(iStr, iOptional, oDouble);
+    pImpl_->extractValue(iStr, iMandatory, oDouble);
 }
 
 void UnmarshallerBase::extractValue(
     const std::string& iStr,
-    bool iOptional,
+    bool iMandatory,
     boost::gregorian::date& oDate)
 {
-    pImpl_->extractValue(iStr, iOptional, oDate);
+    pImpl_->extractValue(iStr, iMandatory, oDate);
 }
 
 } /* namespace bom */

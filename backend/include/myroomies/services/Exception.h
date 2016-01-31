@@ -3,13 +3,13 @@
 namespace myroomies {
 namespace services {
 
-class ServiceEexception
+class ServiceException
 {};
 
-class ResourceNotFoundException : public ServiceEexception
+class ResourceNotFoundException : public ServiceException
 {};
 
-class ForbiddenResourceException : public ServiceEexception
+class ForbiddenResourceException : public ServiceException
 {};
 
 } /* namespace resources */

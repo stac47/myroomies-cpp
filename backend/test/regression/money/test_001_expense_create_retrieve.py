@@ -38,12 +38,12 @@ class MoneyBasicOperations(unittest.TestCase):
         self.assertEqual(401, response.status)
         self.assertEqual(0, len(data))
 
-    def test_retrieve_success(self):
+    def test_retrieve_nothing(self):
         self.conn.request('GET', '/money', headers=self.headers)
         response = self.conn.getresponse()
         data = response.read()
         self.assertEqual(200, response.status)
-        self.assertTrue(len(data) > 0)
+        self.assertEqual('[]', str(data, 'utf-8'))
         expenses = json.loads(str(data, 'utf-8'))
         self.assertEqual(0, len(expenses))
 
@@ -54,22 +54,32 @@ class MoneyBasicOperations(unittest.TestCase):
         self.assertEqual(405, response.status)
         self.assertEqual(0, len(data))
 
-        # self.assertrEqual(12.5, expenses[0]['amount'])
-        # new_expense = expenses[1]
-        # new_expense['amount'] += 6.0
-        # new_expense['comment'] = "new comment"
-        # new_expense['id'] = 14
-        # new_expense_str =  json.dumps(new_expense)
-        # print(new_expense_str)
-        # conn.request('POST', '/money', new_expense_str,
-        #         headers=headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print("Status {}: {}".format(response.status, data))
-        # conn.request('GET', '/money', headers=headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print("Status {}: {}".format(response.status, data))
-        # expenses = json.loads(str(data, 'utf-8'))
-        # print("Expenses number= {}".format(len(expenses)))
+    def test_create_delete(self):
+        new_expense = {}
+        new_expense['date'] = "2016-01-15"
+        new_expense['amount'] = 6.0
+        new_expense['title'] = "bakerie"
+        new_expense['comment'] = "new comment"
+        new_expense_str =  json.dumps(new_expense)
+        logging.debug(new_expense_str)
+
+        # Inserting a new expense
+        self.conn.request('POST', '/money', new_expense_str,
+                          headers=self.headers)
+        response = self.conn.getresponse()
+        data = response.read()
+        logging.debug(str(data, 'utf-8'))
+        self.assertEqual(200, response.status)
+        self.assertTrue(len(data) > 0)
+        inserted_expense = json.loads(str(data, 'utf-8'))
+        self.assertEqual(new_expense['date'], inserted_expense['date'])
+
+        # Retrieve a list of expenses
+        self.conn.request('GET', '/money', headers=self.headers)
+        response = self.conn.getresponse()
+        data = response.read()
+        self.assertEqual(200, response.status)
+        self.assertTrue(len(data) > 0)
+        retrieved_expense = json.loads(str(data, 'utf-8'))
+        self.assertEqual(1, len(retrieved_expense))
 
