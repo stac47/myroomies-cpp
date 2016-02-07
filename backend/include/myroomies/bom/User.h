@@ -1,16 +1,19 @@
 #pragma once
 
-#include <myroomies/model/User.h>
+#include <string>
 
-#include <myroomies/bom/Unmarshaller.h>
-#include <myroomies/bom/Marshaller.h>
+#include <myroomies/model/User.h>
+#include <myroomies/bom/Output.h>
 
 namespace myroomies {
 namespace bom {
 
-using myroomies::model::User;
+struct User final : public myroomies::model::User,
+                    public myroomies::bom::Output
+{
+    void marshall(std::string& oOutputStr) override;
+};
 
-template class Marshaller<User>;
 
 } /* namespace bom */
 } /* namespace myroomies */

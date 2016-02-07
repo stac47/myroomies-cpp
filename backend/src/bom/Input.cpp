@@ -6,12 +6,12 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/document.h>
 
-#include <myroomies/bom/UnmarshallerBase.h>
+#include <myroomies/bom/Input.h>
 
 namespace myroomies {
 namespace bom {
 
-class UnmarshallerBase::Impl
+class Input::Impl
 {
 public:
     void parse(const std::string& iStr)
@@ -105,44 +105,46 @@ private:
     rapidjson::Document json_;
 };
 
-UnmarshallerBase::UnmarshallerBase()
+Input::Input()
   : pImpl_(std::make_unique<Impl>())
 {}
 
-UnmarshallerBase::~UnmarshallerBase()
+Input::~Input()
 {}
 
-void UnmarshallerBase::parse(const std::string& oStr)
+void Input::parse(const std::string& iInputStr)
 {
-    pImpl_->parse(oStr);
+    pImpl_->parse(iInputStr);
+    unmarshall();
+    validate();
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, bool& oBool)
+void Input::extractValue(const std::string& iStr, bool iMandatory, bool& oBool)
 {
     pImpl_->extractValue(iStr, iMandatory, oBool);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, unsigned int& oUInt)
+void Input::extractValue(const std::string& iStr, bool iMandatory, unsigned int& oUInt)
 {
     pImpl_->extractValue(iStr, iMandatory, oUInt);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, int& oInt)
+void Input::extractValue(const std::string& iStr, bool iMandatory, int& oInt)
 {
     pImpl_->extractValue(iStr, iMandatory, oInt);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, std::string& oString)
+void Input::extractValue(const std::string& iStr, bool iMandatory, std::string& oString)
 {
     pImpl_->extractValue(iStr, iMandatory, oString);
 }
 
-void UnmarshallerBase::extractValue(const std::string& iStr, bool iMandatory, double& oDouble)
+void Input::extractValue(const std::string& iStr, bool iMandatory, double& oDouble)
 {
     pImpl_->extractValue(iStr, iMandatory, oDouble);
 }
 
-void UnmarshallerBase::extractValue(
+void Input::extractValue(
     const std::string& iStr,
     bool iMandatory,
     boost::gregorian::date& oDate)

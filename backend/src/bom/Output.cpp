@@ -10,7 +10,7 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
-#include <myroomies/bom/MarshallerBase.h>
+#include <myroomies/bom/Output.h>
 
 using rapidjson::Document;
 using rapidjson::Value;
@@ -20,13 +20,16 @@ using rapidjson::StringBuffer;
 namespace myroomies {
 namespace bom {
 
-class MarshallerBase::Impl
+class Output::Impl
 {
 public:
     Impl()
     {
         json_.SetObject();
     }
+
+    ~Impl()
+    {}
 
     void putValue(const std::string& iKey, bool iBool)
     {
@@ -72,7 +75,7 @@ public:
         json_.AddMember(key, value, json_.GetAllocator());
     }
 
-    void marshall(std::string& oStr)
+    void marshallObject(std::string& oStr)
     {
         StringBuffer buffer;
         Writer<StringBuffer> writer(buffer);
@@ -84,50 +87,48 @@ private:
     rapidjson::Document json_;
 };
 
-MarshallerBase::MarshallerBase()
-  : pImpl_(std::make_unique<Impl>())
+Output::Output()
+  : pImpl_(new Impl())
 {}
 
-MarshallerBase::~MarshallerBase()
-{}
+Output::~Output() = default;
 
-void MarshallerBase::putValue(const std::string& iKey, bool iBool)
+void Output::putValue(const std::string& iKey, bool iBool)
 {
     pImpl_->putValue(iKey, iBool);
 }
 
-void MarshallerBase::putValue(const std::string& iKey, unsigned int iUInt)
+void Output::putValue(const std::string& iKey, unsigned int iUInt)
 {
     pImpl_->putValue(iKey, iUInt);
 }
 
-void MarshallerBase::putValue(const std::string& iKey, int iInt)
+void Output::putValue(const std::string& iKey, int iInt)
 {
     pImpl_->putValue(iKey, iInt);
 }
 
-void MarshallerBase::putValue(const std::string& iKey, const std::string& iString)
+void Output::putValue(const std::string& iKey, const std::string& iString)
 {
     pImpl_->putValue(iKey, iString);
 }
 
-void MarshallerBase::putValue(const std::string& iKey, double iDouble)
+void Output::putValue(const std::string& iKey, double iDouble)
 {
     pImpl_->putValue(iKey, iDouble);
 }
 
-void MarshallerBase::putValue(
+void Output::putValue(
     const std::string& iKey,
     const boost::gregorian::date& iDate)
 {
     pImpl_->putValue(iKey, iDate);
 }
 
-void MarshallerBase::marshall(std::string& oStr)
+void Output::marshallObject(std::string& oStr)
 {
-    pImpl_->marshall(oStr);
+    pImpl_->marshallObject(oStr);
 }
-
 
 } /* namespace bom */
 } /* namespace myroomies */

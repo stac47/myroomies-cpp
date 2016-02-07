@@ -7,8 +7,7 @@
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/User.h>
-#include <myroomies/bom/NewUserRequest.h>
-#include <myroomies/model/User.h>
+#include <myroomies/bom/UserNew.h>
 
 #include <myroomies/services/ServiceInterface.h>
 #include <myroomies/services/ServiceRegistry.h>
@@ -18,9 +17,8 @@
 using myroomies::utils::Configuration;
 using myroomies::utils::db::Key_t;
 
-using UserBom = myroomies::bom::User;
-using myroomies::bom::NewUserRequest;
-using myroomies::model::User;
+using myroomies::bom::User;
+using myroomies::bom::UserNew;
 
 namespace {
 
@@ -34,6 +32,7 @@ std::vector<User>& GetAllUsers()
         admin.login = "admin";
         admin.passwordHash = "PASSWORDHASH"; // TODO calculate a hashcode
         admin.houseshareId = 0;
+        Users.push_back(admin);
     }
     return Users;
 }
@@ -54,7 +53,7 @@ UserService::UserService()
   : ServiceInterface("Users")
 {}
 
-UserBom UserService::createUser(Key_t iLoggedUser, const NewUserRequest& iUser)
+User UserService::createUser(Key_t iLoggedUser, const UserNew& iUser)
 {
     if (iLoggedUser != 0)
     {
@@ -63,7 +62,7 @@ UserBom UserService::createUser(Key_t iLoggedUser, const NewUserRequest& iUser)
     User u;
     u.id = GetAllUsers().size() + 1;
     u.login = iUser.login;
-    u.passwordHash = "PASSWORDHASH"; // TODO calculate a hashcode
+    u.passwordHash = iUser.password; // TODO calculate a hashcode
     u.firstname = iUser.firstname;
     u.lastname = iUser.lastname;
     u.dateOfBirth = iUser.dateOfBirth;
@@ -74,9 +73,9 @@ UserBom UserService::createUser(Key_t iLoggedUser, const NewUserRequest& iUser)
     return u;
 }
 
-std::vector<UserBom> UserService::getUsersFromHouseshare(Key_t iHouseshareId) const
+std::vector<User> UserService::getUsersFromHouseshare(Key_t iHouseshareId) const
 {
-    std::vector<UserBom> v;
+    std::vector<User> v;
     for (const User& u : GetAllUsers())
     {
         if (u.houseshareId == iHouseshareId)
@@ -87,7 +86,7 @@ std::vector<UserBom> UserService::getUsersFromHouseshare(Key_t iHouseshareId) co
     return v;
 }
 
-UserBom UserService::getUserByLogin(const std::string& iLogin)
+User UserService::getUserByLogin(const std::string& iLogin)
 {
     auto it = std::find_if(GetAllUsers().begin(), GetAllUsers().end(),
             [&iLogin] (const User& u) {return u.login == iLogin;});

@@ -8,6 +8,7 @@
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/Expense.h>
+#include <myroomies/bom/ExpenseNew.h>
 
 #include <myroomies/services/ServiceInterface.h>
 
@@ -25,9 +26,9 @@ public:
 
     std::vector<myroomies::bom::Expense> getExpenses(myroomies::utils::db::Key_t iHouseshareId) const;
 
-    const myroomies::bom::Expense addExpense(
+    myroomies::bom::Expense addExpense(
         const std::unique_ptr<const myroomies::bom::User>& iLoggedUser,
-        myroomies::bom::Expense iExpense);
+        const myroomies::bom::ExpenseNew& iExpense);
 
     void removeExpense(myroomies::utils::db::Key_t iLoggedUserId,
                        myroomies::utils::db::Key_t iExpenseId);

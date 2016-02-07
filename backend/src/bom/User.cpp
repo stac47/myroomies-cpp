@@ -1,19 +1,21 @@
-#include <myroomies/bom/Marshaller.h>
+#include <string>
+
+#include <myroomies/bom/Output.h>
 #include <myroomies/bom/User.h>
 
 namespace myroomies {
 namespace bom {
 
-template<>
-void Marshaller<User>::marshallObject(const User& iUser, std::string& oStr)
+void User::marshall(std::string& oOutputStr)
 {
-    putValue("id", iUser.id);
-    putValue("houseshareId", iUser.houseshareId);
-    putValue("firstname", iUser.firstname);
-    putValue("lastname", iUser.lastname);
-    putValue("dateOfBirth", iUser.dateOfBirth);
-    putValue("email", iUser.email);
-    marshall(oStr);
+    putValue("id", id);
+    putValue("login", login);
+    putValue("houseshareId", houseshareId);
+    putValue("firstname", firstname);
+    putValue("lastname", lastname);
+    putValue("dateOfBirth", dateOfBirth);
+    putValue("email", email);
+    marshallObject(oOutputStr);
 }
 
 } /* namespace bom */

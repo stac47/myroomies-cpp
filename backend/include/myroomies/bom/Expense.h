@@ -1,19 +1,19 @@
 #pragma once
 
-#include <myroomies/model/Expense.h>
+#include <string>
 
-#include <myroomies/bom/Unmarshaller.h>
-#include <myroomies/bom/Marshaller.h>
+#include <myroomies/model/Expense.h>
+#include <myroomies/bom/Output.h>
 
 namespace myroomies {
 namespace bom {
 
 // using myroomies::model::Expense;
-class Expense : public myroomies::model::Expense
-{};
-
-template class Marshaller<Expense>;
-template class Unmarshaller<Expense>;
+struct Expense final : public myroomies::model::Expense,
+                       public myroomies::bom::Output
+{
+    void marshall(std::string& oOutputStr) override;
+};
 
 } /* namespace bom */
 } /* namespace myroomies */

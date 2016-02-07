@@ -2,21 +2,28 @@
 
 #include <string>
 #include <memory>
+#include <iomanip>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 namespace myroomies {
 namespace bom {
 
-class UnmarshallerBase
+class Input
 {
 public:
-    UnmarshallerBase();
-    virtual ~UnmarshallerBase();
+    Input();
+    Input(Input&&) = default;
+    Input& operator=(Input&&) = default;
+    virtual ~Input();
+
+    void parse(const std::string& i);
 
 protected:
-    void parse(const std::string& iStr);
+    virtual void unmarshall() = 0;
+    virtual void validate() const = 0;
 
+    // Utility methods to be used in unmarshall method implementation
     void extractValue(const std::string& iStr, bool iMandatory, bool& oBool);
     void extractValue(const std::string& iStr, bool iMandatory, unsigned int& oUInt);
     void extractValue(const std::string& iStr, bool iMandatory, int& oInt);

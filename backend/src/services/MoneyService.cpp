@@ -7,6 +7,7 @@
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/Expense.h>
+#include <myroomies/bom/ExpenseNew.h>
 #include <myroomies/bom/User.h>
 
 #include <myroomies/services/ServiceRegistry.h>
@@ -18,6 +19,7 @@ using myroomies::utils::Configuration;
 using myroomies::utils::db::Key_t;
 
 using myroomies::bom::Expense;
+using myroomies::bom::ExpenseNew;
 using myroomies::bom::User;
 
 using myroomies::services::ServiceRegistry;
@@ -53,15 +55,20 @@ std::vector<Expense> MoneyService::getExpenses(Key_t iHouseshareId) const
     return GetExpenses();
 }
 
-const Expense MoneyService::addExpense(
+Expense MoneyService::addExpense(
     const std::unique_ptr<const User>& iLoggedUser,
-    Expense iExpense)
+    const ExpenseNew& iExpense)
 {
-    iExpense.id = GetExpenses().size() + 1;
-    iExpense.userId = iLoggedUser->id;
-    iExpense.houseshareId = iLoggedUser->houseshareId;
-    GetExpenses().push_back(iExpense);
-    return iExpense;
+    Expense createdExpense;
+    createdExpense.id = GetExpenses().size() + 1;
+    createdExpense.userId = iLoggedUser->id;
+    createdExpense.houseshareId = iLoggedUser->houseshareId;
+    createdExpense.date = iExpense.date;
+    createdExpense.amount = iExpense.amount;
+    createdExpense.title = iExpense.title;
+    createdExpense.comment = iExpense.comment;
+    GetExpenses().push_back(createdExpense);
+    return createdExpense;
 }
 
 void MoneyService::removeExpense(Key_t iLoggedUserId, Key_t iExpenseId)

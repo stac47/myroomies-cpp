@@ -5,9 +5,8 @@
 
 #include <myroomies/utils/db/Def.h>
 
-#include <myroomies/bom/Marshaller.h>
-#include <myroomies/bom/Unmarshaller.h>
 #include <myroomies/bom/Expense.h>
+#include <myroomies/bom/ExpenseNew.h>
 #include <myroomies/bom/User.h>
 
 #include <myroomies/services/MoneyService.h>
@@ -20,9 +19,8 @@ using myroomies::resources::HttpResponse;
 
 using myroomies::utils::db::Key_t;
 
-using myroomies::bom::Marshaller;
-using myroomies::bom::Unmarshaller;
 using myroomies::bom::Expense;
+using myroomies::bom::ExpenseNew;
 using myroomies::bom::User;
 
 using myroomies::services::MoneyService;
@@ -32,22 +30,22 @@ namespace resources {
 
 void MoneyHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
+    uint32_t houseshareId = getLoggedUser()->houseshareId;
+    std::vector<Expense> expenses =
+        getServiceRegistry()->get<MoneyService>()->getExpenses(houseshareId);
     std::string response;
-    Marshaller<Expense> m;
-    m.marshallCollection(getServiceRegistry()->get<MoneyService>()->getExpenses(getLoggedUser()->houseshareId), response);
+    myroomies::bom::MarshallCollection(expenses, response);
     oResponse.setPayload(response);
 }
 
 void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
     std::string content = iRequest.getPayload();
-    Unmarshaller<Expense> unmarshaller;
-    myroomies::bom::Expense e;
-    unmarshaller.unmarshall(content, e);
-    const Expense newExpense = getServiceRegistry()->get<MoneyService>()->addExpense(getLoggedUser(), e);
+    ExpenseNew newExpense;
+    newExpense.parse(content);
+    Expense createdExpense = getServiceRegistry()->get<MoneyService>()->addExpense(getLoggedUser(), newExpense);
     std::string responsePayload;
-    Marshaller<Expense> m;
-    m.marshallObject(newExpense, responsePayload);
+    createdExpense.marshall(responsePayload);
     oResponse.setPayload(responsePayload);
 }
 

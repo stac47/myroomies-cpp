@@ -7,7 +7,7 @@
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/User.h>
-#include <myroomies/bom/NewUserRequest.h>
+#include <myroomies/bom/UserNew.h>
 
 #include <myroomies/services/ServiceInterface.h>
 
@@ -32,8 +32,9 @@ public:
 
     myroomies::bom::User createUser(
         myroomies::utils::db::Key_t iLoggedUserId,
-        const myroomies::bom::NewUserRequest& iUser);
+        const myroomies::bom::UserNew& iUser);
 
 };
+
 } /* namespace services */
 } /* namespace myroomies */
