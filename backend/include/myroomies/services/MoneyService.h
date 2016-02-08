@@ -24,7 +24,8 @@ public:
         const std::shared_ptr<ServiceRegistry>& iServiceRegistry,
         const myroomies::utils::Configuration&);
 
-    std::vector<myroomies::bom::Expense> getExpenses(myroomies::utils::db::Key_t iHouseshareId) const;
+    std::vector<myroomies::bom::Expense> getExpenses(
+        const std::unique_ptr<const myroomies::bom::User>& iLoggedUser) const;
 
     myroomies::bom::Expense addExpense(
         const std::unique_ptr<const myroomies::bom::User>& iLoggedUser,

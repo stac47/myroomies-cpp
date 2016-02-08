@@ -24,16 +24,14 @@ class ResourceBase: public httpserver::http_resource
 {
 public:
     ResourceBase(const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry,
-                 const std::string& iUri,
                  bool iSecured);
 
     virtual ~ResourceBase();
 
-    const std::string& getUri() const;
-
 protected:
     bool performSecurity(const httpserver::http_request& iRequest,
                          myroomies::bom::User& oLoggedUser);
+
     bool isSecured() const
     {
         return secured_;
@@ -47,7 +45,6 @@ protected:
 private:
     const std::shared_ptr<myroomies::services::ServiceRegistry>& serviceRegistry_;
     bool secured_;
-    std::string uri_;
 };
 
 template<typename TH>
@@ -55,9 +52,9 @@ class Resource : public ResourceBase
 {
 public:
     Resource(const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry,
-             const std::string& iUri,
              bool iSecured)
-      : ResourceBase(iServiceRegistry, iUri, iSecured) {}
+      : ResourceBase(iServiceRegistry, iSecured)
+    {}
 
     void render_GET(const httpserver::http_request& iRequest,
                     httpserver::http_response**) override final;
@@ -100,7 +97,7 @@ void Resource<TH>::commonRender(const httpserver::http_request& iRequest,
         {
             transactionHandler.setLoggedUser(loggedUser);
             transactionHandler.setServiceRegistry(getServiceRegistry());
-            myroomies::resources::HttpRequest request(iRequest.get_path().substr(getUri().size()));
+            myroomies::resources::HttpRequest request(iRequest.get_path());
             request.setPayload(iRequest.get_content());
             iFunc(transactionHandler, request, response);
         }

@@ -45,8 +45,9 @@ std::unique_ptr<const User> LoginService::login(
     catch(const ResourceNotFoundException&)
     {
         MYROOMIES_LOG_WARN("User provided wrong credentials ["
-                           << iLogin << ":" << iPassword);
+                           << iLogin << ":" << iPassword << "]");
     }
+    MYROOMIES_LOG_INFO("User [id=" << ret->id << "] logged in  MyRoomies");
     return ret;
 }
 

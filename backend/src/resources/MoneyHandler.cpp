@@ -1,9 +1,11 @@
 #include <sstream>
 #include <vector>
+#include <regex>
 
 #include <boost/lexical_cast.hpp>
 
 #include <myroomies/utils/db/Def.h>
+#include <myroomies/utils/LoggingMacros.h>
 
 #include <myroomies/bom/Expense.h>
 #include <myroomies/bom/ExpenseNew.h>
@@ -30,9 +32,8 @@ namespace resources {
 
 void MoneyHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
-    uint32_t houseshareId = getLoggedUser()->houseshareId;
     std::vector<Expense> expenses =
-        getServiceRegistry()->get<MoneyService>()->getExpenses(houseshareId);
+        getServiceRegistry()->get<MoneyService>()->getExpenses(getLoggedUser());
     std::string response;
     myroomies::bom::MarshallCollection(expenses, response);
     oResponse.setPayload(response);
@@ -51,10 +52,16 @@ void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oRespon
 
 void MoneyHandler::handleDELETE(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
-    std::string expenseId = iRequest.getPathPieces()[0];
+    std::string uri = iRequest.getPath();
+    std::regex urlRegex("/(\\d+)$");
+    std::smatch match;
+    std::regex_search(uri, match, urlRegex);
+    std::string expenseIdStr = match[1];
+    MYROOMIES_LOG_DEBUG("Deleting expense [id=" << expenseIdStr << "] "
+                        << "extracted from [URI=" << uri << "]");
     try
     {
-        Key_t expenseId = boost::lexical_cast<Key_t>(expenseId);
+        Key_t expenseId = boost::lexical_cast<Key_t>(expenseIdStr);
         getServiceRegistry()->get<MoneyService>()->removeExpense(getLoggedUser()->id, expenseId);
         oResponse.setStatus(200);
     }

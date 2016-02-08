@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include <myroomies/utils/Configuration.h>
+#include <myroomies/utils/LoggingMacros.h>
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/User.h>
@@ -57,6 +58,9 @@ User UserService::createUser(Key_t iLoggedUser, const UserNew& iUser)
 {
     if (iLoggedUser != 0)
     {
+        MYROOMIES_LOG_WARN("User [id=" << iLoggedUser << "] "
+                           << "tried to create a new user "
+                           << "[login=" << iUser.login << "]");
         throw myroomies::services::ForbiddenResourceException();
     }
     User u;

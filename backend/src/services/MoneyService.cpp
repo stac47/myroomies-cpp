@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include <myroomies/utils/Configuration.h>
+#include <myroomies/utils/LoggingMacros.h>
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/Expense.h>
@@ -50,8 +51,10 @@ MoneyService::MoneyService(const std::shared_ptr<ServiceRegistry>&)
   : ServiceInterface("Money")
 {}
 
-std::vector<Expense> MoneyService::getExpenses(Key_t iHouseshareId) const
+std::vector<Expense> MoneyService::getExpenses(
+    const std::unique_ptr<const User>& iLoggedUser) const
 {
+    // TODO check if admin or user
     return GetExpenses();
 }
 
@@ -68,6 +71,9 @@ Expense MoneyService::addExpense(
     createdExpense.title = iExpense.title;
     createdExpense.comment = iExpense.comment;
     GetExpenses().push_back(createdExpense);
+    MYROOMIES_LOG_INFO("User [id=" << iLoggedUser->id << "] "
+                       << "created expense [id=" << createdExpense.id << "] "
+                       << "for houseshare [id=" << iLoggedUser->houseshareId << "]");
     return createdExpense;
 }
 
@@ -79,8 +85,14 @@ void MoneyService::removeExpense(Key_t iLoggedUserId, Key_t iExpenseId)
     {
         throw ResourceNotFoundException();
     }
-    if (it->userId != iLoggedUserId)
+    if (iLoggedUserId == 0)
     {
+        MYROOMIES_LOG_INFO("'admin' deletes expense [id=" << iExpenseId << "]");
+    }
+    else if (it->userId != iLoggedUserId)
+    {
+        MYROOMIES_LOG_WARN("User [id=" << iLoggedUserId << "] "
+                           << "tries to delete expense [id=" << iExpenseId << "]");
         throw ForbiddenResourceException();
     }
     GetExpenses().erase(it);

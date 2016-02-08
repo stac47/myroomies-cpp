@@ -22,11 +22,9 @@ namespace resources {
 
 ResourceBase::ResourceBase(
     const std::shared_ptr<myroomies::services::ServiceRegistry>& iServiceRegistry,
-    const std::string& iUri,
     bool iSecured)
   : serviceRegistry_(iServiceRegistry),
-    secured_(iSecured),
-    uri_(iUri)
+    secured_(iSecured)
 {
     disallow_all();
     set_allowing(http_utils::http_method_get, true);
@@ -36,11 +34,6 @@ ResourceBase::ResourceBase(
 }
 
 ResourceBase::~ResourceBase() {}
-
-const std::string& ResourceBase::getUri() const
-{
-    return uri_;
-}
 
 bool ResourceBase::performSecurity(const httpserver::http_request& iRequest,
                                    myroomies::bom::User& oLoggedUser)

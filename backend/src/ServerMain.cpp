@@ -109,10 +109,10 @@ int main(int argc, const char* argv[])
         ws.register_resource("/static", &staticResource, true);
     }
 
-    Resource<MoneyHandler> moneyResource(serviceRegistry, "/money", true);
-    ws.register_resource(moneyResource.getUri(), &moneyResource, true);
-    Resource<UserHandler> userResource(serviceRegistry, "/user", true);
-    ws.register_resource(userResource.getUri(), &userResource, true);
+    Resource<MoneyHandler> moneyResource(serviceRegistry, true);
+    ws.register_resource("/money", &moneyResource, true);
+    Resource<UserHandler> userResource(serviceRegistry, true);
+    ws.register_resource("/user", &userResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
     MYROOMIES_LOG_INFO("Server up and running");
 

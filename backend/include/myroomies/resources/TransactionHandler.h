@@ -40,17 +40,9 @@ public:
       : HttpMessage(),
         path_(iPath) {}
 
-    std::vector<std::string> getPathPieces() const
+    std::string getPath() const
     {
-        std::vector<std::string> ret;
-        boost::split(ret, path_, boost::is_any_of("/"));
-        return ret;
-    }
-
-    std::map<std::string, std::string> getParameters() const
-    {
-        std::map<std::string, std::string> ret;
-        return ret;
+        return path_;
     }
 
 private:
