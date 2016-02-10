@@ -40,7 +40,7 @@ public:
       : HttpMessage(),
         path_(iPath) {}
 
-    std::string getPath() const
+    const std::string& getPath() const
     {
         return path_;
     }

@@ -1,11 +1,8 @@
-#include <sstream>
 #include <vector>
-#include <regex>
-
-#include <boost/lexical_cast.hpp>
 
 #include <myroomies/utils/db/Def.h>
 #include <myroomies/utils/LoggingMacros.h>
+#include <myroomies/utils/UriMatcher.h>
 
 #include <myroomies/bom/Expense.h>
 #include <myroomies/bom/ExpenseNew.h>
@@ -20,6 +17,7 @@ using myroomies::resources::HttpRequest;
 using myroomies::resources::HttpResponse;
 
 using myroomies::utils::db::Key_t;
+using myroomies::utils::UriMatcher;
 
 using myroomies::bom::Expense;
 using myroomies::bom::ExpenseNew;
@@ -52,20 +50,21 @@ void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oRespon
 
 void MoneyHandler::handleDELETE(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
-    std::string uri = iRequest.getPath();
-    std::regex urlRegex("/(\\d+)$");
-    std::smatch match;
-    std::regex_search(uri, match, urlRegex);
-    std::string expenseIdStr = match[1];
-    MYROOMIES_LOG_DEBUG("Deleting expense [id=" << expenseIdStr << "] "
-                        << "extracted from [URI=" << uri << "]");
+    UriMatcher matcher("/(\\d+)$");
+    if (!matcher.match(iRequest.getPath()))
+    {
+        oResponse.setStatus(400);
+        return;
+    }
     try
     {
-        Key_t expenseId = boost::lexical_cast<Key_t>(expenseIdStr);
+        Key_t expenseId = matcher.get<Key_t>(1);
+        MYROOMIES_LOG_DEBUG("Deleting expense [id=" << expenseId << "] "
+                            << "extracted from [URI=" << iRequest.getPath() << "]");
         getServiceRegistry()->get<MoneyService>()->removeExpense(getLoggedUser()->id, expenseId);
         oResponse.setStatus(200);
     }
-    catch (const boost::bad_lexical_cast&)
+    catch (const myroomies::utils::UriMatcherException&)
     {
         oResponse.setStatus(400);
     }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace myroomies {
 namespace utils {
 namespace db {

@@ -37,6 +37,7 @@ test_env.AppendUnique(LIBS=['gtest'])
 
 test_files = Glob('test/unit/*.cpp')
 test_files += Glob('test/unit/resources/*.cpp')
+test_files += Glob('test/unit/utils/*.cpp')
 test_env.Program('myroomies-unittest', test_files)
 
 
