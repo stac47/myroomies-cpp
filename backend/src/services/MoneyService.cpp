@@ -8,7 +8,6 @@
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/Expense.h>
-#include <myroomies/bom/ExpenseNew.h>
 #include <myroomies/bom/User.h>
 
 #include <myroomies/services/ServiceRegistry.h>

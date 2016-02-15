@@ -6,6 +6,7 @@ libs = ['pthread',
         'boost_filesystem',
         'boost_program_options',
         'boost_date_time',
+        'boost_serialization',
         'httpserver']
 
 cxx_flags = ['--std=c++14',
@@ -25,6 +26,7 @@ base_env['ENV']['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
 
 src_files = Glob('src/resources/*.cpp')
 src_files += Glob('src/utils/*.cpp')
+src_files += Glob('src/utils/json/*.cpp')
 src_files += Glob('src/services/*.cpp')
 src_files += Glob('src/bom/*.cpp')
 

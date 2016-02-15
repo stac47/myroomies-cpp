@@ -1,9 +1,11 @@
 #include <sstream>
 #include <vector>
 
-#include <myroomies/bom/Output.h>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include <myroomies/bom/User.h>
-#include <myroomies/bom/UserNew.h>
 
 #include <myroomies/services/UserService.h>
 
@@ -25,20 +27,24 @@ void UserHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse
     uint32_t houseshareId = getLoggedUser()->houseshareId;
     std::vector<User> users =
         getServiceRegistry()->get<UserService>()->getUsersFromHouseshare(houseshareId);
-    std::string response;
-    myroomies::bom::MarshallCollection(users, response);
-    oResponse.setPayload(response);
+    std::ostringstream os;
+    boost::archive::text_oarchive oa(os);
+    oa << users;
+    oResponse.setPayload(os.str());
 }
 
 void UserHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
     std::string content = iRequest.getPayload();
+    std::istringstream is(content);
+    boost::archive::text_iarchive ia(is);
     UserNew newUser;
-    newUser.parse(content);
+    ia >> newUser;
     User createdUser = getServiceRegistry()->get<UserService>()->createUser(getLoggedUser()->id, newUser);
-    std::string responsePayload;
-    createdUser.marshall(responsePayload);
-    oResponse.setPayload(responsePayload);
+    std::ostringstream os;
+    boost::archive::text_oarchive oa(os);
+    oa << createdUser;
+    oResponse.setPayload(os.str());
 }
 
 } /* namespace resources */

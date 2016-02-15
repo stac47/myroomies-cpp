@@ -1,7 +1,10 @@
 #include <string>
 #include <memory>
 
+#include <myroomies/bom/User.h>
+
 #include <myroomies/services/ServiceRegistry.h>
+
 #include <myroomies/resources/TransactionHandler.h>
 
 using myroomies::services::ServiceRegistry;

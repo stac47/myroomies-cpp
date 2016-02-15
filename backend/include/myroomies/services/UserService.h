@@ -7,7 +7,6 @@
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/User.h>
-#include <myroomies/bom/UserNew.h>
 
 #include <myroomies/services/ServiceInterface.h>
 

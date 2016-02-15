@@ -2,28 +2,32 @@
 #include <sstream>
 #include <memory>
 #include <iomanip>
+#include <ostream>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
+#include <rapidjson/ostreamwrapper.h>
 
-#include <myroomies/bom/Output.h>
+#include <myroomies/utils/json/JsonMarshaller.h>
 
 using rapidjson::Document;
 using rapidjson::Value;
 using rapidjson::Writer;
-using rapidjson::StringBuffer;
+using rapidjson::OStreamWrapper;
+using rapidjson::Writer;
 
 namespace myroomies {
-namespace bom {
+namespace utils {
+namespace json {
 
-class Output::Impl
+class JsonMarshaller::Impl
 {
 public:
-    Impl()
+    Impl(std::ostream& oStream)
+      : os_(oStream)
     {
         json_.SetObject();
     }
@@ -75,60 +79,59 @@ public:
         json_.AddMember(key, value, json_.GetAllocator());
     }
 
-    void marshallObject(std::string& oStr)
+    void marshall()
     {
-        StringBuffer buffer;
-        Writer<StringBuffer> writer(buffer);
+        OStreamWrapper osw(os_);
+        Writer<OStreamWrapper> writer(osw);
         json_.Accept(writer);
-        oStr = buffer.GetString();
     }
 
 private:
     rapidjson::Document json_;
+    std::ostream& os_;
 };
 
-Output::Output()
-  : pImpl_(new Impl())
+JsonMarshaller::JsonMarshaller(std::ostream& oStream)
+  : pImpl_(new Impl(oStream))
 {}
 
-Output::~Output() = default;
-
-void Output::putValue(const std::string& iKey, bool iBool)
+void JsonMarshaller::putValue(const std::string& iKey, bool iBool)
 {
     pImpl_->putValue(iKey, iBool);
 }
 
-void Output::putValue(const std::string& iKey, unsigned int iUInt)
+void JsonMarshaller::putValue(const std::string& iKey, unsigned int iUInt)
 {
     pImpl_->putValue(iKey, iUInt);
 }
 
-void Output::putValue(const std::string& iKey, int iInt)
+void JsonMarshaller::putValue(const std::string& iKey, int iInt)
 {
     pImpl_->putValue(iKey, iInt);
 }
 
-void Output::putValue(const std::string& iKey, const std::string& iString)
+void JsonMarshaller::putValue(const std::string& iKey, const std::string& iString)
 {
     pImpl_->putValue(iKey, iString);
 }
 
-void Output::putValue(const std::string& iKey, double iDouble)
+void JsonMarshaller::putValue(const std::string& iKey, double iDouble)
 {
     pImpl_->putValue(iKey, iDouble);
 }
 
-void Output::putValue(
+void JsonMarshaller::putValue(
     const std::string& iKey,
     const boost::gregorian::date& iDate)
 {
     pImpl_->putValue(iKey, iDate);
 }
 
-void Output::marshallObject(std::string& oStr)
+void JsonMarshaller::marshall()
 {
-    pImpl_->marshallObject(oStr);
+    pImpl_->marshall();
 }
 
-} /* namespace bom */
+} /* namespace json */
+} /* namespace utils */
 } /* namespace myroomies */
