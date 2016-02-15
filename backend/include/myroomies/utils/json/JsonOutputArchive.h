@@ -3,7 +3,10 @@
 #include <string>
 #include <ostream>
 #include <cstddef>
+#include <stack>
+#include <memory>
 
+#include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/eval_if.hpp>
 #include <boost/mpl/int.hpp>
@@ -11,8 +14,13 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/access.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
-#include <myroomies/utils/json/JsonMarshaller.h>
+#define RAPIDJSON_HAS_STDSTRING 1
+#include <rapidjson/document.h>
+#include <rapidjson/allocators.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/ostreamwrapper.h>
 
 namespace myroomies {
 namespace utils {
@@ -22,7 +30,7 @@ class JsonOutputArchive
 {
 public:
     JsonOutputArchive(std::ostream& oStream)
-      : marshaller_(oStream)
+      : os_(oStream)
     {}
 
     // Implement requirements for archive concept
@@ -53,48 +61,71 @@ public:
     template<typename T>
     JsonOutputArchive& operator<<(const T& t)
     {
-        save(t);
-        marshaller_.marshall();
+        stack_.push(std::make_unique<rapidjson::Document>(rapidjson::kObjectType, &allocator_));
+        auto& doc = stack_.top();
+        boost::serialization::serialize_adl(
+            *this,
+            const_cast<T &>(t),
+            ::boost::serialization::version<T>::value);
+        // TODO check is the stack size is 1
+        rapidjson::OStreamWrapper osw(os_);
+        rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
+        doc->Accept(writer);
         return *this;
     }
 
     template<typename T>
     JsonOutputArchive& operator<<(const boost::serialization::nvp<T>& t)
     {
-        marshaller_.putValue(t.name(), t.const_value());
+        saveNVP(t.name(), t.const_value());
         return *this;
     }
 
 private:
-    myroomies::utils::json::JsonMarshaller marshaller_;
+    std::ostream& os_;
+    std::stack<std::unique_ptr<rapidjson::Value>> stack_;
+    rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>  allocator_;
 
 	template<class T>
-    void save(const T &t)
+    void saveNVP(const std::string& k, const T &t)
 	{
-        // TODO: Add a test on enum
-        typedef typename boost::mpl::eval_if<
-				// if its primitive
-				boost::mpl::equal_to<
-					boost::serialization::implementation_level<T>,
-					boost::mpl::int_<boost::serialization::primitive_type>
-				>,
-				boost::mpl::identity<SavePrimitive<JsonOutputArchive>>,
-				// else
-				boost::mpl::identity<SaveOnly<JsonOutputArchive>>
-			>::type typex;
-        typex::invoke(*this, t);
+        typedef
+        // primitive value
+        typename boost::mpl::eval_if<
+        boost::mpl::equal_to<
+            boost::serialization::implementation_level<T>,
+            boost::mpl::int_<boost::serialization::primitive_type>
+        >,
+        boost::mpl::identity<SavePrimitive<JsonOutputArchive>>,
+        // std::string
+        typename boost::mpl::eval_if<
+            boost::is_same<std::string, T>,
+            boost::mpl::identity<SaveString<JsonOutputArchive>>,
+        typename boost::mpl::eval_if<
+            boost::is_same<boost::gregorian::date, T>,
+            boost::mpl::identity<SaveDate<JsonOutputArchive>>,
+        // object
+        boost::mpl::identity<SaveObject<JsonOutputArchive>>
+        >>>::type typex;
+        typex::invoke(*this, k, t);
     }
 
     template<typename Archive>
-    struct SaveOnly
+    struct SaveObject
     {
         template<typename T>
-        static void invoke(Archive& ar, const T& t)
+        static void invoke(Archive& ar, const std::string& k, const T& t)
         {
+            ar.stack_.push(std::make_unique<rapidjson::Value>(rapidjson::kObjectType));
             boost::serialization::serialize_adl(
                 ar,
                 const_cast<T &>(t),
                 ::boost::serialization::version<T>::value);
+            rapidjson::Value newObject(rapidjson::kObjectType);
+            newObject = *(ar.stack_.top());
+            ar.stack_.pop();
+            rapidjson::Value key(k.c_str(), ar.allocator_);
+            ar.stack_.top()->AddMember(key, newObject, ar.allocator_);
         }
     };
 
@@ -102,9 +133,35 @@ private:
     struct SavePrimitive
     {
         template<typename T>
-        static void invoke(Archive&, const T&)
+        static void invoke(Archive& ar, const std::string& k, const T& t)
         {
-            // TODO report an error: Only NVP should be allowed
+            rapidjson::Value key(k.c_str(), ar.allocator_);
+            rapidjson::Value value(t);
+            ar.stack_.top()->AddMember(key, value, ar.allocator_);
+        }
+    };
+
+    template <typename Archive>
+    struct SaveString
+    {
+        template<typename T>
+        static void invoke(Archive& ar, const std::string& k, const T& t)
+        {
+            rapidjson::Value key(k.c_str(), ar.allocator_);
+            rapidjson::Value value(t, ar.allocator_);
+            ar.stack_.top()->AddMember(key, value, ar.allocator_);
+        }
+    };
+
+    template <typename Archive>
+    struct SaveDate
+    {
+        template<typename T>
+        static void invoke(Archive& ar, const std::string& k, const T& t)
+        {
+            rapidjson::Value key(k.c_str(), ar.allocator_);
+            rapidjson::Value value(boost::gregorian::to_iso_string(t), ar.allocator_);
+            ar.stack_.top()->AddMember(key, value, ar.allocator_);
         }
     };
 };

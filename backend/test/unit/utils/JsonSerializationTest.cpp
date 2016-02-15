@@ -26,7 +26,7 @@ struct UserConsoliatedData
     }
 };
 
-TEST(JsonOutputArchiveTest, MarshallingSimbleObjectSuccess)
+TEST(JsonSerializationTest, MarshallingSimbleObjectSuccess)
 {
     User user;
     user.id = 12;
@@ -45,7 +45,7 @@ TEST(JsonOutputArchiveTest, MarshallingSimbleObjectSuccess)
     std::cout << os.str() << std::endl;
 }
 
-TEST(JsonOutputArchiveTest, MarshallingNestedObjectSuccess)
+TEST(JsonSerializationTest, MarshallingNestedObjectSuccess)
 {
     User user;
     user.id = 12;
