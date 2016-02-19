@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include <boost/serialization/optional.hpp>
 #include <boost/serialization/nvp.hpp>
 
 #include <myroomies/model/Expense.h>

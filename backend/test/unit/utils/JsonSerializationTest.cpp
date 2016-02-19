@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -17,12 +18,14 @@ struct UserConsoliatedData
 {
     User user;
     int age;
+    std::vector<int> hobbies;
 
     template<typename Archive>
     void serialize(Archive& ar, const unsigned int /*version*/)
     {
         ar & BOOST_SERIALIZATION_NVP(user)
-           & BOOST_SERIALIZATION_NVP(age);
+           & BOOST_SERIALIZATION_NVP(age)
+           & BOOST_SERIALIZATION_NVP(hobbies);
     }
 };
 
@@ -59,6 +62,8 @@ TEST(JsonSerializationTest, MarshallingNestedObjectSuccess)
     UserConsoliatedData ucd;
     ucd.user = user;
     ucd.age = 34;
+    /* ucd.hobbies = {"cycling", "C++"}; */
+    ucd.hobbies = {1, 2, 3};
 
     std::ostringstream os;
     JsonOutputArchive ar{os};
