@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 #include <ostream>
 #include <cstddef>
 #include <stack>
@@ -64,24 +65,23 @@ public:
     {
         saveValue(t);
 
-        rapidjson::Value value;
-        value = *(stack_.top());
-        stack_.pop();
-        if (stack_.top()->IsArray())
-        {
-            stack_.top()->PushBack(value, allocator_);
-        }
-        else
-        {
-            //TODO ERROR
-        }
-
         if (stack_.size() == 1)
         {
             rapidjson::OStreamWrapper osw(os_);
             rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
             stack_.top()->Accept(writer);
         }
+        else
+        {
+            rapidjson::Value value;
+            value = *(stack_.top());
+            stack_.pop();
+            if (stack_.top()->IsArray())
+            {
+                stack_.top()->PushBack(value, allocator_);
+            }
+        }
+
         return *this;
     }
 
@@ -124,9 +124,23 @@ private:
         typex::Invoke(*this, t);
     }
 
-	template<typename T>
-    void saveValue(const std::vector<T>& t)
+	template<typename T,
+             typename Alloc,
+             template <typename T, typename Alloc> class Container>
+    void saveValue(const Container<T, Alloc>& t)
 	{
+        SaveCollection<JsonOutputArchive>::Invoke(*this, t);
+    }
+
+    template<typename T, size_t N>
+    void saveValue(const T(&t)[N])
+    {
+        SaveCollection<JsonOutputArchive>::Invoke(*this, t);
+    }
+
+    template<typename T, size_t N>
+    void saveValue(const std::array<T, N>& t)
+    {
         SaveCollection<JsonOutputArchive>::Invoke(*this, t);
     }
 
@@ -167,11 +181,7 @@ private:
             }
             for (const auto& element : t)
             {
-                boost::serialization::serialize(
-                    ar,
-                    element,
-                    /* const_cast<typename T::value_type>(element), */
-                    ::boost::serialization::version<T>::value);
+                ar & element;
             }
         }
     };
