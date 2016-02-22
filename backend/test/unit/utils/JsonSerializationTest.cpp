@@ -15,9 +15,11 @@
 
 #include <myroomies/bom/User.h>
 #include <myroomies/utils/json/JsonOutputArchive.h>
+#include <myroomies/utils/json/JsonInputArchive.h>
 
 using myroomies::bom::User;
 using myroomies::utils::json::JsonOutputArchive;
+using myroomies::utils::json::JsonInputArchive;
 
 namespace  {
 
@@ -158,3 +160,80 @@ TEST(JsonSerializationTest, MarshallingArraySuccess)
     TestSerialization(CreateUserArrayExpectationPair);
 }
 
+TEST(JsonSerializationTest, UnmarshallingSimpleObjectSuccess)
+{
+    auto p = CreateUserExpectationPair();
+    JsonInputArchive ia{p.second};
+    User u;
+    ia >> u;
+    ASSERT_EQ(p.first.id, u.id);
+    ASSERT_EQ(p.first.login, u.login);
+    ASSERT_EQ(p.first.firstname, u.firstname);
+    ASSERT_EQ(p.first.lastname, u.lastname);
+    ASSERT_EQ(p.first.dateOfBirth, u.dateOfBirth);
+    ASSERT_EQ(p.first.email, u.email);
+    ASSERT_EQ(p.first.houseshareId, u.houseshareId);
+}
+
+TEST(JsonSerializationTest, UnmarshallingComplexObjectSuccess)
+{
+    auto p = CreateUserConsolidatedExpectationPair();
+    JsonInputArchive ia{p.second};
+    UserConsolidatedData ucd;
+    ia >> ucd;
+    ASSERT_EQ(p.first.user.id, ucd.user.id);
+    ASSERT_EQ(p.first.user.login, ucd.user.login);
+    ASSERT_EQ(p.first.user.firstname, ucd.user.firstname);
+    ASSERT_EQ(p.first.user.lastname, ucd.user.lastname);
+    ASSERT_EQ(p.first.user.dateOfBirth, ucd.user.dateOfBirth);
+    ASSERT_EQ(p.first.user.email, ucd.user.email);
+    ASSERT_EQ(p.first.user.houseshareId, ucd.user.houseshareId);
+    ASSERT_EQ(p.first.age, ucd.age);
+    ASSERT_EQ(p.first.hobbies, ucd.hobbies);
+    ASSERT_EQ(p.first.preferedNumbers, ucd.preferedNumbers);
+    ASSERT_EQ(p.first.stdArray, ucd.stdArray);
+}
+
+TEST(JsonSerializationTest, UnmarshallingEmptyVectorSuccess)
+{
+    std::string jsonStr = "[]";
+    JsonInputArchive ia{jsonStr};
+    std::vector<int> v;
+    ia >> v;
+    ASSERT_EQ(0, v.size());
+}
+
+TEST(JsonSerializationTest, UnmarshallingSimpleVectorSuccess)
+{
+    std::string jsonStr = "[1, 2, 3]";
+    JsonInputArchive ia{jsonStr};
+    std::vector<int> v;
+    ia >> v;
+    ASSERT_EQ(3, v.size());
+    ASSERT_EQ(1, v[0]);
+    ASSERT_EQ(2, v[1]);
+    ASSERT_EQ(3, v[2]);
+}
+
+TEST(JsonSerializationTest, UnmarshallingSimpleStdArraySuccess)
+{
+    std::string jsonStr = "[1, 2, 3]";
+    JsonInputArchive ia{jsonStr};
+    std::array<int, 3> a;
+    ia >> a;
+    ASSERT_EQ(3, a.size());
+    ASSERT_EQ(1, a[0]);
+    ASSERT_EQ(2, a[1]);
+    ASSERT_EQ(3, a[2]);
+}
+
+TEST(JsonSerializationTest, UnmarshallingSimpleArraySuccess)
+{
+    std::string jsonStr = "[1, 2, 3]";
+    JsonInputArchive ia{jsonStr};
+    int a[3];
+    ia >> a;
+    ASSERT_EQ(1, a[0]);
+    ASSERT_EQ(2, a[1]);
+    ASSERT_EQ(3, a[2]);
+}

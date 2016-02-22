@@ -8,10 +8,7 @@
 #include <memory>
 
 #include <boost/type_traits/is_same.hpp>
-#include <boost/mpl/bool.hpp>
 #include <boost/mpl/eval_if.hpp>
-#include <boost/mpl/int.hpp>
-#include <boost/mpl/equal_to.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/access.hpp>
@@ -34,25 +31,6 @@ public:
     JsonOutputArchive(std::ostream& oStream)
       : os_(oStream)
     {}
-
-    // Implement requirements for archive concept
-    typedef boost::mpl::bool_<false> is_loading;
-    typedef boost::mpl::bool_<true> is_saving;
-
-    // this can be a no-op since we ignore pointer polymorphism
-    template<class T>
-    void register_type(const T * = NULL)
-    {}
-
-    unsigned int get_library_version()
-    {
-        return 0;
-    }
-
-    void save_binary(const void* address, std::size_t count)
-    {
-        // Not supported
-    }
 
     template<typename T>
     JsonOutputArchive& operator&(const T& t)

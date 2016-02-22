@@ -12,6 +12,7 @@ libs = ['pthread',
 cxx_flags = ['--std=c++14',
              '-g',
              '-Wall',
+             '-ftemplate-backtrace-limit=0',
              '-Werror',
              '-Wpedantic']
 
