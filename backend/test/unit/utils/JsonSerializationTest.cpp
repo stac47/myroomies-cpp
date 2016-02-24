@@ -10,8 +10,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/algorithm/string/join.hpp>
-
-#include <gtest/gtest.h>
+#include <boost/test/unit_test.hpp>
 
 #include <myroomies/bom/User.h>
 #include <myroomies/utils/json/JsonOutputArchive.h>
@@ -130,110 +129,127 @@ void TestSerialization(std::pair<U, std::string>(&f)(void))
     JsonOutputArchive ar{os};
     auto p = f();
     ar & p.first;
-    ASSERT_EQ(p.second, os.str());
+    BOOST_CHECK_EQUAL(p.second, os.str());
 }
 
 } /* namespace  */
 
-TEST(JsonSerializationTest, MarshallingEmptyObject)
+BOOST_AUTO_TEST_SUITE(JsonSerializationTest)
+
+BOOST_AUTO_TEST_CASE(MarshallingEmptyObject)
 {
     TestSerialization(CreateEmptyObject);
 }
 
-TEST(JsonSerializationTest, MarshallingEmptyArray)
+BOOST_AUTO_TEST_CASE(MarshallingEmptyArray)
 {
     TestSerialization(CreateEmptyArray);
 }
 
-TEST(JsonSerializationTest, MarshallingSimbleObjectSuccess)
+BOOST_AUTO_TEST_CASE(MarshallingSimbleObjectSuccess)
 {
     TestSerialization(CreateUserExpectationPair);
 }
 
-TEST(JsonSerializationTest, MarshallingNestedObjectSuccess)
+BOOST_AUTO_TEST_CASE(MarshallingNestedObjectSuccess)
 {
     TestSerialization(CreateUserConsolidatedExpectationPair);
 }
 
-TEST(JsonSerializationTest, MarshallingArraySuccess)
+BOOST_AUTO_TEST_CASE(MarshallingArraySuccess)
 {
     TestSerialization(CreateUserArrayExpectationPair);
 }
 
-TEST(JsonSerializationTest, UnmarshallingSimpleObjectSuccess)
+BOOST_AUTO_TEST_CASE(UnmarshallingSimpleObjectSuccess)
 {
     auto p = CreateUserExpectationPair();
     JsonInputArchive ia{p.second};
     User u;
     ia >> u;
-    ASSERT_EQ(p.first.id, u.id);
-    ASSERT_EQ(p.first.login, u.login);
-    ASSERT_EQ(p.first.firstname, u.firstname);
-    ASSERT_EQ(p.first.lastname, u.lastname);
-    ASSERT_EQ(p.first.dateOfBirth, u.dateOfBirth);
-    ASSERT_EQ(p.first.email, u.email);
-    ASSERT_EQ(p.first.houseshareId, u.houseshareId);
+    BOOST_CHECK_EQUAL(p.first.id, u.id);
+    BOOST_CHECK_EQUAL(p.first.login, u.login);
+    BOOST_CHECK_EQUAL(p.first.firstname, u.firstname);
+    BOOST_CHECK_EQUAL(p.first.lastname, u.lastname);
+    BOOST_CHECK_EQUAL(p.first.dateOfBirth, u.dateOfBirth);
+    BOOST_CHECK_EQUAL(p.first.email, u.email);
+    BOOST_CHECK_EQUAL(p.first.houseshareId, u.houseshareId);
 }
 
-TEST(JsonSerializationTest, UnmarshallingComplexObjectSuccess)
+BOOST_AUTO_TEST_CASE(UnmarshallingComplexObjectSuccess)
 {
     auto p = CreateUserConsolidatedExpectationPair();
     JsonInputArchive ia{p.second};
     UserConsolidatedData ucd;
     ia >> ucd;
-    ASSERT_EQ(p.first.user.id, ucd.user.id);
-    ASSERT_EQ(p.first.user.login, ucd.user.login);
-    ASSERT_EQ(p.first.user.firstname, ucd.user.firstname);
-    ASSERT_EQ(p.first.user.lastname, ucd.user.lastname);
-    ASSERT_EQ(p.first.user.dateOfBirth, ucd.user.dateOfBirth);
-    ASSERT_EQ(p.first.user.email, ucd.user.email);
-    ASSERT_EQ(p.first.user.houseshareId, ucd.user.houseshareId);
-    ASSERT_EQ(p.first.age, ucd.age);
-    ASSERT_EQ(p.first.hobbies, ucd.hobbies);
-    ASSERT_EQ(p.first.preferedNumbers, ucd.preferedNumbers);
-    ASSERT_EQ(p.first.stdArray, ucd.stdArray);
+    BOOST_CHECK_EQUAL(p.first.user.id, ucd.user.id);
+    BOOST_CHECK_EQUAL(p.first.user.login, ucd.user.login);
+    BOOST_CHECK_EQUAL(p.first.user.firstname, ucd.user.firstname);
+    BOOST_CHECK_EQUAL(p.first.user.lastname, ucd.user.lastname);
+    BOOST_CHECK_EQUAL(p.first.user.dateOfBirth, ucd.user.dateOfBirth);
+    BOOST_CHECK_EQUAL(p.first.user.email, ucd.user.email);
+    BOOST_CHECK_EQUAL(p.first.user.houseshareId, ucd.user.houseshareId);
+    BOOST_CHECK_EQUAL(p.first.age, ucd.age);
+    BOOST_CHECK_EQUAL_COLLECTIONS(p.first.hobbies.begin(),
+                                  p.first.hobbies.end(),
+                                  ucd.hobbies.begin(),
+                                  ucd.hobbies.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(p.first.preferedNumbers.begin(),
+                                  p.first.preferedNumbers.end(),
+                                  ucd.preferedNumbers.begin(),
+                                  ucd.preferedNumbers.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(p.first.misc,
+                                  p.first.misc + 3,
+                                  ucd.misc,
+                                  ucd.misc + 3);
+    BOOST_CHECK_EQUAL_COLLECTIONS(p.first.stdArray.begin(),
+                                  p.first.stdArray.end(),
+                                  ucd.stdArray.begin(),
+                                  ucd.stdArray.end());
 }
 
-TEST(JsonSerializationTest, UnmarshallingEmptyVectorSuccess)
+BOOST_AUTO_TEST_CASE(UnmarshallingEmptyVectorSuccess)
 {
     std::string jsonStr = "[]";
     JsonInputArchive ia{jsonStr};
     std::vector<int> v;
     ia >> v;
-    ASSERT_EQ(0, v.size());
+    BOOST_CHECK_EQUAL(0, v.size());
 }
 
-TEST(JsonSerializationTest, UnmarshallingSimpleVectorSuccess)
+BOOST_AUTO_TEST_CASE(UnmarshallingSimpleVectorSuccess)
 {
     std::string jsonStr = "[1, 2, 3]";
     JsonInputArchive ia{jsonStr};
     std::vector<int> v;
     ia >> v;
-    ASSERT_EQ(3, v.size());
-    ASSERT_EQ(1, v[0]);
-    ASSERT_EQ(2, v[1]);
-    ASSERT_EQ(3, v[2]);
+    BOOST_CHECK_EQUAL(3, v.size());
+    BOOST_CHECK_EQUAL(1, v[0]);
+    BOOST_CHECK_EQUAL(2, v[1]);
+    BOOST_CHECK_EQUAL(3, v[2]);
 }
 
-TEST(JsonSerializationTest, UnmarshallingSimpleStdArraySuccess)
+BOOST_AUTO_TEST_CASE(UnmarshallingSimpleStdArraySuccess)
 {
     std::string jsonStr = "[1, 2, 3]";
     JsonInputArchive ia{jsonStr};
     std::array<int, 3> a;
     ia >> a;
-    ASSERT_EQ(3, a.size());
-    ASSERT_EQ(1, a[0]);
-    ASSERT_EQ(2, a[1]);
-    ASSERT_EQ(3, a[2]);
+    BOOST_CHECK_EQUAL(3, a.size());
+    BOOST_CHECK_EQUAL(1, a[0]);
+    BOOST_CHECK_EQUAL(2, a[1]);
+    BOOST_CHECK_EQUAL(3, a[2]);
 }
 
-TEST(JsonSerializationTest, UnmarshallingSimpleArraySuccess)
+BOOST_AUTO_TEST_CASE(UnmarshallingSimpleArraySuccess)
 {
     std::string jsonStr = "[1, 2, 3]";
     JsonInputArchive ia{jsonStr};
     int a[3];
     ia >> a;
-    ASSERT_EQ(1, a[0]);
-    ASSERT_EQ(2, a[1]);
-    ASSERT_EQ(3, a[2]);
+    BOOST_CHECK_EQUAL(1, a[0]);
+    BOOST_CHECK_EQUAL(2, a[1]);
+    BOOST_CHECK_EQUAL(3, a[2]);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

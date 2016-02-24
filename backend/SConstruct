@@ -36,7 +36,8 @@ base_env.AppendUnique(LIBS=['myroomies-server'])
 base_env.Program('myroomies-server', 'src/ServerMain.cpp')
 
 test_env = base_env.Clone()
-test_env.AppendUnique(LIBS=['gtest'])
+test_env.AppendUnique(LIBS=['boost_unit_test_framework'])
+test_env.AppendUnique(CXXFLAGS=['-DBOOST_TEST_DYN_LINK'])
 
 test_files = Glob('test/unit/*.cpp')
 test_files += Glob('test/unit/resources/*.cpp')

@@ -1,95 +1,97 @@
 #include <string>
 
-#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/test/unit_test.hpp>
 
-#include <gtest/gtest.h>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 #include <myroomies/utils/UriMatcher.h>
 
 using myroomies::utils::UriMatcher;
 using myroomies::utils::UriMatcherException;
 
-TEST(UriMatcherTest, SimpleRegex)
+BOOST_AUTO_TEST_SUITE(UriMatcherTest)
+
+BOOST_AUTO_TEST_CASE(SimpleRegex)
 {
     UriMatcher m("^\\S*/(\\d+)$");
 
-    ASSERT_TRUE(m.match("/myroomies/money/14"));
-    ASSERT_EQ(14, m.get<unsigned int>(1)) << "Should have returned 14";
-    ASSERT_EQ(14, m.get<int>(1));
-    ASSERT_EQ(14L, m.get<long>(1));
-    ASSERT_EQ("14", m.get<std::string>(1));
+    BOOST_CHECK(m.match("/myroomies/money/14"));
+    BOOST_CHECK_EQUAL(14, m.get<unsigned int>(1));
+    BOOST_CHECK_EQUAL(14, m.get<int>(1));
+    BOOST_CHECK_EQUAL(14L, m.get<long>(1));
+    BOOST_CHECK_EQUAL("14", m.get<std::string>(1));
 
-    ASSERT_FALSE(m.match("/myroomies/money/wrong"));
-    ASSERT_FALSE(m.match("/myroomies/money/14 "));
-    ASSERT_FALSE(m.match("14"));
+    BOOST_CHECK(!m.match("/myroomies/money/wrong"));
+    BOOST_CHECK(!m.match("/myroomies/money/14 "));
+    BOOST_CHECK(!m.match("14"));
 
-    ASSERT_TRUE(m.match("/myroomies/money/19/18"));
-    ASSERT_EQ(18, m.get<unsigned int>(1)) << "Should have returned 18";
+    BOOST_CHECK(m.match("/myroomies/money/19/18"));
+    BOOST_CHECK_EQUAL(18, m.get<unsigned int>(1));
 }
 
-TEST(UriMatcherTest, ComplexRegex)
+BOOST_AUTO_TEST_CASE(ComplexRegex)
 {
     UriMatcher m("^\\D*?/money(/since/(\\d{8}))?(/to/(\\d{8}))?/?$");
 
-    ASSERT_TRUE(m.match("/myroomies/money/since/20150619/to/20160131"));
-    ASSERT_EQ("20150619", m.get<std::string>(2));
-    ASSERT_EQ("20160131", m.get<std::string>(4));
+    BOOST_CHECK(m.match("/myroomies/money/since/20150619/to/20160131"));
+    BOOST_CHECK_EQUAL("20150619", m.get<std::string>(2));
+    BOOST_CHECK_EQUAL("20160131", m.get<std::string>(4));
 
     auto sinceDate = m.get<boost::gregorian::date>(2);
-    ASSERT_EQ(2015, sinceDate.year());
-    ASSERT_EQ(6, sinceDate.month());
-    ASSERT_EQ(19, sinceDate.day());
+    BOOST_CHECK_EQUAL(2015, sinceDate.year());
+    BOOST_CHECK_EQUAL(6, sinceDate.month());
+    BOOST_CHECK_EQUAL(19, sinceDate.day());
 
-    ASSERT_TRUE(m.match("/myroomies/money/since/20150619/to/20160131/"));
-    ASSERT_EQ("20150619", m.get<std::string>(2));
-    ASSERT_EQ("20160131", m.get<std::string>(4));
+    BOOST_CHECK(m.match("/myroomies/money/since/20150619/to/20160131/"));
+    BOOST_CHECK_EQUAL("20150619", m.get<std::string>(2));
+    BOOST_CHECK_EQUAL("20160131", m.get<std::string>(4));
 
     // Ignore case
-    ASSERT_TRUE(m.match("/MYROOMIES/MONEY/SINCE/20150619/TO/20160131"));
-    ASSERT_EQ("20150619", m.get<std::string>(2));
-    ASSERT_EQ("20160131", m.get<std::string>(4));
+    BOOST_CHECK(m.match("/MYROOMIES/MONEY/SINCE/20150619/TO/20160131"));
+    BOOST_CHECK_EQUAL("20150619", m.get<std::string>(2));
+    BOOST_CHECK_EQUAL("20160131", m.get<std::string>(4));
 
-    ASSERT_TRUE(m.match("/myroomies/money/since/20150619"));
-    ASSERT_EQ("20150619", m.get<std::string>(2));
+    BOOST_CHECK(m.match("/myroomies/money/since/20150619"));
+    BOOST_CHECK_EQUAL("20150619", m.get<std::string>(2));
 
-    ASSERT_TRUE(m.match("/myroomies/money/since/20150619/"));
-    ASSERT_EQ("20150619", m.get<std::string>(2));
+    BOOST_CHECK(m.match("/myroomies/money/since/20150619/"));
+    BOOST_CHECK_EQUAL("20150619", m.get<std::string>(2));
 
-    ASSERT_TRUE(m.match("/myroomies/money/"));
-    ASSERT_TRUE(m.match("/myroomies/money"));
+    BOOST_CHECK(m.match("/myroomies/money/"));
+    BOOST_CHECK(m.match("/myroomies/money"));
 
-    ASSERT_FALSE(m.match("/myroomies/money/since/2015/to/20160131"));
-    ASSERT_FALSE(m.match("/myroomies/money/since/2015/to/2016"));
-    ASSERT_FALSE(m.match("/myroomies/money/since/2015/to/"));
-    ASSERT_FALSE(m.match("/myroomies/money/since/2015/"));
-    ASSERT_FALSE(m.match("/myroomies/money/since/2015"));
-    ASSERT_FALSE(m.match("/myroomies/money/since"));
-    ASSERT_FALSE(m.match("/myroomies/money/since/"));
+    BOOST_CHECK(!m.match("/myroomies/money/since/2015/to/20160131"));
+    BOOST_CHECK(!m.match("/myroomies/money/since/2015/to/2016"));
+    BOOST_CHECK(!m.match("/myroomies/money/since/2015/to/"));
+    BOOST_CHECK(!m.match("/myroomies/money/since/2015/"));
+    BOOST_CHECK(!m.match("/myroomies/money/since/2015"));
+    BOOST_CHECK(!m.match("/myroomies/money/since"));
+    BOOST_CHECK(!m.match("/myroomies/money/since/"));
 }
 
-TEST(UriMatcherTest, BadRegex)
+BOOST_AUTO_TEST_CASE(BadRegex)
 {
-    ASSERT_THROW(UriMatcher m("\\"), UriMatcherException);
-    ASSERT_THROW(UriMatcher m("[abc][def"), UriMatcherException);
+    BOOST_CHECK_THROW(UriMatcher m("\\"), UriMatcherException);
+    BOOST_CHECK_THROW(UriMatcher m("[abc][def"), UriMatcherException);
 }
 
-TEST(UriMatcherTest, BadLexicalCast)
-{
-    UriMatcher m("^\\S*/(\\w+)$");
-    ASSERT_TRUE(m.match("/money/expense/12abc"));
-    ASSERT_THROW(m.get<int>(1), UriMatcherException);
-    ASSERT_THROW(m.get<double>(1), UriMatcherException);
-    ASSERT_THROW(m.get<boost::gregorian::date>(1), UriMatcherException);
-}
-
-TEST(UriMatcherTest, BadGroupAccess)
+BOOST_AUTO_TEST_CASE(BadLexicalCast)
 {
     UriMatcher m("^\\S*/(\\w+)$");
-    ASSERT_TRUE(m.match("/money/expense/12abc"));
-    ASSERT_EQ("/money/expense/12abc", m.get<std::string>(0));
-    ASSERT_EQ("12abc", m.get<std::string>(1));
-    ASSERT_THROW(m.get<std::string>(2), UriMatcherException);
-    ASSERT_THROW(m.get<std::string>(-1), UriMatcherException);
-
+    BOOST_CHECK(m.match("/money/expense/12abc"));
+    BOOST_CHECK_THROW(m.get<int>(1), UriMatcherException);
+    BOOST_CHECK_THROW(m.get<double>(1), UriMatcherException);
+    BOOST_CHECK_THROW(m.get<boost::gregorian::date>(1), UriMatcherException);
 }
 
+BOOST_AUTO_TEST_CASE(BadGroupAccess)
+{
+    UriMatcher m("^\\S*/(\\w+)$");
+    BOOST_CHECK(m.match("/money/expense/12abc"));
+    BOOST_CHECK_EQUAL("/money/expense/12abc", m.get<std::string>(0));
+    BOOST_CHECK_EQUAL("12abc", m.get<std::string>(1));
+    BOOST_CHECK_THROW(m.get<std::string>(2), UriMatcherException);
+    BOOST_CHECK_THROW(m.get<std::string>(-1), UriMatcherException);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
