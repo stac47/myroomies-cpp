@@ -24,7 +24,7 @@ class CreateExpense(object):
     def __call__(self):
         self.counter += 1
         new_expense = {}
-        new_expense['date'] = "2016-01-15"
+        new_expense['date'] = "20160115"
         new_expense['amount'] = 6.0 + self.counter
         new_expense['title'] = "title_{}".format(self.counter)
         new_expense['comment'] = "comment_{}".format(self.counter)

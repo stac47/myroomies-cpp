@@ -18,33 +18,44 @@ class MyRoomiesServer(object):
 
     def __init__(self):
         self.path = '../../myroomies-server'
+        self.already_started = False
 
     def start(self):
         cmd = []
         cmd.append(self.path)
         cmd.append("--logging-path=.")
-        self.server_process = subprocess.Popen(cmd)
-        logging.info("Server started [pid={}]".format(self.server_process.pid))
-        self.__wait_for_connection()
+        self.already_started = self.__wait_for_connection(3)
+        if self.already_started:
+            logging.info("Server has ready been started")
+        else:
+            self.server_process = subprocess.Popen(cmd)
+            logging.info("Server started [pid={}]".format(self.server_process.pid))
+            self.__wait_for_connection()
         logging.info("Server ready to accept connection")
 
     def stop(self):
-        logging.info("Server stopping...")
-        self.server_process.terminate()
-        logging.info("Server stopped")
+        if (not self.already_started):
+            logging.info("Server stopping...")
+            self.server_process.terminate()
+            logging.info("Server stopped")
+        else:
+            logging.info("Not stopping the server")
 
-    def __wait_for_connection(self):
+    def __wait_for_connection(self, max_try=-1):
         logging.info("Wait for server connectivity")
         conn = http.client.HTTPConnection('localhost', 8080)
-        while (True):
+        while (max_try == -1 or max_try > 0):
             try:
+                if max_try > 0:
+                    max_try -= 1
                 conn.connect()
             except:
                 logging.info("Server is not ready...")
                 time.sleep(1)
             else:
                 conn.close()
-                return
+                return True
+        return False
 
     def __enter__(self):
         self.start()
@@ -72,7 +83,7 @@ def create_houseshare(roomies_nb):
         u.firstname = field.format(houseshare_id, "firstname", i)
         u.lastname = field.format(houseshare_id, "lastname", i)
         u.email = field.format(houseshare_id, "email", i) + "@host.com"
-        u.date_of_birth = "1981-06-19"
+        u.date_of_birth = "19810619"
         user_str = json.dumps(u, cls=models.UserEncoder)
         logging.debug("Sent: " + user_str)
         headers = dict()

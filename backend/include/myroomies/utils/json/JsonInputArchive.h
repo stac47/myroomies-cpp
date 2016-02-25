@@ -15,6 +15,7 @@
 #include <boost/serialization/version.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/join.hpp>
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/document.h>

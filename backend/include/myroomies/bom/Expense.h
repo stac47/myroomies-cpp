@@ -31,9 +31,7 @@ struct ExpenseNew final : public myroomies::model::Expense
     template<typename Archive>
     void serialize(Archive& ar, const unsigned int /*version*/)
     {
-        ar & BOOST_SERIALIZATION_NVP(userId)
-           & BOOST_SERIALIZATION_NVP(houseshareId)
-           & BOOST_SERIALIZATION_NVP(date)
+        ar & BOOST_SERIALIZATION_NVP(date)
            & BOOST_SERIALIZATION_NVP(amount)
            & BOOST_SERIALIZATION_NVP(title)
            & BOOST_SERIALIZATION_NVP(comment);

@@ -1,9 +1,10 @@
 #include <sstream>
 #include <vector>
 
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
+
+#include <myroomies/utils/json/JsonOutputArchive.h>
+#include <myroomies/utils/json/JsonInputArchive.h>
 
 #include <myroomies/bom/User.h>
 
@@ -13,6 +14,9 @@
 
 using myroomies::resources::HttpRequest;
 using myroomies::resources::HttpResponse;
+
+using myroomies::utils::json::JsonInputArchive;
+using myroomies::utils::json::JsonOutputArchive;
 
 using myroomies::bom::User;
 using myroomies::bom::UserNew;
@@ -28,7 +32,7 @@ void UserHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse
     std::vector<User> users =
         getServiceRegistry()->get<UserService>()->getUsersFromHouseshare(houseshareId);
     std::ostringstream os;
-    boost::archive::text_oarchive oa(os);
+    JsonOutputArchive oa(os);
     oa << users;
     oResponse.setPayload(os.str());
 }
@@ -36,13 +40,12 @@ void UserHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse
 void UserHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
     std::string content = iRequest.getPayload();
-    std::istringstream is(content);
-    boost::archive::text_iarchive ia(is);
+    JsonInputArchive ia(content);
     UserNew newUser;
     ia >> newUser;
     User createdUser = getServiceRegistry()->get<UserService>()->createUser(getLoggedUser()->id, newUser);
     std::ostringstream os;
-    boost::archive::text_oarchive oa(os);
+    JsonOutputArchive oa(os);
     oa << createdUser;
     oResponse.setPayload(os.str());
 }

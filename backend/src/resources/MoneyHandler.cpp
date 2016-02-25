@@ -1,13 +1,13 @@
 #include <vector>
 #include <sstream>
 
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
 
 #include <myroomies/utils/db/Def.h>
 #include <myroomies/utils/LoggingMacros.h>
 #include <myroomies/utils/UriMatcher.h>
+#include <myroomies/utils/json/JsonOutputArchive.h>
+#include <myroomies/utils/json/JsonInputArchive.h>
 
 #include <myroomies/bom/Expense.h>
 #include <myroomies/bom/User.h>
@@ -27,6 +27,9 @@ using myroomies::bom::Expense;
 using myroomies::bom::ExpenseNew;
 using myroomies::bom::User;
 
+using myroomies::utils::json::JsonInputArchive;
+using myroomies::utils::json::JsonOutputArchive;
+
 using myroomies::services::MoneyService;
 
 namespace myroomies {
@@ -37,7 +40,7 @@ void MoneyHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oRespons
     std::vector<Expense> expenses =
         getServiceRegistry()->get<MoneyService>()->getExpenses(getLoggedUser());
     std::ostringstream os;
-    boost::archive::text_oarchive oa(os);
+    JsonOutputArchive oa(os);
     oa << expenses;
     oResponse.setPayload(os.str());
 }
@@ -45,21 +48,20 @@ void MoneyHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oRespons
 void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
     std::string content = iRequest.getPayload();
-    std::istringstream is(content);
-    boost::archive::text_iarchive ia(is);
+    JsonInputArchive ia(content);
     ExpenseNew newExpense;
     ia >> newExpense;
     Expense createdExpense = getServiceRegistry()->get<MoneyService>()->addExpense(getLoggedUser(), newExpense);
     std::string responsePayload;
     std::ostringstream os;
-    boost::archive::text_oarchive oa(os);
+    JsonOutputArchive oa(os);
     oa << createdExpense;
     oResponse.setPayload(os.str());
 }
 
 void MoneyHandler::handleDELETE(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
-    UriMatcher matcher("/(\\d+)$");
+    UriMatcher matcher("^\\S*/(\\d+)$");
     if (!matcher.match(iRequest.getPath()))
     {
         oResponse.setStatus(400);

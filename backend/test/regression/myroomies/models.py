@@ -42,7 +42,7 @@ if __name__ == '__main__':
     u.firstname = "firstname"
     u.lastname = "lastname"
     u.email = "email@host.com"
-    u.date_of_birth = "1981-06-19"
+    u.date_of_birth = "19810619"
     s = json.dumps(u, cls=UserEncoder)
     print(s)
     u = json.loads(s, object_hook=User.from_json)
