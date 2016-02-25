@@ -17,12 +17,11 @@ starting working on this project.
 
 #### Libraries
 
-* boost >1.54 (log, filesystem, program_options, system)
+* boost >1.54 (log, filesystem, program_options, system, test...)
 * microhttpd
 * httpserver (https://github.com/stac47/libhttpserver.git)
 * libsqlite3
 * rapidjson
-* google-test (for unit testing)
 
 ### Procedure
 
@@ -35,14 +34,6 @@ First thing to do is to install the tools:
 #### microhttpd
 
     sudo apt-get install libmicrohttpd-dev
-
-#### google-test
-
-    sudo apt-get install libgtest-dev
-    cd /usr/src/gtest
-    sudo cmake .
-    sudo make
-    sudo mv libg* /usr/lib/
 
 #### httpserver
 
@@ -65,17 +56,39 @@ cause a linkage error.
 #### rapidjson
 
     git clone https://github.com/miloyip/rapidjson.git
-    cd ~/local
+    cd ~/local/include
     ln -s $HOME/rapidjson/include/rapidjson rapidjson
 
 #### spdlog
 
     git clone https://github.com/gabime/spdlog.git
-    cd ~/local
+    cd ~/local/include
     ln -s $HOME/spdlog/include/spdlog spdlog
 
 ## Tests
 
+Tests comes in two flavours: unit tests and regression tests. Unit tests are
+checking the C++ code small pieces by small pieces. They are written in C++ and
+we use Boost UTF.
+
+Regression tests aims at testing the whole application. They start a server,
+shoot HTTP/JSON queries and check the response. Regression tests are written in
+Python 3 and use the standard __unittest__ module.
+
 ### Unit tests
 
+When you build the application, the unit tests are also build in a dedicated
+binary. Simply run this binary to start the unit test suite.
+
+    ./myroomies-unittest
+
 ### Regression
+
+To run the regression, move to the __myroomies/backend/test/regression__ and
+run the follwing command to run the whole regression campaign:
+
+    python3 -m unittest
+
+To run a single test, simply provide the path to your test as follow:
+
+    python3 -m unittest package.module[.class[.method]]
