@@ -3,6 +3,7 @@
 
 #include <boost/serialization/vector.hpp>
 
+#include <myroomies/utils/UriMatcher.h>
 #include <myroomies/utils/json/JsonOutputArchive.h>
 #include <myroomies/utils/json/JsonInputArchive.h>
 
@@ -15,6 +16,7 @@
 using myroomies::resources::HttpRequest;
 using myroomies::resources::HttpResponse;
 
+using myroomies::utils::UriMatcher;
 using myroomies::utils::json::JsonInputArchive;
 using myroomies::utils::json::JsonOutputArchive;
 
@@ -28,12 +30,21 @@ namespace resources {
 
 void UserHandler::handleGET(const HttpRequest& iRequest, HttpResponse& oResponse)
 {
-    uint32_t houseshareId = getLoggedUser()->houseshareId;
-    std::vector<User> users =
-        getServiceRegistry()->get<UserService>()->getUsersFromHouseshare(houseshareId);
     std::ostringstream os;
     JsonOutputArchive oa(os);
-    oa << users;
+
+    UriMatcher matcher("^\\S*/me(/)?$");
+    if (matcher.match(iRequest.getPath()))
+    {
+        oa << *getLoggedUser();
+    }
+    else
+    {
+        uint32_t houseshareId = getLoggedUser()->houseshareId;
+        std::vector<User> users =
+            getServiceRegistry()->get<UserService>()->getUsersFromHouseshare(houseshareId);
+        oa << users;
+    }
     oResponse.setPayload(os.str());
 }
 

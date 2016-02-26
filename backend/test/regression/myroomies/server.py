@@ -24,7 +24,7 @@ class MyRoomiesServer(object):
         cmd = []
         cmd.append(self.path)
         cmd.append("--logging-path=.")
-        self.already_started = self.__wait_for_connection(3)
+        self.already_started = self.__wait_for_connection(1)
         if self.already_started:
             logging.info("Server has ready been started")
         else:

@@ -25,6 +25,8 @@ class UserManagementOperations(unittest.TestCase):
         cls._server = MyRoomiesServer()
         cls._server.start()
         cls.conn = http.client.HTTPConnection('localhost', 8080)
+        cls.houseshare_id, cls.roomies = create_houseshare(3)
+
 
     @classmethod
     def tearDownClass(cls):
@@ -32,14 +34,12 @@ class UserManagementOperations(unittest.TestCase):
         cls._server.stop()
 
     def test_user_creation(self):
-        houseshare_id, roomies = create_houseshare(3)
-
         # Log in as a user of houseshare id 1 and retrieve all the roomies
         # from this user's houseshare
         headers = {}
         add_authorization_header(headers,
-                                 roomies[0].login,
-                                 roomies[0].password)
+                                 self.roomies[0].login,
+                                 self.roomies[0].password)
         self.conn.request('GET', '/user', headers=headers)
         response = self.conn.getresponse()
         data = response.read()
@@ -49,5 +49,19 @@ class UserManagementOperations(unittest.TestCase):
             json.loads(str(data, 'utf-8'), object_hook=User.from_json)
         self.assertEqual(3, len(users_list))
         for user in users_list:
-            self.assertEqual(houseshare_id, user.houseshare_id)
+            self.assertEqual(self.houseshare_id, user.houseshare_id)
+
+    def test_get_user(self):
+        headers = {}
+        add_authorization_header(headers,
+                                 self.roomies[0].login,
+                                 self.roomies[0].password)
+        self.conn.request('GET', '/user/me', headers=headers)
+        response = self.conn.getresponse()
+        data = response.read()
+        logging.debug(str(data, 'utf-8'))
+        self.assertEqual(200, response.status)
+        logged_user = \
+            json.loads(str(data, 'utf-8'), object_hook=User.from_json)
+        self.assertEqual(self.roomies[0].user_id, logged_user.user_id)
 

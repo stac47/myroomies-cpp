@@ -23,7 +23,7 @@ add/remove users.
 
 #### Retrieve
 
-##### GET <root-uri>/users
+##### GET <root-uri>/user
 
 Retrieve the list of the users belonging to the logged user houseshare. If the
 logged user is 'admin', retrieve all the registered users.
@@ -50,6 +50,27 @@ Reply example:
         "email": "user2@host.com",
         "houseshareId": 1
     }]
+
+##### GET <root-uri>/user/me
+
+Retrieve the current logged user profile. This is generally the first message
+sent by a GUI to myroomies server.
+
+This service cannot fail except is bad credentials are provided in the basic
+HTTP authorization header.
+
+Reply example:
+
+    {
+        "id" : 12,
+        "login": "user1",
+        "password": "password1",
+        "firstname": "firstname1",
+        "lastname": "lastname",
+        "dateOfBirth": "1984-03-11",
+        "email": "user1@host.com",
+        "houseshareId": 1
+    }
 
 ##### GET <root-uri>/users/<user-id>
 
