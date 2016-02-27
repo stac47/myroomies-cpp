@@ -1,8 +1,8 @@
 import subprocess
-import http.client
 import time
 import base64
 import json
+import http.client
 
 import logging
 logging.basicConfig(
@@ -12,6 +12,7 @@ logging.basicConfig(
 
 from . import tools
 from . import models
+from .client import MyRoomiesClient
 
 
 class MyRoomiesServer(object):
@@ -73,7 +74,7 @@ def create_houseshare(roomies_nb):
     field = "h{}_{}{}"
     houseshare_id = 1
     roomies = []
-    conn = http.client.HTTPConnection('localhost', 8080)
+    client = MyRoomiesClient('localhost', 8080)
     for i in range(roomies_nb):
         u = models.User()
         u.login = field.format(houseshare_id, "login", i)
@@ -85,14 +86,11 @@ def create_houseshare(roomies_nb):
         u.email = field.format(houseshare_id, "email", i) + "@host.com"
         u.date_of_birth = "19810619"
         user_str = json.dumps(u, cls=models.UserEncoder)
-        logging.debug("Sent: " + user_str)
-        headers = dict()
+        headers = {}
         tools.add_admin_authorization_header(headers)
-        conn.request('POST', '/user', user_str, headers=headers)
-        data = conn.getresponse().read()
-        logging.debug(data)
-        u = json.loads(str(data, 'utf-8'), object_hook=models.User.from_json)
+        status, data = client.request('POST', '/user', user_str, headers=headers)
+        u = json.loads(data, object_hook=models.User.from_json)
         u.password = password
         roomies.append(u)
-    conn.close()
+    client.close()
     return (houseshare_id, roomies)
