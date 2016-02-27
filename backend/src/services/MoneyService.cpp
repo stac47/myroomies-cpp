@@ -69,6 +69,7 @@ Expense MoneyService::addExpense(
     createdExpense.amount = iExpense.amount;
     createdExpense.title = iExpense.title;
     createdExpense.comment = iExpense.comment;
+    createdExpense.tags = iExpense.tags;
     GetExpenses().push_back(createdExpense);
     MYROOMIES_LOG_INFO("User [id=" << iLoggedUser->id << "] "
                        << "created expense [id=" << createdExpense.id << "] "

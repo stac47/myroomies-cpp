@@ -22,7 +22,8 @@ struct Expense final : public myroomies::model::Expense
            & BOOST_SERIALIZATION_NVP(date)
            & BOOST_SERIALIZATION_NVP(amount)
            & BOOST_SERIALIZATION_NVP(title)
-           & BOOST_SERIALIZATION_NVP(comment);
+           & BOOST_SERIALIZATION_NVP(comment)
+           & BOOST_SERIALIZATION_NVP(tags);
     }
 };
 
@@ -34,7 +35,8 @@ struct ExpenseNew final : public myroomies::model::Expense
         ar & BOOST_SERIALIZATION_NVP(date)
            & BOOST_SERIALIZATION_NVP(amount)
            & BOOST_SERIALIZATION_NVP(title)
-           & BOOST_SERIALIZATION_NVP(comment);
+           & BOOST_SERIALIZATION_NVP(comment)
+           & BOOST_SERIALIZATION_NVP(tags);
     }
 };
 

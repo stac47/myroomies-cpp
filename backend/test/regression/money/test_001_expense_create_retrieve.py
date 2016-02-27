@@ -29,6 +29,7 @@ class CreateExpense(object):
         new_expense['amount'] = 6.0 + self.counter
         new_expense['title'] = "title_{}".format(self.counter)
         new_expense['comment'] = "comment_{}".format(self.counter)
+        new_expense['tags'] = ["tag1", "tag2"]
         return new_expense
 
 create_expense = CreateExpense()

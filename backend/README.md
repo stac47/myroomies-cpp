@@ -25,7 +25,7 @@ add/remove users.
 
 ##### GET <root-uri>/user
 
-Retrieve the list of the users belonging to the logged user houseshare. If the
+Retrieve the list of the users belonging to the logged user's houseshare. If the
 logged user is 'admin', retrieve all the registered users.
 
 Reply example:
@@ -56,7 +56,7 @@ Reply example:
 Retrieve the current logged user profile. This is generally the first message
 sent by a GUI to myroomies server.
 
-This service cannot fail except is bad credentials are provided in the basic
+This service cannot fail except if bad credentials are provided in the basic
 HTTP authorization header.
 
 Reply example:
@@ -72,7 +72,7 @@ Reply example:
         "houseshareId": 1
     }
 
-##### GET <root-uri>/users/<user-id>
+##### GET <root-uri>/user/<user-id>
 
 Retrieve <user-id>'s profile information.
 
@@ -96,13 +96,10 @@ Reply example:
 
 #### Create
 
-##### POST <root-uri>/users
+##### POST <root-uri>/user
 
-Create a user.
-
-If the logged user is 'admin', the new user must be provided with a valid
-houseshare id otherwise an error __400__ is returned. If the logged user is not
-'admin', an HTTP error __403__ is returned.
+Create a user. Only 'admin' can perform this action otherwise an error __403__
+is returned.
 
 In case of success, HTTP error code __200__ is returned and the reply contains
 the stored user profile.
@@ -134,13 +131,10 @@ Reply example:
 
 #### Delete
 
-##### DELETE <root-uri>/users
+##### DELETE <root-uri>/user
 
-Delete a user.
-
-If the logged user is 'admin', the new user must be provided with a valid
-houseshare id otherwise an error __400__ is returned. If the logged user is not
-'admin', an HTTP error __403__ is returned.
+Delete a user. Only 'admin' can perform this action otherwise an error __403__
+is returned.
 
 In case of success, HTTP error code __200__ is returned and the user is
 deleted.
@@ -149,4 +143,73 @@ deleted.
 
 #### Expense: Retrieve GET <root-uri>/money
 
-Retrieve the list of expenses of the current logged user's houseshare.
+Retrieve the list of expenses of the logged user's houseshare.
+
+Reply example:
+
+    [{
+        "id": 1,
+        "amount": 8.0,
+        "userId": 2,
+        "title": "title_2",
+        "date": "20160115",
+        "comment": "comment_2",
+        "houseshareId": 1
+    },
+    {
+        "id": 2,
+        "amount": 14.0,
+        "userId": 1,
+        "title": "title_4",
+        "date": "20160115",
+        "comment": "comment_4",
+        "houseshareId": 1
+    }]
+
+#### Expense: Create POST <root-uri>/money
+
+Create an expense on behalf of the houseshare of the logged user.
+
+A new expense request is valid if it contains the following mandatory elements:
+amount, date, title. If one of this element is missing an error __400__ is
+returned.
+
+The reply contains consolidated data about the expense (id, houseshareId).
+
+Query example:
+
+	{
+		"amount": 8.0,
+		"comment": "comment_2",
+		"title": "title_2",
+		"date": "20160115",
+        "tags": [
+            "tag1",
+            "tag2"
+        ]
+	}
+
+Reply example:
+
+	{
+		"id": 1,
+		"amount": 8.0,
+		"userId": 2,
+		"title": "title_2",
+		"date": "20160115",
+		"comment": "comment_2",
+		"houseshareId": 1,
+        "tags": [
+            "tag1",
+            "tag2"
+        ]
+	}
+
+#### Expense: Delete DELETE <root-uri>/money/<id>
+
+Delete the expense <id>.
+
+If the expense <id> does not belong to the logged user, an error __403__ is
+returned. If the expense <id> does not exist, an error __404__ is returned. If
+<id> is not a numbe, an error __400__ is returned.
+
