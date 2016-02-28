@@ -1,6 +1,7 @@
 import os
 
 libs = ['pthread',
+        'soci_core',
         'boost_thread',
         'boost_system',
         'boost_filesystem',
@@ -27,9 +28,9 @@ base_env['ENV']['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
 
 src_files = Glob('src/resources/*.cpp')
 src_files += Glob('src/utils/*.cpp')
-src_files += Glob('src/utils/json/*.cpp')
 src_files += Glob('src/services/*.cpp')
 src_files += Glob('src/bom/*.cpp')
+src_files += Glob('src/model/*.cpp')
 
 base_env.StaticLibrary('myroomies-server', src_files)
 base_env.AppendUnique(LIBS=['myroomies-server'])
@@ -42,6 +43,7 @@ test_env.AppendUnique(CXXFLAGS=['-DBOOST_TEST_DYN_LINK'])
 test_files = Glob('test/unit/*.cpp')
 test_files += Glob('test/unit/resources/*.cpp')
 test_files += Glob('test/unit/utils/*.cpp')
+test_files += Glob('test/unit/model/*.cpp')
 test_env.Program('myroomies-unittest', test_files)
 
 

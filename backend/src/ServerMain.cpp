@@ -10,6 +10,8 @@
 #include <myroomies/utils/LoggingMacros.h>
 #include <myroomies/utils/Configuration.h>
 
+#include <myroomies/model/Common.h>
+
 #include <myroomies/services/ServiceRegistry.h>
 
 #include <myroomies/resources/StaticResource.h>
@@ -50,15 +52,25 @@ void signalHandler(int signal)
     gWebServer->stop();
 }
 
-} // namespace
-
-int main(int argc, const char* argv[])
+const Configuration ParseOptions(int argc, const char* argv[])
 {
+    Configuration config;
+
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
-        ("logging-path", po::value<std::string>(), "set the logging files location")
-        ("development", "start the server in development mode")
+        ("bind-address", po::value<std::string>(&config.address)->default_value("localhost"),
+            "set the interface on which the server will be bound")
+        ("listening-port", po::value<uint16_t>(&config.port)->default_value(8080),
+            "set the listening port")
+        ("logging-path", po::value<std::string>(&config.loggingPath)->default_value(""),
+            "set the logging files location")
+        ("statics-path", po::value<std::string>(&config.staticsPath)->default_value(""),
+            "set the path to the local statics")
+        ("db-path", po::value<std::string>(&config.dbPath)->default_value("myroomies.db3"),
+            "set the path to the database path")
+        ("db-create", po::value<bool>(&config.dbCreate)->default_value(false),
+            "if the db file does not exist, create it")
     ;
 
     po::variables_map vm;
@@ -68,26 +80,27 @@ int main(int argc, const char* argv[])
     if (vm.count("help"))
     {
         std::cout << desc << std::endl;
-        return 1;
+        exit(1);
     }
+    return config;
+}
 
-    if (vm.count("logging-path"))
-    {
-        myroomies::utils::Logger::Init(vm["logging-path"].as<std::string>());
-    }
-    else
-    {
-        myroomies::utils::Logger::Init();
-    }
+} // namespace
+
+int main(int argc, const char* argv[])
+{
+    auto config = ParseOptions(argc, argv);
+
+    // First thing to do: setup the logging system
+    myroomies::utils::Logger::Init(config.loggingPath);
+
+    // Create the database if needed
+    myroomies::model::CreateTables(config.dbPath, config.dbCreate);
 
     MYROOMIES_LOG_INFO("MyRoomies server is starting...");
     boost::filesystem::path programPath = argv[0];
     MYROOMIES_LOG_INFO("Binary: " << boost::filesystem::absolute(programPath).native());
     MYROOMIES_LOG_INFO("Working directory: " << boost::filesystem::current_path().native());
-
-
-    // TODO fill the configuration object
-    Configuration config;
 
     // Create the ServiceRegistry
     auto serviceRegistry = std::make_shared<ServiceRegistry>(config);
@@ -102,10 +115,10 @@ int main(int argc, const char* argv[])
     gWebServer = &ws;
 
     MYROOMIES_LOG_INFO("Registering resources...");
-    if (vm.count("development"))
+    if (!config.staticsPath.empty())
     {
         MYROOMIES_LOG_WARN("Development mode activated. DO NOT USE IT IN PRODUCTION.");
-        static StaticResource staticResource(programPath.parent_path());
+        StaticResource staticResource(programPath.parent_path());
         ws.register_resource("/static", &staticResource, true);
     }
 

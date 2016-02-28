@@ -27,7 +27,7 @@ private:
     void registerService(const std::shared_ptr<T>& iService);
 
     std::map<std::type_index, std::shared_ptr<ServiceInterface>> services_;
-    myroomies::utils::Configuration config_;
+    const myroomies::utils::Configuration config_;
 };
 
 template<typename T>

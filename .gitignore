@@ -8,3 +8,4 @@ backend/myroomies-unittest
 __pycache__
 *.log.txt
 *.log
+*.db3

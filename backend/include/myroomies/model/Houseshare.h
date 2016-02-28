@@ -7,8 +7,14 @@
 namespace myroomies {
 namespace model {
 
+const std::string kTableHouseshare = "houseshare";
+
 struct Houseshare
 {
+    static const std::string kColId;
+    static const std::string kColName;
+    static const std::string kColLanguage;
+
     myroomies::utils::db::Key_t id;
     std::string name;
     std::string language;

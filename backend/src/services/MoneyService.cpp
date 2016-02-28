@@ -38,7 +38,6 @@ std::vector<Expense>& GetExpenses()
 namespace myroomies {
 namespace services {
 
-
 std::shared_ptr<MoneyService> MoneyService::BuildFromConfig(
     const std::shared_ptr<ServiceRegistry>& iServiceRegistry,
     const Configuration&)
