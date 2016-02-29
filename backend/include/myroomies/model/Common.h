@@ -5,6 +5,8 @@
 namespace myroomies {
 namespace model {
 
+const std::string kColRowId = "rowid";
+
 bool CreateTables(const std::string& iPath, bool iCreateIfNotExists);
 
 } /* namespace model */
