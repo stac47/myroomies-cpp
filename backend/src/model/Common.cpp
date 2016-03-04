@@ -125,10 +125,6 @@ bool CreateTables(const std::string& iPath, bool iCreateIfNotExsits)
     return ret;
 }
 
-const std::string Houseshare::kColId = "id";
-const std::string Houseshare::kColName = "name";
-const std::string Houseshare::kColLanguage = "language";
-
 const std::string User::kColId = "id";
 const std::string User::kColLogin = "login";
 const std::string User::kColPasswordHash = "password_hash";

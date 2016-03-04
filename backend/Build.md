@@ -22,6 +22,7 @@ starting working on this project.
 * httpserver (https://github.com/stac47/libhttpserver.git)
 * libsqlite3
 * rapidjson
+* soci
 
 ### Procedure
 
@@ -64,6 +65,31 @@ cause a linkage error.
     git clone https://github.com/gabime/spdlog.git
     cd ~/local/include
     ln -s $HOME/spdlog/include/spdlog spdlog
+
+#### SOCI
+
+SOCI is used as a tiny layer on top of sqlite3 API. This lib is available in
+the major linux distributions and Mac OSX package managers (homebrew, macport).
+
+    sudo apt-get install libsoci-dev
+
+Nevertheless, for debian, SOCI is only available from __Stretch__ version. So
+if you work on __Jessie__ or a prior version, you will have to install the lib
+by yourself. Hereafter is the procedure we can use for MyRoomies project. For
+more information, go to http://soci.sourceforge.net/doc/3.2/installation.html .
+
+Download https://sourceforge.net/projects/soci/files/soci/ and untar the last
+version of the library in <path/to/soci>.
+
+    mkdir build
+    cd build
+    cmake -G"Unix Makefiles" -DWITH_BOOST=ON -DSOCI_TESTS=ON \
+    -DCMAKE_INSTALL_PREFIX=$HOME/local -DWITH_SQLITE3=ON -DWITH_DB2=OFF \
+    -DWITH_FIREBIRD=OFF -DWITH_MYSQL=OFF -DWITH_ODBC=OFF -DWITH_ORACLE=OFF \
+    -DWITH_POSTGRESQL=OFF <path/to/soci>
+    make
+    make test
+    make install
 
 ## Tests
 
