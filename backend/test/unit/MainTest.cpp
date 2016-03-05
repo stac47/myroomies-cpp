@@ -3,9 +3,8 @@
 
 #include <myroomies/utils/LoggingMacros.h>
 
-class MyRoomiesGlobalFixture
+struct MyRoomiesGlobalFixture
 {
-public:
     MyRoomiesGlobalFixture()
     {
         myroomies::utils::Logger::Init(".");
@@ -16,4 +15,4 @@ public:
     }
 };
 
-BOOST_GLOBAL_FIXTURE(MyRoomiesGlobalFixture)
+BOOST_GLOBAL_FIXTURE(MyRoomiesGlobalFixture);

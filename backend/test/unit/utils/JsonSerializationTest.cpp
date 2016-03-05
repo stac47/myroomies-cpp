@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(UnmarshallingEmptyVectorSuccess)
     JsonInputArchive ia{jsonStr};
     std::vector<int> v;
     ia >> v;
-    BOOST_CHECK_EQUAL(0, v.size());
+    BOOST_CHECK_EQUAL(0u, v.size());
 }
 
 BOOST_AUTO_TEST_CASE(UnmarshallingSimpleVectorSuccess)
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(UnmarshallingSimpleVectorSuccess)
     JsonInputArchive ia{jsonStr};
     std::vector<int> v;
     ia >> v;
-    BOOST_CHECK_EQUAL(3, v.size());
+    BOOST_CHECK_EQUAL(3u, v.size());
     BOOST_CHECK_EQUAL(1, v[0]);
     BOOST_CHECK_EQUAL(2, v[1]);
     BOOST_CHECK_EQUAL(3, v[2]);
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(UnmarshallingSimpleStdArraySuccess)
     JsonInputArchive ia{jsonStr};
     std::array<int, 3> a;
     ia >> a;
-    BOOST_CHECK_EQUAL(3, a.size());
+    BOOST_CHECK_EQUAL(3u, a.size());
     BOOST_CHECK_EQUAL(1, a[0]);
     BOOST_CHECK_EQUAL(2, a[1]);
     BOOST_CHECK_EQUAL(3, a[2]);

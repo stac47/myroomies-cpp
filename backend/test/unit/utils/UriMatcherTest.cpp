@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(SimpleRegex)
     UriMatcher m("^\\S*/(\\d+)$");
 
     BOOST_CHECK(m.match("/myroomies/money/14"));
-    BOOST_CHECK_EQUAL(14, m.get<unsigned int>(1));
+    BOOST_CHECK_EQUAL(14u, m.get<unsigned int>(1));
     BOOST_CHECK_EQUAL(14, m.get<int>(1));
     BOOST_CHECK_EQUAL(14L, m.get<long>(1));
     BOOST_CHECK_EQUAL("14", m.get<std::string>(1));
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(SimpleRegex)
     BOOST_CHECK(!m.match("14"));
 
     BOOST_CHECK(m.match("/myroomies/money/19/18"));
-    BOOST_CHECK_EQUAL(18, m.get<unsigned int>(1));
+    BOOST_CHECK_EQUAL(18u, m.get<unsigned int>(1));
 }
 
 BOOST_AUTO_TEST_CASE(ComplexRegex)

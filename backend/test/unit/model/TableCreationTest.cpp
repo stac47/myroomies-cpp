@@ -52,11 +52,6 @@ private:
     std::ostringstream os_;
 };
 
-std::string BuildCompositeString()
-{
-    return "";
-}
-
 template<typename T, typename ... Args>
 std::string BuildCompositeString(T&& s, Args&&... args)
 {
@@ -137,11 +132,11 @@ BOOST_AUTO_TEST_CASE(TableCreation)
         into(houseshare);
 
     BOOST_CHECK(!houseshare.name.empty());
-    BOOST_CHECK_EQUAL(1, houseshare.id);
+    BOOST_CHECK_EQUAL(1u, houseshare.id);
     BOOST_CHECK_EQUAL(houseshares[0].name, houseshare.name);
     BOOST_CHECK_EQUAL(houseshares[0].language, houseshare.language);
 
-    auto users = BuildUsers(2, houseshare.id);
+    auto users = BuildUsers(2u, houseshare.id);
     for (User u : users)
     {
         sql << "INSERT INTO " << kTableUser << " VALUES ("

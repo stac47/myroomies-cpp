@@ -83,7 +83,7 @@ private:
 
 	template<typename T,
              typename Alloc,
-             template <typename T, typename Alloc> class Container>
+             template <typename, typename> class Container>
     void loadValue(Container<T, Alloc>& t)
     {
         if (rapidjson::Value* value = rapidjson::Pointer(getPath()).Get(doc_))

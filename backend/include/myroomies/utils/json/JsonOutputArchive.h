@@ -32,6 +32,14 @@ public:
       : os_(oStream)
     {}
 
+    typedef boost::mpl::bool_<true> is_saving;
+    typedef boost::mpl::bool_<false> is_loading;
+
+    template<typename T>
+    void register_type(){}
+
+    void save_binary(void *address, std::size_t count){};
+
     template<typename T>
     JsonOutputArchive& operator&(const T& t)
     {
@@ -104,7 +112,7 @@ private:
 
 	template<typename T,
              typename Alloc,
-             template <typename T, typename Alloc> class Container>
+             template <typename, typename> class Container>
     void saveValue(const Container<T, Alloc>& t)
 	{
         SaveCollection<JsonOutputArchive>::Invoke(*this, t);

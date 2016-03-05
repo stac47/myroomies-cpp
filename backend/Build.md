@@ -91,6 +91,15 @@ version of the library in <path/to/soci>.
     make test
     make install
 
+### Building the application
+
+Scons is used to build the application. By default, running scons alone will
+only compile the source. To link into an executable, use the option
+__--build-exe__. To use several compilation threads, you can use __-j <N>__
+option.
+
+    scons --build-exe -j8
+
 ## Tests
 
 Tests comes in two flavours: unit tests and regression tests. Unit tests are
@@ -103,15 +112,16 @@ Python 3 and use the standard __unittest__ module.
 
 ### Unit tests
 
-When you build the application, the unit tests are also build in a dedicated
-binary. Simply run this binary to start the unit test suite.
+To compile the tests and build the binary, set the 2 options
+__--compile-tests__ and __--build-exe__, then run the binary:
 
-    ./myroomies-unittest
+    ./myroomies-unittest-<toolchain>
 
 ### Regression
 
-To run the regression, move to the __myroomies/backend/test/regression__ and
-run the follwing command to run the whole regression campaign:
+To run the regression, you have to build the executable of
+''myroomies-server'', move to the __myroomies/backend/test/regression__ and run
+the follwing command to run the whole regression campaign:
 
     python3 -m unittest
 

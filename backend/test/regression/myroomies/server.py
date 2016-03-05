@@ -18,7 +18,7 @@ from .client import MyRoomiesClient
 class MyRoomiesServer(object):
 
     def __init__(self):
-        self.path = '../../myroomies-server'
+        self.path = '../../myroomies-server-gnu'
         self.already_started = False
 
     def start(self):

@@ -1,5 +1,31 @@
 import os
 
+AddOption('--toolchain', dest='toolchain', choices=['gnu', 'clang'],
+          default='gnu', help='Toolchain Specification')
+
+AddOption('--compile-tests', action='store_true', dest='compile_tests',
+          default=False,
+          help='Compile the unit tests')
+
+AddOption('--build-exe', action='store_true', dest='build_exe', default=False,
+          help='Build Executable')
+
+build_exe = GetOption('build_exe')
+compile_tests = GetOption('compile_tests')
+
+# myroomies server source files
+src_files = Glob('src/resources/*.cpp')
+src_files += Glob('src/utils/*.cpp')
+src_files += Glob('src/services/*.cpp')
+src_files += Glob('src/bom/*.cpp')
+src_files += Glob('src/model/*.cpp')
+
+# unit tests
+test_files = Glob('test/unit/*.cpp')
+test_files += Glob('test/unit/resources/*.cpp')
+test_files += Glob('test/unit/utils/*.cpp')
+test_files += Glob('test/unit/model/*.cpp')
+
 libs = ['pthread',
         'soci_core',
         'boost_thread',
@@ -7,8 +33,11 @@ libs = ['pthread',
         'boost_filesystem',
         'boost_program_options',
         'boost_date_time',
+        'boost_timer',
+        'boost_chrono',
         'boost_serialization',
-        'httpserver']
+        'httpserver'
+        ]
 
 cxx_flags = ['--std=c++14',
              '-g',
@@ -17,33 +46,33 @@ cxx_flags = ['--std=c++14',
              '-Werror',
              '-Wpedantic']
 
-base_env = Environment(#CXX='clang++',
-                       CXXFLAGS=cxx_flags,
+base_env = Environment(CXXFLAGS=cxx_flags,
                        LIBS=libs,
                        LIBPATH='.',
                        CPPPATH='#include')
 
 base_env['ENV']['CPATH'] = os.environ['CPATH']
 base_env['ENV']['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
+base_env.Replace(TOOLCHAIN=GetOption('toolchain'))
+if base_env['TOOLCHAIN'] == 'clang':
+    base_env.Replace(CXX='clang++')
 
-src_files = Glob('src/resources/*.cpp')
-src_files += Glob('src/utils/*.cpp')
-src_files += Glob('src/services/*.cpp')
-src_files += Glob('src/bom/*.cpp')
-src_files += Glob('src/model/*.cpp')
+myroomies_server_filename =\
+    'myroomies-server-{}'.format(GetOption('toolchain'))
+myroomies_unittest_filename =\
+    'myroomies-unittest-{}'.format(GetOption('toolchain'))
 
-base_env.StaticLibrary('myroomies-server', src_files)
-base_env.AppendUnique(LIBS=['myroomies-server'])
-base_env.Program('myroomies-server', 'src/ServerMain.cpp')
+base_env.StaticLibrary(myroomies_server_filename, src_files)
+base_env.Prepend(LIBS=[myroomies_server_filename])
 
-test_env = base_env.Clone()
-test_env.AppendUnique(LIBS=['boost_unit_test_framework'])
-test_env.AppendUnique(CXXFLAGS=['-DBOOST_TEST_DYN_LINK'])
+if build_exe:
+    myroomies_server_exe = base_env.Object('src/ServerMain.cpp')
+    base_env.Program(myroomies_server_filename, myroomies_server_exe)
 
-test_files = Glob('test/unit/*.cpp')
-test_files += Glob('test/unit/resources/*.cpp')
-test_files += Glob('test/unit/utils/*.cpp')
-test_files += Glob('test/unit/model/*.cpp')
-test_env.Program('myroomies-unittest', test_files)
-
-
+if compile_tests:
+    test_env = base_env.Clone()
+    test_env.Prepend(LIBS=['boost_unit_test_framework'])
+    test_env.AppendUnique(CXXFLAGS=['-DBOOST_TEST_DYN_LINK'])
+    test_env.StaticLibrary(myroomies_unittest_filename, test_files)
+    if build_exe:
+        test_env.Program(myroomies_unittest_filename, test_files)
