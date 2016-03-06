@@ -44,7 +44,8 @@ cxx_flags = ['--std=c++14',
              '-Wall',
              '-ftemplate-backtrace-limit=0',
              '-Werror',
-             '-Wpedantic']
+             '-Wpedantic'
+            ]
 
 base_env = Environment(CXXFLAGS=cxx_flags,
                        LIBS=libs,

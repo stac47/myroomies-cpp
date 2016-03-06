@@ -84,9 +84,9 @@ version of the library in <path/to/soci>.
     mkdir build
     cd build
     cmake -G"Unix Makefiles" -DWITH_BOOST=ON -DSOCI_TESTS=ON \
-    -DCMAKE_INSTALL_PREFIX=$HOME/local -DWITH_SQLITE3=ON -DWITH_DB2=OFF \
+    -DCMAKE_INSTALL_PREFIX=$HOME/local -DSOCI_LIBDIR=lib -DWITH_SQLITE3=ON \
     -DWITH_FIREBIRD=OFF -DWITH_MYSQL=OFF -DWITH_ODBC=OFF -DWITH_ORACLE=OFF \
-    -DWITH_POSTGRESQL=OFF <path/to/soci>
+    -DWITH_POSTGRESQL=OFF -DWITH_DB2=OFF -DSOCI_HAVE_CXX_C11=ON <path/to/soci>
     make
     make test
     make install
