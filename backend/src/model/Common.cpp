@@ -35,12 +35,14 @@ void CreateTablesImpl(const std::string& iPath)
     sql << "INSERT INTO language VALUES (\"EN\", \"english\")";
 
     sql << "CREATE TABLE IF NOT EXISTS " << kTableHouseshare << " ("
+        << Houseshare::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
         << Houseshare::kColName << " TEXT NOT NULL,"
         << Houseshare::kColLanguage << " TEXT,"
         << "FOREIGN KEY (" << Houseshare::kColLanguage << ") REFERENCES language (lang)"
         << ")";
 
     sql << "CREATE TABLE IF NOT EXISTS " << kTableUser << " ("
+        << Houseshare::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
         << User::kColLogin << " TEXT NOT NULL UNIQUE,"
         << User::kColPasswordHash << " TEXT NOT NULL,"
         << User::kColFirstname << " TEXT NOT NULL,"
@@ -53,6 +55,7 @@ void CreateTablesImpl(const std::string& iPath)
         << ")";
 
     sql << "CREATE TABLE IF NOT EXISTS " << kTableExpense << " ("
+        << Houseshare::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
         << Expense::kColUserId << " INTEGER,"
         << Expense::kColHouseshareId << " INTEGER,"
         << Expense::kColDate << " TEXT NOT NULL,"
@@ -66,7 +69,7 @@ void CreateTablesImpl(const std::string& iPath)
         << ")";
 
     sql << "CREATE TABLE IF NOT EXISTS tag ("
-        << "id INTEGER PRIMARY KEY,"
+        << "id INTEGER PRIMARY KEY AUTOINCREMENT,"
         << "name TEXT NOT NULL,"
         << "lang TEXT NOt NULL,"
         << "FOREIGN KEY (lang) REFERENCES language(lang)"
@@ -75,7 +78,7 @@ void CreateTablesImpl(const std::string& iPath)
     sql << "CREATE TABLE IF NOT EXISTS expense_tag ("
         << "expense_id INTEGER,"
         << "tag_id INTEGER,"
-        << "FOREIGN KEY (expense_id) REFERENCES " << kTableExpense << "(" << kColRowId << "),"
+        << "FOREIGN KEY (expense_id) REFERENCES " << kTableExpense << "(" << Expense::kColId << "),"
         << "FOREIGN KEY (tag_id) REFERENCES tag(id)"
         << ")";
 }

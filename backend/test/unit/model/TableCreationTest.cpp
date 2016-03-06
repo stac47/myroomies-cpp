@@ -18,7 +18,6 @@
 using myroomies::model::kTableHouseshare;
 using myroomies::model::kTableUser;
 using myroomies::model::kTableExpense;
-using myroomies::model::kColRowId;
 using myroomies::model::Houseshare;
 using myroomies::model::User;
 using myroomies::model::Expense;
@@ -121,25 +120,34 @@ BOOST_AUTO_TEST_CASE(TableCreation)
                    % Houseshare::kColName
                    % Houseshare::kColLanguage);
     sql << insertHouseshare, use(houseshares[0]);
-    long id;
-    if (!sql.get_last_insert_id(kTableHouseshare, id))
-    {}
+
+    long id = 0;
+    sql.get_last_insert_id(kTableHouseshare, id);
+
     Houseshare houseshare;
-    sql << "SELECT rowid, name, language FROM " << kTableHouseshare << " WHERE rowid=" << id,
-        into(houseshare.id),
-        into(houseshare.name),
-        into(houseshare.language);
-        /* into(houseshare); */
+    sql << "SELECT id, name, language FROM " << kTableHouseshare << " WHERE id=" << id,
+        /* into(houseshare.id), */
+        /* into(houseshare.name), */
+        /* into(houseshare.language); */
+        into(houseshare);
 
     BOOST_CHECK(!houseshare.name.empty());
     BOOST_CHECK_EQUAL(1u, houseshare.id);
+    BOOST_CHECK_EQUAL(static_cast<Key_t>(id), houseshare.id);
     BOOST_CHECK_EQUAL(houseshares[0].name, houseshare.name);
     BOOST_CHECK_EQUAL(houseshares[0].language, houseshare.language);
 
     auto users = BuildUsers(2u, houseshare.id);
     for (User u : users)
     {
-        sql << "INSERT INTO " << kTableUser << " VALUES ("
+        sql << "INSERT INTO " << kTableUser << "("
+            << User::kColLogin << ","
+            << User::kColPasswordHash << ","
+            << User::kColFirstname << ","
+            << User::kColLastname << ","
+            << User::kColDateOfBirth << ","
+            << User::kColEmail << ","
+            << User::kColHouseshareId << ") VALUES ("
             << ":login, :pass, :fn, :ln, :dob, :email, :hid)",
             use(u.login, "login"),
             use(u.passwordHash, "pass"),

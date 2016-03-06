@@ -7,7 +7,7 @@
 namespace myroomies {
 namespace model {
 
-const std::string Houseshare::kColId = "rowid";
+const std::string Houseshare::kColId = "id";
 const std::string Houseshare::kColName = "name";
 const std::string Houseshare::kColLanguage = "language";
 
