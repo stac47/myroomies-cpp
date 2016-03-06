@@ -125,7 +125,7 @@ int main(int argc, const char* argv[])
     Resource<MoneyHandler> moneyResource(serviceRegistry, true);
     ws.register_resource("/money", &moneyResource, true);
     Resource<UserHandler> userResource(serviceRegistry, true);
-    ws.register_resource("/user", &userResource, true);
+    ws.register_resource("/users", &userResource, true);
     MYROOMIES_LOG_INFO("Resources registered");
     MYROOMIES_LOG_INFO("Server up and running");
 

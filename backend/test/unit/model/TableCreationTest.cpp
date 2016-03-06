@@ -126,10 +126,10 @@ BOOST_AUTO_TEST_CASE(TableCreation)
     {}
     Houseshare houseshare;
     sql << "SELECT rowid, name, language FROM " << kTableHouseshare << " WHERE rowid=" << id,
-        /* into(houseshare.id), */
-        /* into(houseshare.name), */
-        /* into(houseshare.language); */
-        into(houseshare);
+        into(houseshare.id),
+        into(houseshare.name),
+        into(houseshare.language);
+        /* into(houseshare); */
 
     BOOST_CHECK(!houseshare.name.empty());
     BOOST_CHECK_EQUAL(1u, houseshare.id);

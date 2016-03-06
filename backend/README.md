@@ -23,7 +23,7 @@ add/remove users.
 
 #### Retrieve
 
-##### GET <root-uri>/user
+##### GET <root-uri>/users
 
 Retrieve the list of the users belonging to the logged user's houseshare. If the
 logged user is 'admin', retrieve all the registered users.
@@ -51,7 +51,7 @@ Reply example:
         "houseshareId": 1
     }]
 
-##### GET <root-uri>/user/me
+##### GET <root-uri>/users/me
 
 Retrieve the current logged user profile. This is generally the first message
 sent by a GUI to myroomies server.
@@ -72,7 +72,7 @@ Reply example:
         "houseshareId": 1
     }
 
-##### GET <root-uri>/user/<user-id>
+##### GET <root-uri>/users/<user-id>
 
 Retrieve <user-id>'s profile information.
 
@@ -96,7 +96,7 @@ Reply example:
 
 #### Create
 
-##### POST <root-uri>/user
+##### POST <root-uri>/users
 
 Create a user. Only 'admin' can perform this action otherwise an error __403__
 is returned.
@@ -131,7 +131,7 @@ Reply example:
 
 #### Delete
 
-##### DELETE <root-uri>/user
+##### DELETE <root-uri>/users/<user-id>
 
 Delete a user. Only 'admin' can perform this action otherwise an error __403__
 is returned.

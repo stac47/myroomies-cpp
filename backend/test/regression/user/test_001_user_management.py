@@ -41,7 +41,7 @@ class UserManagementOperations(unittest.TestCase):
         add_authorization_header(headers,
                                  self.roomies[0].login,
                                  self.roomies[0].password)
-        status, data = self.client.request('GET', '/user', headers=headers)
+        status, data = self.client.request('GET', '/users', headers=headers)
         self.assertEqual(200, status)
         users_list = \
             json.loads(data, object_hook=User.from_json)
@@ -55,7 +55,7 @@ class UserManagementOperations(unittest.TestCase):
                                  self.roomies[0].login,
                                  self.roomies[0].password)
         status, data =\
-            self.client.request('GET', '/user/me', headers=headers)
+            self.client.request('GET', '/users/me', headers=headers)
         self.assertEqual(200, status)
         logged_user = \
             json.loads(data , object_hook=User.from_json)

@@ -88,7 +88,7 @@ def create_houseshare(roomies_nb):
         user_str = json.dumps(u, cls=models.UserEncoder)
         headers = {}
         tools.add_admin_authorization_header(headers)
-        status, data = client.request('POST', '/user', user_str, headers=headers)
+        status, data = client.request('POST', '/users', user_str, headers=headers)
         u = json.loads(data, object_hook=models.User.from_json)
         u.password = password
         roomies.append(u)
