@@ -1,6 +1,5 @@
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
@@ -15,6 +14,8 @@
 #include <myroomies/model/User.h>
 #include <myroomies/model/Expense.h>
 
+#include "ModelTools.h"
+
 using myroomies::model::kTableHouseshare;
 using myroomies::model::kTableUser;
 using myroomies::model::kTableExpense;
@@ -22,85 +23,15 @@ using myroomies::model::Houseshare;
 using myroomies::model::User;
 using myroomies::model::Expense;
 using myroomies::utils::db::Key_t;
+using myroomies::model::BuildUsers;
+using myroomies::model::BuildHouseshares;
 
 using soci::row;
+using soci::statement;
 using soci::use;
 using soci::into;
 using soci::rowset;
 using soci::session;
-
-namespace {
-
-class BuildCompositeStringHelper
-{
-public:
-    std::string operator()()
-    {
-        return "";
-    }
-
-    template<typename T, typename ... Args>
-    std::string operator()(T&& s, Args&&... args)
-    {
-        os_ << std::forward<T>(s);
-        (*this)(std::forward<Args>(args)...);
-        return os_.str();
-    }
-
-private:
-    std::ostringstream os_;
-};
-
-template<typename T, typename ... Args>
-std::string BuildCompositeString(T&& s, Args&&... args)
-{
-    return BuildCompositeStringHelper()(std::forward<T>(s), std::forward<Args>(args)...);
-}
-
-std::vector<Houseshare> BuildHouseshares(unsigned int iNumber)
-{
-    if (iNumber < 1)
-    {
-        iNumber = 1;
-    }
-    std::vector<Houseshare> ret;
-    for (unsigned int i=0; i<iNumber; ++i)
-    {
-        Houseshare h;
-        h.name = BuildCompositeString("Houseshare name", i);
-        h.language = i % 2 == 0 ? "FR" : "EN";
-        ret.push_back(h);
-    }
-    return ret;
-}
-
-std::vector<User> BuildUsers(unsigned int iNumber, Key_t iHouseshareId)
-{
-    if (iNumber < 1)
-    {
-        iNumber = 1;
-    }
-    std::vector<User> ret;
-    auto compositeString =
-        [iHouseshareId] (const std::string& s, unsigned int i)
-        {return BuildCompositeString(s, iHouseshareId, i);};
-    for (unsigned int i=0; i<iNumber; ++i)
-    {
-        User u;
-        u.login = compositeString("login", i);
-        u.passwordHash = compositeString("pass", i);
-        u.firstname = compositeString("firstname", i);
-        u.lastname = compositeString("lastname", i);
-        u.dateOfBirth = boost::gregorian::date(2002 + i, 1, 12);
-        u.email = compositeString("email", i);
-        u.houseshareId = iHouseshareId;
-        ret.push_back(u);
-    }
-    return ret;
-}
-
-
-} /* namespace  */
 
 BOOST_AUTO_TEST_SUITE(ModelTest)
 
@@ -123,39 +54,42 @@ BOOST_AUTO_TEST_CASE(TableCreation)
 
     long id = 0;
     sql.get_last_insert_id(kTableHouseshare, id);
+    BOOST_CHECK_EQUAL(1L, id);
 
     Houseshare houseshare;
-    sql << "SELECT id, name, language FROM " << kTableHouseshare << " WHERE id=" << id,
-        /* into(houseshare.id), */
-        /* into(houseshare.name), */
-        /* into(houseshare.language); */
-        into(houseshare);
+    statement s = (sql.prepare << "SELECT * FROM " << kTableHouseshare << " WHERE id=1",
+                    into(houseshare));
+    s.execute();
 
-    BOOST_CHECK(!houseshare.name.empty());
-    BOOST_CHECK_EQUAL(1u, houseshare.id);
-    BOOST_CHECK_EQUAL(static_cast<Key_t>(id), houseshare.id);
-    BOOST_CHECK_EQUAL(houseshares[0].name, houseshare.name);
-    BOOST_CHECK_EQUAL(houseshares[0].language, houseshare.language);
+    unsigned int count = 0;
+    while (s.fetch())
+    {
+        ++count;
+        BOOST_CHECK(!houseshare.name.empty());
+        BOOST_CHECK_EQUAL(1, houseshare.id);
+        BOOST_CHECK_EQUAL(static_cast<Key_t>(id), houseshare.id);
+        BOOST_CHECK_EQUAL(houseshares[0].name, houseshare.name);
+        BOOST_CHECK_EQUAL(houseshares[0].language, houseshare.language);
+    }
+    BOOST_CHECK_EQUAL(count, 1u);
+
+    std::string insertUser =
+        boost::str(boost::format(
+                    "INSERT INTO %1%(%2%,%3%,%4%,%5%,%6%,%7%,%8%) "
+                    "VALUES(:%2%,:%3%,:%4%,:%5%,:%6%,:%7%,:%8%)")
+                   % kTableUser
+                   % User::kColLogin
+                   % User::kColPasswordHash
+                   % User::kColFirstname
+                   % User::kColLastname
+                   % User::kColDateOfBirth
+                   % User::kColEmail
+                   % User::kColHouseshareId);
 
     auto users = BuildUsers(2u, houseshare.id);
     for (User u : users)
     {
-        sql << "INSERT INTO " << kTableUser << "("
-            << User::kColLogin << ","
-            << User::kColPasswordHash << ","
-            << User::kColFirstname << ","
-            << User::kColLastname << ","
-            << User::kColDateOfBirth << ","
-            << User::kColEmail << ","
-            << User::kColHouseshareId << ") VALUES ("
-            << ":login, :pass, :fn, :ln, :dob, :email, :hid)",
-            use(u.login, "login"),
-            use(u.passwordHash, "pass"),
-            use(u.firstname, "fn"),
-            use(u.lastname, "ln"),
-            use(boost::gregorian::to_simple_string(u.dateOfBirth), "dob"),
-            use(u.email, "email"),
-            use(u.houseshareId, "hid");
+        sql << insertUser, use(u);
     }
     BOOST_TEST_MESSAGE(kTableUser << " is populated with "
                                   << users.size() << " users");

@@ -27,27 +27,25 @@ struct Houseshare
 
 namespace soci {
 
-using myroomies::model::Houseshare;
-
 template<>
-struct type_conversion<Houseshare>
+struct type_conversion<myroomies::model::Houseshare>
 {
-    typedef values base_type;
+    typedef soci::values base_type;
 
     static void from_base(const values& iRow,
                            indicator iInd ,
-                           Houseshare& oHouseshare)
+                           myroomies::model::Houseshare& oHouseshare)
     {
-        oHouseshare.id = iRow.get<uint64_t>(Houseshare::kColId);
-        oHouseshare.name = iRow.get<std::string>(Houseshare::kColName);
-        oHouseshare.language = iRow.get<std::string>(Houseshare::kColLanguage);
+        oHouseshare.id = iRow.get<myroomies::utils::db::Key_t>(myroomies::model::Houseshare::kColId);
+        oHouseshare.name = iRow.get<std::string>(myroomies::model::Houseshare::kColName);
+        oHouseshare.language = iRow.get<std::string>(myroomies::model::Houseshare::kColLanguage);
     }
 
-    static void to_base(const Houseshare& iHouseshare, values& oRow, indicator oInd)
+    static void to_base(const myroomies::model::Houseshare& iHouseshare, values& oRow, indicator oInd)
     {
-        oRow.set(Houseshare::kColId, iHouseshare.id);
-        oRow.set(Houseshare::kColName, iHouseshare.name);
-        oRow.set(Houseshare::kColLanguage, iHouseshare.language);
+        oRow.set(myroomies::model::Houseshare::kColId, iHouseshare.id);
+        oRow.set(myroomies::model::Houseshare::kColName, iHouseshare.name);
+        oRow.set(myroomies::model::Houseshare::kColLanguage, iHouseshare.language);
         oInd = i_ok;
     }
 };

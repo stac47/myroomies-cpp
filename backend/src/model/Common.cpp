@@ -128,22 +128,5 @@ bool CreateTables(const std::string& iPath, bool iCreateIfNotExsits)
     return ret;
 }
 
-const std::string User::kColId = "id";
-const std::string User::kColLogin = "login";
-const std::string User::kColPasswordHash = "password_hash";
-const std::string User::kColFirstname = "firstname";
-const std::string User::kColLastname = "lastname";
-const std::string User::kColDateOfBirth = "date_of_birth";
-const std::string User::kColEmail = "email";
-const std::string User::kColHouseshareId = "houseshare_id";
-
-const std::string Expense::kColId = "id";
-const std::string Expense::kColUserId = "user_id";
-const std::string Expense::kColHouseshareId = "houseshare_id";
-const std::string Expense::kColDate = "date";
-const std::string Expense::kColAmount = "amount";
-const std::string Expense::kColTitle = "title";
-const std::string Expense::kColComment = "comment";
-
 } /* namespace model */
 } /* namespace myroomies */
