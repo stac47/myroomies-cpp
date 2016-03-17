@@ -3,13 +3,13 @@
 #include <vector>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/format.hpp>
 
 #include <soci/soci.h>
 
 #include <myroomies/model/Common.h>
 #include <myroomies/model/User.h>
 #include <myroomies/utils/db/Def.h>
+#include <myroomies/utils/db/SqlTools.h>
 
 #include <myroomies/model/UserDataAccess.h>
 
@@ -22,30 +22,25 @@ using myroomies::model::User;
 
 namespace {
 
-std::string kUserInsert =
-    boost::str(boost::format(
-                "INSERT INTO %1%(%2%,%3%,%4%,%5%,%6%,%7%,%8%) "
-                "VALUES(:%2%,:%3%,:%4%,:%5%,:%6%,:%7%,:%8%)")
-               % myroomies::model::kTableUser
-               % User::kColLogin
-               % User::kColPasswordHash
-               % User::kColFirstname
-               % User::kColLastname
-               % User::kColDateOfBirth
-               % User::kColEmail
-               % User::kColHouseshareId);
+namespace db = myroomies::utils::db;
 
-std::string kUserRetrieveByHouseshare =
-    boost::str(boost::format(
-                "SELECT * FROM %1% WHERE %2%=:%2%")
-               % myroomies::model::kTableUser
-               % User::kColHouseshareId);
+const std::string kUserInsert =
+    db::GenerateInsertTemplate(myroomies::model::kTableUser,
+                               User::kColLogin,
+                               User::kColPasswordHash,
+                               User::kColFirstname,
+                               User::kColLastname,
+                               User::kColDateOfBirth,
+                               User::kColEmail,
+                               User::kColHouseshareId);
 
-std::string kUserRetrieveByLogin =
-    boost::str(boost::format(
-                "SELECT * FROM %1% WHERE %2%=:%2%")
-               % myroomies::model::kTableUser
-               % User::kColLogin);
+const std::string kUserRetrieveByHouseshare =
+    db::GenerateSimpleSelectTemplate(myroomies::model::kTableUser,
+                                      User::kColHouseshareId);
+
+const std::string kUserRetrieveByLogin =
+    db::GenerateSimpleSelectTemplate(myroomies::model::kTableUser,
+                                      User::kColLogin);
 
 } /* namespace  */
 
@@ -59,6 +54,7 @@ UserDataAccess::UserDataAccess(const std::string& iDatabase)
 User UserDataAccess::createUser(const User& iNewUser)
 {
     session sql("sqlite3", getDatabase().c_str());
+    //sql.once << "PRAGMA foreign_keys = ON";
     sql << kUserInsert, use(iNewUser);
     User user = iNewUser;
     long id;

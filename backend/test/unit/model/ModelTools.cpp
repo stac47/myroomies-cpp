@@ -11,6 +11,7 @@
 #include "ModelTools.h"
 
 using myroomies::utils::db::Key_t;
+using myroomies::utils::BuildSimpleCompositeString;
 
 namespace myroomies {
 namespace model {
@@ -25,7 +26,7 @@ std::vector<Houseshare> BuildHouseshares(unsigned int iNumber)
     for (unsigned int i=0; i<iNumber; ++i)
     {
         Houseshare h;
-        h.name = BuildCompositeString("Houseshare name", i);
+        h.name = BuildSimpleCompositeString("Houseshare name", i);
         h.language = i % 2 == 0 ? "FR" : "EN";
         ret.push_back(h);
     }
@@ -41,7 +42,7 @@ std::vector<User> BuildUsers(unsigned int iNumber, Key_t iHouseshareId)
     std::vector<User> ret;
     auto compositeString =
         [iHouseshareId] (const std::string& s, unsigned int i)
-        {return BuildCompositeString(s, iHouseshareId, i);};
+        {return BuildSimpleCompositeString(s, iHouseshareId, i);};
     for (unsigned int i=0; i<iNumber; ++i)
     {
         User u;

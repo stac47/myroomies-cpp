@@ -10,35 +10,10 @@
 #include <myroomies/model/Common.h>
 #include <myroomies/model/Houseshare.h>
 #include <myroomies/model/User.h>
+#include <myroomies/utils/StringUtils.h>
 
 namespace myroomies {
 namespace model {
-
-class BuildCompositeStringHelper
-{
-public:
-    std::string operator()()
-    {
-        return "";
-    }
-
-    template<typename T, typename ... Args>
-    std::string operator()(T&& s, Args&&... args)
-    {
-        os_ << std::forward<T>(s);
-        (*this)(std::forward<Args>(args)...);
-        return os_.str();
-    }
-
-private:
-    std::ostringstream os_;
-};
-
-template<typename T, typename ... Args>
-std::string BuildCompositeString(T&& s, Args&&... args)
-{
-    return BuildCompositeStringHelper()(std::forward<T>(s), std::forward<Args>(args)...);
-}
 
 std::vector<Houseshare> BuildHouseshares(unsigned int iNumber);
 

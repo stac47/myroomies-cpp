@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <ctime>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 
@@ -53,7 +54,8 @@ struct type_conversion<myroomies::model::User>
         oUser.passwordHash = iRow.get<std::string>(myroomies::model::User::kColPasswordHash);
         oUser.firstname = iRow.get<std::string>(myroomies::model::User::kColFirstname);
         oUser.lastname = iRow.get<std::string>(myroomies::model::User::kColLastname);
-        oUser.dateOfBirth = iRow.get<boost::gregorian::date>(myroomies::model::User::kColDateOfBirth);
+        std::string dob = iRow.get<std::string>(myroomies::model::User::kColDateOfBirth);
+        oUser.dateOfBirth = boost::gregorian::from_string(dob);
         oUser.email = iRow.get<std::string>(myroomies::model::User::kColEmail);
         oUser.houseshareId = iRow.get<myroomies::utils::db::Key_t>(myroomies::model::User::kColHouseshareId);
     }
@@ -65,7 +67,8 @@ struct type_conversion<myroomies::model::User>
         oRow.set(myroomies::model::User::kColPasswordHash, iUser.passwordHash);
         oRow.set(myroomies::model::User::kColFirstname, iUser.firstname);
         oRow.set(myroomies::model::User::kColLastname, iUser.lastname);
-        oRow.set(myroomies::model::User::kColDateOfBirth, iUser.dateOfBirth);
+        oRow.set(myroomies::model::User::kColDateOfBirth,
+                 boost::gregorian::to_iso_extended_string(iUser.dateOfBirth));
         oRow.set(myroomies::model::User::kColEmail, iUser.email);
         oRow.set(myroomies::model::User::kColHouseshareId, iUser.houseshareId);
         oInd = i_ok;

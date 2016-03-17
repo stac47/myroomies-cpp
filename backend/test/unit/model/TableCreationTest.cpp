@@ -57,7 +57,8 @@ BOOST_AUTO_TEST_CASE(TableCreation)
     BOOST_CHECK_EQUAL(1L, id);
 
     Houseshare houseshare;
-    statement s = (sql.prepare << "SELECT * FROM " << kTableHouseshare << " WHERE id=1",
+    statement s = (sql.prepare << "SELECT * FROM " << kTableHouseshare << " WHERE id=:id",
+                    use(1, "id"),
                     into(houseshare));
     s.execute();
 
@@ -93,6 +94,8 @@ BOOST_AUTO_TEST_CASE(TableCreation)
     }
     BOOST_TEST_MESSAGE(kTableUser << " is populated with "
                                   << users.size() << " users");
+
+    // Retrieve all the users from the current houseshare
     rowset<row> rs = (sql.prepare
         << "SELECT " << User::kColLogin << ","
                      << User::kColDateOfBirth << " "
@@ -106,6 +109,15 @@ BOOST_AUTO_TEST_CASE(TableCreation)
         BOOST_CHECK_EQUAL(users[userCounter].dateOfBirth, dob);
         userCounter++;
     }
+    BOOST_CHECK_EQUAL(2, userCounter);
+
+    // Retrieve a user by login
+    User user;
+    s = (sql.prepare << "SELECT * FROM " << kTableUser << " WHERE login=:login",
+         use(users[0].login, "login"),
+         into(user));
+    s.execute(true);
+    BOOST_CHECK_EQUAL(users[0].login, user.login);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
