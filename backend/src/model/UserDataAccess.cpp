@@ -6,7 +6,7 @@
 
 #include <soci/soci.h>
 
-#include <myroomies/model/Common.h>
+#include <myroomies/model/DataAccess.h>
 #include <myroomies/model/User.h>
 #include <myroomies/utils/db/Def.h>
 #include <myroomies/utils/db/SqlTools.h>
@@ -47,18 +47,12 @@ const std::string kUserRetrieveByLogin =
 namespace myroomies {
 namespace model {
 
-UserDataAccess::UserDataAccess(const std::string& iDatabase)
-  : DataAccess(iDatabase)
-{}
-
 User UserDataAccess::createUser(const User& iNewUser)
 {
-    session sql("sqlite3", getDatabase().c_str());
-    //sql.once << "PRAGMA foreign_keys = ON";
-    sql << kUserInsert, use(iNewUser);
+    getSession() << kUserInsert, use(iNewUser);
     User user = iNewUser;
     long id;
-    sql.get_last_insert_id(myroomies::model::kTableUser, id);
+    getSession().get_last_insert_id(myroomies::model::kTableUser, id);
     user.id = static_cast<int>(id);
     return user;
 }
@@ -66,10 +60,9 @@ User UserDataAccess::createUser(const User& iNewUser)
 std::vector<User> UserDataAccess::getUsersFromHouseshare(
     myroomies::utils::db::Key_t iHouseshareId)
 {
-    session sql("sqlite3", getDatabase().c_str());
     std::vector<User> result;
     User user;
-    statement st = (sql.prepare << kUserRetrieveByHouseshare,
+    statement st = (getSession().prepare << kUserRetrieveByHouseshare,
                         use(iHouseshareId, User::kColHouseshareId),
                         into(user));
     st.execute();
@@ -82,9 +75,8 @@ std::vector<User> UserDataAccess::getUsersFromHouseshare(
 
 std::unique_ptr<User> UserDataAccess::getUserFromLogin(const std::string& iLogin)
 {
-    session sql("sqlite3", getDatabase().c_str());
     User user;
-    sql << kUserRetrieveByLogin, into(user), use(iLogin);
+    getSession() << kUserRetrieveByLogin, into(user), use(iLogin);
     auto result = std::make_unique<User>(user);
     return std::move(result);
 }

@@ -51,7 +51,7 @@ void CreateTablesImpl(const std::string& iPath)
         << User::kColEmail << " TEXT NOT NULL,"
         << User::kColHouseshareId << " INTEGER,"
         << "FOREIGN KEY (" << User::kColHouseshareId << ") "
-            << "REFERENCES " << kTableHouseshare << " (" << kColRowId << ")"
+            << "REFERENCES " << kTableHouseshare << " (" << Houseshare::kColId << ")"
         << ")";
 
     sql << "CREATE TABLE IF NOT EXISTS " << kTableExpense << " ("
@@ -63,9 +63,9 @@ void CreateTablesImpl(const std::string& iPath)
         << Expense::kColTitle << " TEXT NOT NULL,"
         << Expense::kColComment << " TEXT,"
         << "FOREIGN KEY (" << Expense::kColUserId << ") "
-            << "REFERENCES " << kTableUser << "(" << kColRowId << "),"
+            << "REFERENCES " << kTableUser << "(" << User::kColId << "),"
         << "FOREIGN KEY (" << Expense::kColHouseshareId << ") "
-            << "REFERENCES " << kTableHouseshare << "(" << kColRowId << ")"
+            << "REFERENCES " << kTableHouseshare << "(" << Houseshare::kColId << ")"
         << ")";
 
     sql << "CREATE TABLE IF NOT EXISTS tag ("

@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <myroomies/model/Houseshare.h>
-#include <myroomies/model/Common.h>
+#include <myroomies/model/DataAccess.h>
 #include <myroomies/utils/db/Def.h>
 
 namespace myroomies {
@@ -13,11 +13,8 @@ namespace model {
 class HouseshareDataAccess : public DataAccess
 {
 public:
-    HouseshareDataAccess(const std::string& iDatabase);
-
     // Create
-    Houseshare createHouseshare(const std::string& iName,
-                                const std::string& iLanguage);
+    Houseshare createHouseshare(const Houseshare& iNewHouseshare);
 
     // Retrieve
     std::unique_ptr<Houseshare> getHouseshareById(

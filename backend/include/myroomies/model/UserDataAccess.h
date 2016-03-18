@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <myroomies/model/Common.h>
+#include <myroomies/model/DataAccess.h>
 #include <myroomies/model/User.h>
 #include <myroomies/utils/db/Def.h>
 
@@ -14,8 +14,6 @@ namespace model {
 class UserDataAccess : public DataAccess
 {
 public:
-    UserDataAccess(const std::string& iDatabase);
-
     // Create
     User createUser(const User& iNewUser);
 
