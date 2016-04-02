@@ -6,27 +6,23 @@
 #include <soci/soci.h>
 
 #include <myroomies/model/Common.h>
-#include <myroomies/model/Houseshare.h>
-#include <myroomies/model/Expense.h>
-#include <myroomies/model/User.h>
+#include <myroomies/model/TableDesc.h>
 #include <myroomies/utils/LoggingMacros.h>
 
 using soci::session;
 
-using myroomies::model::kTableHouseshare;
-using myroomies::model::kTableUser;
-using myroomies::model::kTableExpense;
-using myroomies::model::kColRowId;
-
-using myroomies::model::Houseshare;
-using myroomies::model::User;
-using myroomies::model::Expense;
+using myroomies::model::HouseshareTable;
+using myroomies::model::UserTable;
+using myroomies::model::ExpenseTable;
+using myroomies::model::ExpenseTagTable;
+using myroomies::model::ExpenseTagJoinTable;
 
 namespace {
 
 void CreateTablesImpl(const std::string& iPath)
 {
     session sql("sqlite3", iPath);
+
     sql << "CREATE TABLE IF NOT EXISTS language ("
         << "lang TEXT PRIMARY KEY,"
         << "description TEXT NOT NULL)";
@@ -34,52 +30,49 @@ void CreateTablesImpl(const std::string& iPath)
     sql << "INSERT INTO language VALUES (\"FR\", \"french\")";
     sql << "INSERT INTO language VALUES (\"EN\", \"english\")";
 
-    sql << "CREATE TABLE IF NOT EXISTS " << kTableHouseshare << " ("
-        << Houseshare::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
-        << Houseshare::kColName << " TEXT NOT NULL,"
-        << Houseshare::kColLanguage << " TEXT,"
-        << "FOREIGN KEY (" << Houseshare::kColLanguage << ") REFERENCES language (lang)"
+    sql << "CREATE TABLE IF NOT EXISTS " << HouseshareTable::kName << " ("
+        << HouseshareTable::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
+        << HouseshareTable::kColName << " TEXT NOT NULL,"
+        << HouseshareTable::kColLanguage << " TEXT,"
+        << "FOREIGN KEY (" << HouseshareTable::kColLanguage << ") REFERENCES language (lang)"
         << ")";
 
-    sql << "CREATE TABLE IF NOT EXISTS " << kTableUser << " ("
-        << Houseshare::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
-        << User::kColLogin << " TEXT NOT NULL UNIQUE,"
-        << User::kColPasswordHash << " TEXT NOT NULL,"
-        << User::kColFirstname << " TEXT NOT NULL,"
-        << User::kColLastname << " TEXT NOT NULL,"
-        << User::kColDateOfBirth << " TEXT NOT NULL,"
-        << User::kColEmail << " TEXT NOT NULL,"
-        << User::kColHouseshareId << " INTEGER,"
-        << "FOREIGN KEY (" << User::kColHouseshareId << ") "
-            << "REFERENCES " << kTableHouseshare << " (" << Houseshare::kColId << ")"
+    sql << "CREATE TABLE IF NOT EXISTS " << UserTable::kName << " ("
+        << UserTable::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
+        << UserTable::kColLogin << " TEXT NOT NULL UNIQUE,"
+        << UserTable::kColPasswordHash << " TEXT NOT NULL,"
+        << UserTable::kColFirstname << " TEXT NOT NULL,"
+        << UserTable::kColLastname << " TEXT NOT NULL,"
+        << UserTable::kColDateOfBirth << " TEXT NOT NULL,"
+        << UserTable::kColEmail << " TEXT NOT NULL,"
+        << UserTable::kColHouseshareId << " INTEGER,"
+        << "FOREIGN KEY (" << UserTable::kColHouseshareId << ") "
+            << "REFERENCES " << HouseshareTable::kName << " (" << HouseshareTable::kColId << ")"
         << ")";
 
-    sql << "CREATE TABLE IF NOT EXISTS " << kTableExpense << " ("
-        << Houseshare::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
-        << Expense::kColUserId << " INTEGER,"
-        << Expense::kColHouseshareId << " INTEGER,"
-        << Expense::kColDate << " TEXT NOT NULL,"
-        << Expense::kColAmount << " REAL NOT NULL,"
-        << Expense::kColTitle << " TEXT NOT NULL,"
-        << Expense::kColComment << " TEXT,"
-        << "FOREIGN KEY (" << Expense::kColUserId << ") "
-            << "REFERENCES " << kTableUser << "(" << User::kColId << "),"
-        << "FOREIGN KEY (" << Expense::kColHouseshareId << ") "
-            << "REFERENCES " << kTableHouseshare << "(" << Houseshare::kColId << ")"
+    sql << "CREATE TABLE IF NOT EXISTS " << ExpenseTable::kName << " ("
+        << ExpenseTable::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
+        << ExpenseTable::kColUserId << " INTEGER,"
+        << ExpenseTable::kColDate << " TEXT NOT NULL,"
+        << ExpenseTable::kColAmount << " REAL NOT NULL,"
+        << ExpenseTable::kColTitle << " TEXT NOT NULL,"
+        << ExpenseTable::kColComment << " TEXT,"
+        << "FOREIGN KEY (" << ExpenseTable::kColUserId << ") "
+            << "REFERENCES " << UserTable::kName << "(" << UserTable::kColId << ")"
         << ")";
 
-    sql << "CREATE TABLE IF NOT EXISTS tag ("
-        << "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        << "name TEXT NOT NULL,"
-        << "lang TEXT NOt NULL,"
-        << "FOREIGN KEY (lang) REFERENCES language(lang)"
+    sql << "CREATE TABLE IF NOT EXISTS " << ExpenseTagTable::kName << " ("
+        << ExpenseTagTable::kColId << " INTEGER PRIMARY KEY AUTOINCREMENT,"
+        << ExpenseTagTable::kColTag << " TEXT NOT NULL UNIQUE"
         << ")";
 
-    sql << "CREATE TABLE IF NOT EXISTS expense_tag ("
-        << "expense_id INTEGER,"
-        << "tag_id INTEGER,"
-        << "FOREIGN KEY (expense_id) REFERENCES " << kTableExpense << "(" << Expense::kColId << "),"
-        << "FOREIGN KEY (tag_id) REFERENCES tag(id)"
+    sql << "CREATE TABLE IF NOT EXISTS " << ExpenseTagJoinTable::kName << " ("
+        << ExpenseTagJoinTable::kColExpenseId << " INTEGER,"
+        << ExpenseTagJoinTable::kColExpenseTagId << " INTEGER,"
+        << "FOREIGN KEY (" << ExpenseTagJoinTable::kColExpenseId << ") "
+            << "REFERENCES " << ExpenseTable::kName << "(" << ExpenseTable::kColId << ") ON DELETE CASCADE,"
+        << "FOREIGN KEY (" << ExpenseTagJoinTable::kColExpenseTagId << ") "
+            << "REFERENCES " << ExpenseTagTable::kName << "(" << ExpenseTagTable::kColId << ")"
         << ")";
 }
 

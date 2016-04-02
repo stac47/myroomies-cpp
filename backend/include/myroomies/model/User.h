@@ -8,23 +8,14 @@
 #include <soci/soci.h>
 
 #include <myroomies/utils/db/Def.h>
+#include <myroomies/model/TableDesc.h>
 
 namespace myroomies {
 namespace model {
 
-const std::string kTableUser = "user";
 
 struct User
 {
-    static const std::string kColId;
-    static const std::string kColLogin;
-    static const std::string kColPasswordHash;
-    static const std::string kColFirstname;
-    static const std::string kColLastname;
-    static const std::string kColDateOfBirth;
-    static const std::string kColEmail;
-    static const std::string kColHouseshareId;
-
     myroomies::utils::db::Key_t id;
     std::string login;
     std::string passwordHash;
@@ -49,28 +40,28 @@ struct type_conversion<myroomies::model::User>
                            indicator iInd ,
                            myroomies::model::User& oUser)
     {
-        oUser.id = iRow.get<myroomies::utils::db::Key_t>(myroomies::model::User::kColId);
-        oUser.login = iRow.get<std::string>(myroomies::model::User::kColLogin);
-        oUser.passwordHash = iRow.get<std::string>(myroomies::model::User::kColPasswordHash);
-        oUser.firstname = iRow.get<std::string>(myroomies::model::User::kColFirstname);
-        oUser.lastname = iRow.get<std::string>(myroomies::model::User::kColLastname);
-        std::string dob = iRow.get<std::string>(myroomies::model::User::kColDateOfBirth);
+        oUser.id = iRow.get<myroomies::utils::db::Key_t>(myroomies::model::UserTable::kColId);
+        oUser.login = iRow.get<std::string>(myroomies::model::UserTable::kColLogin);
+        oUser.passwordHash = iRow.get<std::string>(myroomies::model::UserTable::kColPasswordHash);
+        oUser.firstname = iRow.get<std::string>(myroomies::model::UserTable::kColFirstname);
+        oUser.lastname = iRow.get<std::string>(myroomies::model::UserTable::kColLastname);
+        std::string dob = iRow.get<std::string>(myroomies::model::UserTable::kColDateOfBirth);
         oUser.dateOfBirth = boost::gregorian::from_string(dob);
-        oUser.email = iRow.get<std::string>(myroomies::model::User::kColEmail);
-        oUser.houseshareId = iRow.get<myroomies::utils::db::Key_t>(myroomies::model::User::kColHouseshareId);
+        oUser.email = iRow.get<std::string>(myroomies::model::UserTable::kColEmail);
+        oUser.houseshareId = iRow.get<myroomies::utils::db::Key_t>(myroomies::model::UserTable::kColHouseshareId);
     }
 
     static void to_base(const myroomies::model::User& iUser, values& oRow, indicator oInd)
     {
-        oRow.set(myroomies::model::User::kColId, iUser.id);
-        oRow.set(myroomies::model::User::kColLogin, iUser.login);
-        oRow.set(myroomies::model::User::kColPasswordHash, iUser.passwordHash);
-        oRow.set(myroomies::model::User::kColFirstname, iUser.firstname);
-        oRow.set(myroomies::model::User::kColLastname, iUser.lastname);
-        oRow.set(myroomies::model::User::kColDateOfBirth,
+        oRow.set(myroomies::model::UserTable::kColId, iUser.id);
+        oRow.set(myroomies::model::UserTable::kColLogin, iUser.login);
+        oRow.set(myroomies::model::UserTable::kColPasswordHash, iUser.passwordHash);
+        oRow.set(myroomies::model::UserTable::kColFirstname, iUser.firstname);
+        oRow.set(myroomies::model::UserTable::kColLastname, iUser.lastname);
+        oRow.set(myroomies::model::UserTable::kColDateOfBirth,
                  boost::gregorian::to_iso_extended_string(iUser.dateOfBirth));
-        oRow.set(myroomies::model::User::kColEmail, iUser.email);
-        oRow.set(myroomies::model::User::kColHouseshareId, iUser.houseshareId);
+        oRow.set(myroomies::model::UserTable::kColEmail, iUser.email);
+        oRow.set(myroomies::model::UserTable::kColHouseshareId, iUser.houseshareId);
         oInd = i_ok;
     }
 };

@@ -16,6 +16,7 @@ compile_tests = GetOption('compile_tests')
 # myroomies server source files
 src_files = Glob('src/resources/*.cpp')
 src_files += Glob('src/utils/*.cpp')
+src_files += Glob('src/utils/db/*.cpp')
 src_files += Glob('src/services/*.cpp')
 src_files += Glob('src/bom/*.cpp')
 src_files += Glob('src/model/*.cpp')

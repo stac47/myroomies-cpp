@@ -50,7 +50,8 @@ BOOST_FIXTURE_TEST_CASE(UserDataAccessTest, ModelFixture)
     // Retrieve all the users from the same houseshare
     auto retUsers = dao.getUsersFromHouseshare(1);
     BOOST_CHECK_EQUAL(2u, retUsers.size());
-
+    BOOST_CHECK_EQUAL(retUsers[0].login, users[0].login);
+    BOOST_CHECK_EQUAL(retUsers[1].login, users[1].login);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

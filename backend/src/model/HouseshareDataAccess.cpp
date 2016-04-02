@@ -1,11 +1,10 @@
 #include <string>
 #include <memory>
 
-#include <boost/format.hpp>
-
 #include <soci/soci.h>
 
 #include <myroomies/model/Houseshare.h>
+#include <myroomies/model/TableDesc.h>
 #include <myroomies/model/Common.h>
 #include <myroomies/utils/db/Def.h>
 #include <myroomies/utils/db/SqlTools.h>
@@ -18,19 +17,20 @@ using soci::use;
 using soci::into;
 
 using myroomies::model::Houseshare;
+using myroomies::model::HouseshareTable;
 
 namespace {
 
 namespace db = myroomies::utils::db;
 
 const std::string kHouseshareInsert =
-    db::GenerateInsertTemplate(myroomies::model::kTableHouseshare,
-                               Houseshare::kColName,
-                               Houseshare::kColLanguage);
+    db::GenerateInsertTemplate(HouseshareTable::kName,
+                               HouseshareTable::kColName,
+                               HouseshareTable::kColLanguage);
 
 const std::string kHouseshareRetrieveById =
-    db::GenerateSimpleSelectTemplate(myroomies::model::kTableHouseshare,
-                                     Houseshare::kColId);
+    db::GenerateSimpleSelectTemplate(HouseshareTable::kName,
+                                     HouseshareTable::kColId);
 
 } /* namespace  */
 
@@ -42,7 +42,7 @@ Houseshare HouseshareDataAccess::createHouseshare(const Houseshare& iNewHousesha
     getSession() << kHouseshareInsert, use(iNewHouseshare);
     Houseshare houseshare = iNewHouseshare;
     long id;
-    getSession().get_last_insert_id(myroomies::model::kTableHouseshare, id);
+    getSession().get_last_insert_id(HouseshareTable::kName, id);
     houseshare.id = static_cast<int>(id);
     return houseshare;
 }

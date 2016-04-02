@@ -31,4 +31,3 @@ BOOST_FIXTURE_TEST_CASE(HouseshareDataAccessTest, ModelFixture)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

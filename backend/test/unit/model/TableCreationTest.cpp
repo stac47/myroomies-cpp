@@ -16,12 +16,12 @@
 
 #include "ModelTools.h"
 
-using myroomies::model::kTableHouseshare;
-using myroomies::model::kTableUser;
-using myroomies::model::kTableExpense;
 using myroomies::model::Houseshare;
 using myroomies::model::User;
 using myroomies::model::Expense;
+using myroomies::model::HouseshareTable;
+using myroomies::model::UserTable;
+using myroomies::model::ExpenseTable;
 using myroomies::utils::db::Key_t;
 using myroomies::model::BuildUsers;
 using myroomies::model::BuildHouseshares;
@@ -47,17 +47,17 @@ BOOST_AUTO_TEST_CASE(TableCreation)
 
     std::string insertHouseshare =
         boost::str(boost::format("INSERT INTO %1%(%2%, %3%) VALUES(:%2%,:%3%)")
-                   % kTableHouseshare
-                   % Houseshare::kColName
-                   % Houseshare::kColLanguage);
+                   % HouseshareTable::kName
+                   % HouseshareTable::kColName
+                   % HouseshareTable::kColLanguage);
     sql << insertHouseshare, use(houseshares[0]);
 
     long id = 0;
-    sql.get_last_insert_id(kTableHouseshare, id);
+    sql.get_last_insert_id(HouseshareTable::kName, id);
     BOOST_CHECK_EQUAL(1L, id);
 
     Houseshare houseshare;
-    statement s = (sql.prepare << "SELECT * FROM " << kTableHouseshare << " WHERE id=:id",
+    statement s = (sql.prepare << "SELECT * FROM " << HouseshareTable::kName << " WHERE id=:id",
                     use(1, "id"),
                     into(houseshare));
     s.execute();
@@ -78,29 +78,29 @@ BOOST_AUTO_TEST_CASE(TableCreation)
         boost::str(boost::format(
                     "INSERT INTO %1%(%2%,%3%,%4%,%5%,%6%,%7%,%8%) "
                     "VALUES(:%2%,:%3%,:%4%,:%5%,:%6%,:%7%,:%8%)")
-                   % kTableUser
-                   % User::kColLogin
-                   % User::kColPasswordHash
-                   % User::kColFirstname
-                   % User::kColLastname
-                   % User::kColDateOfBirth
-                   % User::kColEmail
-                   % User::kColHouseshareId);
+                   % UserTable::kName
+                   % UserTable::kColLogin
+                   % UserTable::kColPasswordHash
+                   % UserTable::kColFirstname
+                   % UserTable::kColLastname
+                   % UserTable::kColDateOfBirth
+                   % UserTable::kColEmail
+                   % UserTable::kColHouseshareId);
 
     auto users = BuildUsers(2u, houseshare.id);
     for (User u : users)
     {
         sql << insertUser, use(u);
     }
-    BOOST_TEST_MESSAGE(kTableUser << " is populated with "
+    BOOST_TEST_MESSAGE(UserTable::kName << " is populated with "
                                   << users.size() << " users");
 
     // Retrieve all the users from the current houseshare
     rowset<row> rs = (sql.prepare
-        << "SELECT " << User::kColLogin << ","
-                     << User::kColDateOfBirth << " "
-        << "FROM " << kTableUser << " "
-        << "WHERE " << User::kColHouseshareId << "=" << houseshare.id);
+        << "SELECT " << UserTable::kColLogin << ","
+                     << UserTable::kColDateOfBirth << " "
+        << "FROM " << UserTable::kName<< " "
+        << "WHERE " << UserTable::kColHouseshareId << "=" << houseshare.id);
     int userCounter = 0;
     for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(TableCreation)
 
     // Retrieve a user by login
     User user;
-    s = (sql.prepare << "SELECT * FROM " << kTableUser << " WHERE login=:login",
+    s = (sql.prepare << "SELECT * FROM " << UserTable::kName << " WHERE login=:login",
          use(users[0].login, "login"),
          into(user));
     s.execute(true);

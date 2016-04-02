@@ -63,7 +63,6 @@ Expense MoneyService::addExpense(
     Expense createdExpense;
     createdExpense.id = GetExpenses().size() + 1;
     createdExpense.userId = iLoggedUser->id;
-    createdExpense.houseshareId = iLoggedUser->houseshareId;
     createdExpense.date = iExpense.date;
     createdExpense.amount = iExpense.amount;
     createdExpense.title = iExpense.title;
@@ -71,8 +70,7 @@ Expense MoneyService::addExpense(
     createdExpense.tags = iExpense.tags;
     GetExpenses().push_back(createdExpense);
     MYROOMIES_LOG_INFO("User [id=" << iLoggedUser->id << "] "
-                       << "created expense [id=" << createdExpense.id << "] "
-                       << "for houseshare [id=" << iLoggedUser->houseshareId << "]");
+                       << "created expense [id=" << createdExpense.id << "] ");
     return createdExpense;
 }
 

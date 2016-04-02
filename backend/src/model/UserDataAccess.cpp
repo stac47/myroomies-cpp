@@ -8,6 +8,7 @@
 
 #include <myroomies/model/DataAccess.h>
 #include <myroomies/model/User.h>
+#include <myroomies/model/TableDesc.h>
 #include <myroomies/utils/db/Def.h>
 #include <myroomies/utils/db/SqlTools.h>
 
@@ -19,28 +20,29 @@ using soci::use;
 using soci::into;
 
 using myroomies::model::User;
+using myroomies::model::UserTable;
 
 namespace {
 
 namespace db = myroomies::utils::db;
 
 const std::string kUserInsert =
-    db::GenerateInsertTemplate(myroomies::model::kTableUser,
-                               User::kColLogin,
-                               User::kColPasswordHash,
-                               User::kColFirstname,
-                               User::kColLastname,
-                               User::kColDateOfBirth,
-                               User::kColEmail,
-                               User::kColHouseshareId);
+    db::GenerateInsertTemplate(UserTable::kName,
+                               UserTable::kColLogin,
+                               UserTable::kColPasswordHash,
+                               UserTable::kColFirstname,
+                               UserTable::kColLastname,
+                               UserTable::kColDateOfBirth,
+                               UserTable::kColEmail,
+                               UserTable::kColHouseshareId);
 
 const std::string kUserRetrieveByHouseshare =
-    db::GenerateSimpleSelectTemplate(myroomies::model::kTableUser,
-                                      User::kColHouseshareId);
+    db::GenerateSimpleSelectTemplate(UserTable::kName,
+                                     UserTable::kColHouseshareId);
 
 const std::string kUserRetrieveByLogin =
-    db::GenerateSimpleSelectTemplate(myroomies::model::kTableUser,
-                                      User::kColLogin);
+    db::GenerateSimpleSelectTemplate(UserTable::kName,
+                                     UserTable::kColLogin);
 
 } /* namespace  */
 
@@ -52,7 +54,7 @@ User UserDataAccess::createUser(const User& iNewUser)
     getSession() << kUserInsert, use(iNewUser);
     User user = iNewUser;
     long id;
-    getSession().get_last_insert_id(myroomies::model::kTableUser, id);
+    getSession().get_last_insert_id(UserTable::kName, id);
     user.id = static_cast<int>(id);
     return user;
 }
@@ -63,7 +65,7 @@ std::vector<User> UserDataAccess::getUsersFromHouseshare(
     std::vector<User> result;
     User user;
     statement st = (getSession().prepare << kUserRetrieveByHouseshare,
-                        use(iHouseshareId, User::kColHouseshareId),
+                        use(iHouseshareId, UserTable::kColHouseshareId),
                         into(user));
     st.execute();
     while (st.fetch())

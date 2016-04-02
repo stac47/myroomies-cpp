@@ -18,7 +18,6 @@ struct Expense final : public myroomies::model::Expense
     {
         ar & BOOST_SERIALIZATION_NVP(id)
            & BOOST_SERIALIZATION_NVP(userId)
-           & BOOST_SERIALIZATION_NVP(houseshareId)
            & BOOST_SERIALIZATION_NVP(date)
            & BOOST_SERIALIZATION_NVP(amount)
            & BOOST_SERIALIZATION_NVP(title)
