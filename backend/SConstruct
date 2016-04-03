@@ -37,7 +37,8 @@ libs = ['pthread',
         'boost_timer',
         'boost_chrono',
         'boost_serialization',
-        'httpserver'
+        'httpserver',
+        'scrypt'
         ]
 
 cxx_flags = ['--std=c++14',

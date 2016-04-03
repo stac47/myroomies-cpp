@@ -23,6 +23,7 @@ starting working on this project.
 * libsqlite3
 * rapidjson
 * soci
+* libscrypt
 
 ### Procedure
 
@@ -35,6 +36,10 @@ First thing to do is to install the tools:
 #### microhttpd
 
     sudo apt-get install libmicrohttpd-dev
+
+#### libscrypt
+
+    sudo apt-get install libscrypt-dev
 
 #### httpserver
 
