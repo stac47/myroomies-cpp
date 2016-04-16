@@ -5,9 +5,15 @@
 
 #include <myroomies/utils/Configuration.h>
 #include <myroomies/utils/LoggingMacros.h>
+#include <myroomies/utils/PasswordHasher.h>
 #include <myroomies/utils/db/Def.h>
 
 #include <myroomies/bom/User.h>
+
+#include <myroomies/model/User.h>
+#include <myroomies/model/UserDataAccess.h>
+#include <myroomies/model/Houseshare.h>
+#include <myroomies/model/HouseshareDataAccess.h>
 
 #include <myroomies/services/ServiceInterface.h>
 #include <myroomies/services/ServiceRegistry.h>
@@ -16,29 +22,41 @@
 
 using myroomies::utils::Configuration;
 using myroomies::utils::db::Key_t;
-
-using myroomies::bom::User;
 using myroomies::bom::UserNew;
+using myroomies::bom::User;
+using myroomies::model::UserDataAccess;
+using myroomies::model::Houseshare;
+using myroomies::model::HouseshareDataAccess;
 
 namespace {
 
-std::vector<User>& GetAllUsers()
+myroomies::model::User ToModel(const myroomies::bom::User& iUser)
 {
-    static std::vector<User> Users;
-    if (Users.empty())
-    {
-        User admin;
-        admin.id = 0;
-        admin.login = "admin";
-        admin.passwordHash = "PASSWORDHASH"; // TODO calculate a hashcode
-        admin.houseshareId = 0;
-        Users.push_back(admin);
-    }
-    return Users;
+    myroomies::model::User user;
+    user.id = iUser.id;
+    user.login = iUser.login;
+    user.firstname = iUser.firstname;
+    user.lastname = iUser.lastname;
+    user.dateOfBirth = iUser.dateOfBirth;
+    user.email = iUser.email;
+    user.houseshareId = iUser.houseshareId;
+    return user;
 }
 
-} /* namespace */
+User FromModel(const myroomies::model::User& iUser)
+{
+    User user;
+    user.id = iUser.id;
+    user.login = iUser.login;
+    user.firstname = iUser.firstname;
+    user.lastname = iUser.lastname;
+    user.dateOfBirth = iUser.dateOfBirth;
+    user.email = iUser.email;
+    user.houseshareId = iUser.houseshareId;
+    return user;
+}
 
+} /* namespace  */
 namespace myroomies {
 namespace services {
 
@@ -53,51 +71,100 @@ UserService::UserService()
   : ServiceInterface("Users")
 {}
 
+User UserService::createAdmin(const std::string& iPassword)
+{
+    // A user must be part of a houseshare. Let us create a fake houseshare for
+    // the admin
+    Houseshare houseshare;
+    houseshare.name = "admin-houseshare";
+    houseshare.language = "EN";
+    HouseshareDataAccess houseshareDao;
+    Key_t id = houseshareDao.createHouseshare(houseshare).id;
+
+    // Create the admin user
+    myroomies::model::User admin;
+    admin.login = "admin";
+    admin.houseshareId = id;
+    admin.dateOfBirth = boost::gregorian::date(1981, 6, 19);
+    myroomies::utils::PasswordHasher hasher;
+    hasher.hash(iPassword, admin.passwordHash);
+    UserDataAccess userDao;
+    return FromModel(userDao.createUser(admin));
+}
+
 User UserService::createUser(Key_t iLoggedUser, const UserNew& iUser)
 {
-    if (iLoggedUser != 0)
+    if (iLoggedUser != 1)
     {
         MYROOMIES_LOG_WARN("User [id=" << iLoggedUser << "] "
                            << "tried to create a new user "
                            << "[login=" << iUser.login << "]");
         throw myroomies::services::ForbiddenResourceException();
     }
-    User u;
-    u.id = GetAllUsers().size() + 1;
-    u.login = iUser.login;
-    u.passwordHash = iUser.password; // TODO calculate a hashcode
-    u.firstname = iUser.firstname;
-    u.lastname = iUser.lastname;
-    u.dateOfBirth = iUser.dateOfBirth;
-    u.email = iUser.email;
-    u.houseshareId = iUser.houseshareId;
-    GetAllUsers().push_back(u);
+    myroomies::model::User u = ToModel(iUser);
 
-    return u;
+    myroomies::utils::PasswordHasher hasher;
+    hasher.hash(iUser.password, u.passwordHash);
+
+    UserDataAccess dao;
+    auto createdUser = dao.createUser(u);
+    User result = FromModel(createdUser);
+    MYROOMIES_LOG_INFO("User " << result.login << "[id=" << result.id << "]"
+                       << " has been created.");
+    return result;
 }
 
 std::vector<User> UserService::getUsersFromHouseshare(Key_t iHouseshareId) const
 {
     std::vector<User> v;
-    for (const User& u : GetAllUsers())
+    UserDataAccess dao;
+    for (auto user : dao.getUsersFromHouseshare(iHouseshareId))
     {
-        if (u.houseshareId == iHouseshareId)
-        {
-            v.push_back(u);
-        }
+        const User u = FromModel(user);
+        v.push_back(u);
     }
+
     return v;
 }
 
 User UserService::getUserByLogin(const std::string& iLogin)
 {
-    auto it = std::find_if(GetAllUsers().begin(), GetAllUsers().end(),
-            [&iLogin] (const User& u) {return u.login == iLogin;});
-    if (it == std::end(GetAllUsers()))
+    UserDataAccess dao;
+    auto userPtr = dao.getUserFromLogin(iLogin);
+    User u;
+    if (userPtr)
+    {
+        u = FromModel(*userPtr);
+    }
+    else
     {
         throw ResourceNotFoundException();
     }
-    return *it;
+    return u;
+}
+
+std::unique_ptr<const User> UserService::login(
+    const std::string& iLogin,
+    const std::string& iPassword)
+{
+    UserDataAccess dao;
+    auto userPtr = dao.getUserFromLogin(iLogin);
+    std::unique_ptr<const User> ret;
+    if (userPtr)
+    {
+        myroomies::utils::PasswordHasher hasher;
+        if (hasher.check(iPassword, userPtr->passwordHash))
+        {
+            ret = std::make_unique<const User>(FromModel(*userPtr));
+        }
+    }
+    else
+    {
+        MYROOMIES_LOG_WARN("User provided wrong credentials ["
+                           << iLogin << ":" << iPassword << "]");
+    }
+    MYROOMIES_LOG_INFO("User [id=" << ret->id << "] logged in  MyRoomies");
+    return ret;
 }
 
 } /* namespace services */

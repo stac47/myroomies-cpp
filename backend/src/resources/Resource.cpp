@@ -6,7 +6,7 @@
 #include <myroomies/bom/User.h>
 
 #include <myroomies/services/ServiceRegistry.h>
-#include <myroomies/services/LoginService.h>
+#include <myroomies/services/UserService.h>
 
 #include <myroomies/resources/Resource.h>
 
@@ -15,7 +15,7 @@ using httpserver::http_response_builder;
 using httpserver::http_request;
 using httpserver::http::http_utils;
 
-using myroomies::services::LoginService;
+using myroomies::services::UserService;
 
 namespace myroomies {
 namespace resources {
@@ -48,7 +48,7 @@ bool ResourceBase::performSecurity(const httpserver::http_request& iRequest,
     iRequest.get_pass(password);
     if (!user.empty() && !password.empty())
     {
-        auto userPtr = getServiceRegistry()->get<LoginService>()->login(user, password);
+        auto userPtr = getServiceRegistry()->get<UserService>()->login(user, password);
         if (userPtr)
         {
             oLoggedUser = *userPtr;

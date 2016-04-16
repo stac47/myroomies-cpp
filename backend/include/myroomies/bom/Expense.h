@@ -3,16 +3,24 @@
 #include <string>
 
 #include <boost/serialization/nvp.hpp>
-
-#include <myroomies/model/Expense.h>
-
+#include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/gregorian/greg_serialize.hpp>
+
+#include <myroomies/utils/db/Def.h>
 
 namespace myroomies {
 namespace bom {
 
-struct Expense final : public myroomies::model::Expense
+struct Expense
 {
+    myroomies::utils::db::Key_t id;
+    myroomies::utils::db::ForeignKey_t userId;
+    boost::gregorian::date date;
+    double amount;
+    std::string title;
+    std::string comment;
+    std::vector<std::string> tags;
+
     template<typename Archive>
     void serialize(Archive& ar, const unsigned int /*version*/)
     {
@@ -26,7 +34,7 @@ struct Expense final : public myroomies::model::Expense
     }
 };
 
-struct ExpenseNew final : public myroomies::model::Expense
+struct ExpenseNew final : public Expense
 {
     template<typename Archive>
     void serialize(Archive& ar, const unsigned int /*version*/)

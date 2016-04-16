@@ -3,6 +3,9 @@ import time
 import base64
 import json
 import http.client
+import os
+import os.path
+import datetime
 
 import logging
 logging.basicConfig(
@@ -22,17 +25,26 @@ class MyRoomiesServer(object):
         self.already_started = False
 
     def start(self):
-        cmd = []
-        cmd.append(self.path)
-        cmd.append("--logging-path=.")
         self.already_started = self.__wait_for_connection(1)
         if self.already_started:
             logging.info("Server has ready been started")
         else:
+            cmd = []
+            cmd.append(self.path)
+            cmd.append("--logging-path=.")
+            db_path = "./myroomies.db3"
+            cmd.append("--db-path={}".format(db_path))
+            if os.path.exists(db_path):
+                new_name = "{}.{}".format(db_path,
+                        datetime.datetime.now().isoformat())
+                os.rename(db_path, new_name)
+            cmd.append("--db-create=1")
+            cmd.append("--admin-password={}".format(tools.ADMIN_CREDENTIAL[1]))
             self.server_process = subprocess.Popen(cmd)
             logging.info("Server started [pid={}]".format(self.server_process.pid))
+            logging.info("Server: {}".format(" ".join(cmd)))
             self.__wait_for_connection()
-        logging.info("Server ready to accept connection")
+            logging.info("Server ready to accept connection")
 
     def stop(self):
         if (not self.already_started):

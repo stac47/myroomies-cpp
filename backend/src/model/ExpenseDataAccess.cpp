@@ -14,6 +14,7 @@
 #include <myroomies/model/TableDesc.h>
 #include <myroomies/utils/db/Def.h>
 #include <myroomies/utils/db/SqlTools.h>
+#include <myroomies/utils/LoggingMacros.h>
 
 #include <myroomies/model/ExpenseDataAccess.h>
 
@@ -106,15 +107,13 @@ Expense ExpenseDataAccess::createExpense(const Expense& iNewExpense)
     getSession().get_last_insert_id(ExpenseTable::kName, id);
     createdExpense.id = id;
 
+    MYROOMIES_LOG_DEBUG("Expense [id=" << id << "] has been inserted."
+                        << " Inserting tags...");
     // Insert the tags
     auto allTags = getExpenseTags();
-    /* std::sort(allTags.begin(), allTags.end()); */
-    /* std::vector<std::string> tagsToInsert; */
-    /* std::set_difference(iNewExpense.tags.begin(), iNewExpense.tags.end(), */
-    /*                     allTags.begin(), allTags.end(), */
-    /*                     std::inserter(tagsToInsert, tagsToInsert.begin())); */
     std::for_each(iNewExpense.tags.begin(), iNewExpense.tags.end(),
                   [this, &id, &allTags] (auto& t) {this->addTagToExpense(t, id, allTags);});
+    MYROOMIES_LOG_DEBUG("Tags for Expense [id=" << id << "] have been inserted.");
     return createdExpense;
 }
 

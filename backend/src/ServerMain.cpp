@@ -11,8 +11,10 @@
 #include <myroomies/utils/Configuration.h>
 
 #include <myroomies/model/Common.h>
+#include <myroomies/model/DataAccess.h>
 
 #include <myroomies/services/ServiceRegistry.h>
+#include <myroomies/services/UserService.h>
 
 #include <myroomies/resources/StaticResource.h>
 #include <myroomies/resources/Resource.h>
@@ -71,6 +73,8 @@ const Configuration ParseOptions(int argc, const char* argv[])
             "set the path to the database path")
         ("db-create", po::value<bool>(&config.dbCreate)->default_value(false),
             "if the db file does not exist, create it")
+        ("admin-password", po::value<std::string>(&config.adminPassword)->default_value(""),
+            "set the admin password")
     ;
 
     po::variables_map vm;
@@ -93,17 +97,29 @@ int main(int argc, const char* argv[])
 
     // First thing to do: setup the logging system
     myroomies::utils::Logger::Init(config.loggingPath);
+    MYROOMIES_LOG_INFO("MyRoomies server is starting...");
 
     // Create the database if needed
     myroomies::model::CreateTables(config.dbPath, config.dbCreate);
+    myroomies::model::DataAccess::ConfigureConnectionPool(10, config.dbPath.c_str());
 
-    MYROOMIES_LOG_INFO("MyRoomies server is starting...");
     boost::filesystem::path programPath = argv[0];
     MYROOMIES_LOG_INFO("Binary: " << boost::filesystem::absolute(programPath).native());
     MYROOMIES_LOG_INFO("Working directory: " << boost::filesystem::current_path().native());
 
     // Create the ServiceRegistry
     auto serviceRegistry = std::make_shared<ServiceRegistry>(config);
+
+    if (config.dbCreate)
+    {
+        if (config.adminPassword.empty())
+        {
+            MYROOMIES_LOG_ERROR("Admin password cannot be empty. Exiting...");
+            exit(1);
+        }
+        MYROOMIES_LOG_INFO("Admin creation");
+        serviceRegistry->get<myroomies::services::UserService>()->createAdmin(config.adminPassword);
+    }
 
     webserver ws = httpserver::create_webserver(8080)
                    .start_method(httpserver::http::http_utils::INTERNAL_SELECT)

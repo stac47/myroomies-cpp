@@ -1,5 +1,6 @@
 #pragma once
 
+#include <myroomies/model/DataAccess.h>
 #include <myroomies/model/ExpenseTag.h>
 #include <myroomies/model/Expense.h>
 

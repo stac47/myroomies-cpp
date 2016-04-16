@@ -3,16 +3,24 @@
 #include <string>
 
 #include <boost/serialization/nvp.hpp>
-
-#include <myroomies/model/User.h>
-
+#include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/gregorian/greg_serialize.hpp>
+
+#include <myroomies/utils/db/Def.h>
 
 namespace myroomies {
 namespace bom {
 
-struct User final : public myroomies::model::User
+struct User
 {
+    myroomies::utils::db::Key_t id;
+    std::string login;
+    std::string firstname;
+    std::string lastname;
+    boost::gregorian::date dateOfBirth;
+    std::string email;
+    myroomies::utils::db::ForeignKey_t houseshareId;
+
     template<typename Archive>
     void serialize(Archive& ar, const unsigned int /*version*/)
     {
@@ -26,7 +34,7 @@ struct User final : public myroomies::model::User
     }
 };
 
-struct UserNew final : public myroomies::model::User
+struct UserNew final : public User
 {
     std::string password;
 

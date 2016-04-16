@@ -12,6 +12,7 @@ struct Configuration {
     std::string staticsPath;
     std::string dbPath;
     bool dbCreate;
+    std::string adminPassword;
 };
 
 } /* namespace utils */

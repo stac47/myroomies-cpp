@@ -24,6 +24,10 @@ public:
 
     UserService();
 
+    std::unique_ptr<const myroomies::bom::User> login(
+        const std::string& iUser,
+        const std::string& iPassword);
+
     std::vector<myroomies::bom::User> getUsersFromHouseshare(
         myroomies::utils::db::Key_t iHouseshareId) const;
 
@@ -32,6 +36,8 @@ public:
     myroomies::bom::User createUser(
         myroomies::utils::db::Key_t iLoggedUserId,
         const myroomies::bom::UserNew& iUser);
+
+    myroomies::bom::User createAdmin(const std::string& iPassword);
 
 };
 

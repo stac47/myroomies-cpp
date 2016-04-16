@@ -45,7 +45,8 @@ class UserManagementOperations(unittest.TestCase):
         self.assertEqual(200, status)
         users_list = \
             json.loads(data, object_hook=User.from_json)
-        self.assertEqual(3, len(users_list))
+        # 3 users + admin
+        self.assertEqual(4, len(users_list))
         for user in users_list:
             self.assertEqual(self.houseshare_id, user.houseshare_id)
 
