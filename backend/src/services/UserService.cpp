@@ -7,17 +7,15 @@
 #include <myroomies/utils/LoggingMacros.h>
 #include <myroomies/utils/PasswordHasher.h>
 #include <myroomies/utils/db/Def.h>
-
-#include <myroomies/bom/User.h>
-
 #include <myroomies/model/User.h>
 #include <myroomies/model/UserDataAccess.h>
 #include <myroomies/model/Houseshare.h>
 #include <myroomies/model/HouseshareDataAccess.h>
-
 #include <myroomies/services/ServiceInterface.h>
 #include <myroomies/services/ServiceRegistry.h>
 #include <myroomies/services/Exception.h>
+#include "UserCache.h"
+
 #include <myroomies/services/UserService.h>
 
 using myroomies::utils::Configuration;
@@ -57,6 +55,7 @@ User FromModel(const myroomies::model::User& iUser)
 }
 
 } /* namespace  */
+
 namespace myroomies {
 namespace services {
 
@@ -147,21 +146,36 @@ std::unique_ptr<const User> UserService::login(
     const std::string& iLogin,
     const std::string& iPassword)
 {
-    UserDataAccess dao;
-    auto userPtr = dao.getUserFromLogin(iLogin);
     std::unique_ptr<const User> ret;
+    static UserCache Cache(std::chrono::seconds(600));
+    auto userPtr = Cache.check(iLogin);
     if (userPtr)
     {
-        myroomies::utils::PasswordHasher hasher;
-        if (hasher.check(iPassword, userPtr->passwordHash))
-        {
-            ret = std::make_unique<const User>(FromModel(*userPtr));
-        }
+        ret = std::make_unique<const User>(FromModel(*userPtr));
     }
     else
     {
-        MYROOMIES_LOG_WARN("User provided wrong credentials ["
-                           << iLogin << ":" << iPassword << "]");
+        UserDataAccess dao;
+        userPtr = dao.getUserFromLogin(iLogin);
+        if (userPtr)
+        {
+            myroomies::utils::PasswordHasher hasher;
+            if (hasher.check(iPassword, userPtr->passwordHash))
+            {
+                Cache.push(*userPtr);
+                ret = std::make_unique<const User>(FromModel(*userPtr));
+            }
+            else
+            {
+                MYROOMIES_LOG_WARN("User provided wrong credentials ["
+                                   << iLogin << ":" << iPassword << "]");
+            }
+        }
+        else
+        {
+            MYROOMIES_LOG_WARN("User not found [login="
+                               << iLogin << ", password=" << iPassword << "]");
+        }
     }
     MYROOMIES_LOG_INFO("User [id=" << ret->id << "] logged in  MyRoomies");
     return ret;

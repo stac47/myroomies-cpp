@@ -26,6 +26,7 @@ test_files = Glob('test/unit/*.cpp')
 test_files += Glob('test/unit/resources/*.cpp')
 test_files += Glob('test/unit/utils/*.cpp')
 test_files += Glob('test/unit/model/*.cpp')
+test_files += Glob('test/unit/services/*.cpp')
 
 libs = ['pthread',
         'soci_core',
