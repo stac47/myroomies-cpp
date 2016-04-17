@@ -24,7 +24,7 @@ std::unique_ptr<myroomies::model::User> UserCache::check(const std::string& iLog
     if (it == std::end(cache_))
     {
         MYROOMIES_LOG_INFO("User [login=" << iLogin << "] "
-                           << "not found in the cache");
+                           << "was not found in the cache");
         return nullptr;
     }
     auto now = std::chrono::steady_clock::now();
@@ -33,12 +33,14 @@ std::unique_ptr<myroomies::model::User> UserCache::check(const std::string& iLog
         MYROOMIES_LOG_INFO("User [login=" << iLogin << "] "
                            << "found in the cache but his last "
                            << "login was done after more than " << ttl_.count()
-                           << "ms");
+                           << "s");
         cache_.erase(it);
         return nullptr;
     }
     else
     {
+        MYROOMIES_LOG_INFO("User [login=" << iLogin << "] "
+                           << "was found in the cache");
         it->second = now;
     }
     return std::make_unique<myroomies::model::User>(it->first);
