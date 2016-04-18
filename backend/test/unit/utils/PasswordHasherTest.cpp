@@ -15,7 +15,9 @@ BOOST_AUTO_TEST_CASE(HashAndCheck)
     BOOST_REQUIRE(hasher.hash(password, mcf));
     BOOST_TEST_MESSAGE("MCF: " << mcf);
     BOOST_CHECK(!hasher.check("WrongPassword", mcf));
+    BOOST_TEST_MESSAGE("MCF: " << mcf);
     BOOST_CHECK(hasher.check(password, mcf));
+    BOOST_TEST_MESSAGE("MCF: " << mcf);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
