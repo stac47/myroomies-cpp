@@ -79,24 +79,21 @@ std::vector<Expense> MoneyService::getExpenses(
     const std::unique_ptr<const User>& iLoggedUser) const
 {
     ExpenseDataAccess dao;
-    auto expenses = dao.getAllExpenses();
     std::vector<Expense> result;
+    std::vector<myroomies::model::Expense> expenses;
     if (iLoggedUser->id == 1)
     {
+        expenses = dao.getExpenses(0);
         MYROOMIES_LOG_INFO("User [admin] retrieves all expenses");
-        std::transform(expenses.begin(), expenses.end(), std::back_inserter(result),
-            [] (const auto& e) {return FromModel(e);});
     }
     else
     {
-        Key_t id = iLoggedUser->id;
-        MYROOMIES_LOG_INFO("User [id=" << id << "] retrieves all expenses"
+        expenses = dao.getExpenses(iLoggedUser->houseshareId);
+        MYROOMIES_LOG_INFO("User [id=" << iLoggedUser->id << "] retrieves all expenses"
                            << " from houseshare [id=" << iLoggedUser->houseshareId << "]");
-        auto it = std::partition(expenses.begin(), expenses.end(),
-            [&id] (const auto& e) {return e.userId != id;});
-        std::transform(it, expenses.end(), std::back_inserter(result),
-            [] (const myroomies::model::Expense& e) {return FromModel(e);});
     }
+    std::transform(expenses.begin(), expenses.end(), std::back_inserter(result),
+        [] (const myroomies::model::Expense& e) {return FromModel(e);});
     return result;
 }
 
@@ -116,7 +113,7 @@ Expense MoneyService::addExpense(
 void MoneyService::removeExpense(Key_t iLoggedUserId, Key_t iExpenseId)
 {
     ExpenseDataAccess dao;
-    auto expenses = dao.getAllExpenses();
+    auto expenses = dao.getExpenses(0);
     auto it = std::find_if(expenses.begin(), expenses.end(),
                            [iExpenseId](const auto& e) {return e.id == iExpenseId;});
     if (it == expenses.end())

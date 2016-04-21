@@ -126,7 +126,7 @@ bool ExpenseDataAccess::removeExpense(myroomies::utils::db::Key_t iExpenseId)
     return true;
 }
 
-std::vector<Expense> ExpenseDataAccess::getAllExpenses()
+std::vector<Expense> ExpenseDataAccess::getExpenses(Key_t iHouseshareId)
 {
     std::vector<Expense> ret;
     std::ostringstream os;
@@ -136,14 +136,26 @@ std::vector<Expense> ExpenseDataAccess::getAllExpenses()
                     << ExpenseTable::kName << "." << ExpenseTable::kColAmount << ","
                     << ExpenseTable::kName << "." << ExpenseTable::kColTitle << ","
                     << ExpenseTable::kName << "." << ExpenseTable::kColComment << ","
-                    << ExpenseTagTable::kName << "." << ExpenseTagTable::kColTag
+                    << ExpenseTagTable::kName << "." << ExpenseTagTable::kColTag << ","
+                    << HouseshareTable::kName << "." << HouseshareTable::kColId
        << " FROM " << ExpenseTable::kName
        << " LEFT JOIN " << ExpenseTagJoinTable::kName << " ON "
             << ExpenseTagJoinTable::kColExpenseId << "="
             << ExpenseTable::kName << "." << ExpenseTable::kColId
        << " LEFT JOIN " << ExpenseTagTable::kName << " ON "
             << ExpenseTagTable::kName << "." << ExpenseTagTable::kColId << "="
-            << ExpenseTagJoinTable::kColExpenseTagId;
+            << ExpenseTagJoinTable::kColExpenseTagId
+       << " LEFT JOIN " << UserTable::kName << " ON "
+            << UserTable::kName << "." << UserTable::kColId << "="
+            << ExpenseTable::kName << "." << ExpenseTable::kColUserId
+       << " LEFT JOIN " << HouseshareTable::kName << " ON "
+            << HouseshareTable::kName << "." << HouseshareTable::kColId << "="
+            << UserTable::kName << "." << UserTable::kColHouseshareId;
+    if (iHouseshareId != 0)
+    {
+           os << " WHERE " << HouseshareTable::kName << "." << HouseshareTable::kColId << "="
+                << iHouseshareId;
+    }
     rowset<row> rs = (getSession().prepare << os.str());
     for (auto it = rs.begin(); it != rs.end(); ++it)
     {

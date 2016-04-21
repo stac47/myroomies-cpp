@@ -99,7 +99,18 @@ class MoneyBasicOperations(unittest.TestCase):
         inserted_expense = json.loads(data)
         self.assertEqual(new_expense['date'], inserted_expense['date'])
 
-        # Retrieve a list of expenses
+        # Retrieve a list of the expense by the user who created the expense
+        status, data = self.client.request('GET', '/money', headers=headers)
+        self.assertEqual(200, status)
+        self.assertTrue(len(data) > 0)
+        retrieved_expense = json.loads(data)
+        self.assertEqual(1, len(retrieved_expense))
+
+        # Retrieve a list of expenses from another user belonging to the same
+        # houseshare => same behaviour as in the previous example
+        add_authorization_header(headers,
+                                 self.roomies[1].login,
+                                 self.roomies[1].password)
         status, data = self.client.request('GET', '/money', headers=headers)
         self.assertEqual(200, status)
         self.assertTrue(len(data) > 0)
@@ -107,6 +118,9 @@ class MoneyBasicOperations(unittest.TestCase):
         self.assertEqual(1, len(retrieved_expense))
 
         # Delete the expense
+        add_authorization_header(headers,
+                                 self.roomies[0].login,
+                                 self.roomies[0].password)
         status, data =\
             self.client.request('DELETE',
                                 '/money/{}'.format(retrieved_expense[0]["id"]),

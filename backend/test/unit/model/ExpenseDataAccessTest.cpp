@@ -35,6 +35,7 @@ BOOST_FIXTURE_TEST_CASE(ExpenseDataAccessTest, ModelFixture)
     Houseshare houseshare = myroomies::model::BuildHouseshares(1)[0];
     HouseshareDataAccess houseshareDao;
     Key_t houseshareId = houseshareDao.createHouseshare(houseshare).id;
+    BOOST_CHECK(houseshareId > 0);
 
     auto users = myroomies::model::BuildUsers(2u, houseshareId);
 
@@ -52,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(ExpenseDataAccessTest, ModelFixture)
     BOOST_CHECK_EQUAL(2, count);
 
     ExpenseDataAccess expenseDao;
-    auto expenses = expenseDao.getAllExpenses();
+    auto expenses = expenseDao.getExpenses(houseshareId);
     BOOST_CHECK_EQUAL(0u, expenses.size());
 
     {
@@ -68,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE(ExpenseDataAccessTest, ModelFixture)
         BOOST_CHECK_EQUAL(createdExpense.id, 1);
     }
 
-    expenses = expenseDao.getAllExpenses();
+    expenses = expenseDao.getExpenses(houseshareId);
     BOOST_CHECK_EQUAL(1u, expenses.size());
 
     {
@@ -82,12 +83,12 @@ BOOST_FIXTURE_TEST_CASE(ExpenseDataAccessTest, ModelFixture)
         BOOST_CHECK_EQUAL(createdExpense.id, 2);
     }
 
-    expenses = expenseDao.getAllExpenses();
+    expenses = expenseDao.getExpenses(houseshareId);
     BOOST_CHECK_EQUAL(2u, expenses.size());
 
     {
         Expense newExpense;
-        newExpense.userId = users[0].id;
+        newExpense.userId = users[1].id;
         newExpense.date = boost::gregorian::date(2002, 1, 12);
         newExpense.amount = 16;
         newExpense.title = "title3";
@@ -98,12 +99,12 @@ BOOST_FIXTURE_TEST_CASE(ExpenseDataAccessTest, ModelFixture)
         BOOST_CHECK_EQUAL(createdExpense.id, 3);
     }
 
-    expenses = expenseDao.getAllExpenses();
+    expenses = expenseDao.getExpenses(houseshareId);
     BOOST_CHECK_EQUAL(3u, expenses.size());
 
     // Delete
     expenseDao.removeExpense(1);
-    expenses = expenseDao.getAllExpenses();
+    expenses = expenseDao.getExpenses(0);
     BOOST_CHECK_EQUAL(2u, expenses.size());
 
     // Update expense 3

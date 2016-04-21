@@ -13,7 +13,7 @@ public:
     Expense createExpense(const Expense& iNewExpense);
     bool removeExpense(myroomies::utils::db::Key_t iExpenseId);
     Expense updateExpense(const Expense& iUpdatedExpense);
-    std::vector<Expense> getAllExpenses();
+    std::vector<Expense> getExpenses(myroomies::utils::db::Key_t iHouseshareId);
     std::vector<ExpenseTag> getExpenseTags();
 
 private:
