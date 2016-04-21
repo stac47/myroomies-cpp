@@ -52,7 +52,6 @@ void MoneyHandler::handlePOST(const HttpRequest& iRequest, HttpResponse& oRespon
     ExpenseNew newExpense;
     ia >> newExpense;
     Expense createdExpense = getServiceRegistry()->get<MoneyService>()->addExpense(getLoggedUser(), newExpense);
-    std::string responsePayload;
     std::ostringstream os;
     JsonOutputArchive oa(os);
     oa << createdExpense;

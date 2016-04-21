@@ -36,7 +36,7 @@ private:
 class HttpRequest : public HttpMessage
 {
 public:
-    HttpRequest(const std::string& iPath)
+    explicit HttpRequest(const std::string& iPath)
       : HttpMessage(),
         path_(iPath) {}
 

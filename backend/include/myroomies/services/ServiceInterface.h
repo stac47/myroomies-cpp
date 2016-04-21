@@ -11,7 +11,7 @@ class ServiceRegistry;
 class ServiceInterface
 {
 public:
-    ServiceInterface(const std::string& iServiceName);
+    explicit ServiceInterface(const std::string& iServiceName);
     ServiceInterface(const ServiceInterface&) = delete;
     ServiceInterface& operator=(const ServiceInterface&) = delete;
     virtual ~ServiceInterface();

@@ -34,8 +34,7 @@ public:
                        myroomies::utils::db::Key_t iExpenseId);
 
 private:
-    MoneyService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry);
-
+    explicit MoneyService(const std::shared_ptr<ServiceRegistry>& iServiceRegistry);
 };
 
 } /* namespace services */

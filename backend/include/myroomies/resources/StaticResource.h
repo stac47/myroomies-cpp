@@ -10,7 +10,7 @@ namespace resources {
 class StaticResource : public httpserver::http_resource
 {
 public:
-    StaticResource(const boost::filesystem::path& iBackendPath);
+    explicit StaticResource(const boost::filesystem::path& iBackendPath);
 
     void render(const httpserver::http_request& iRequest,
                 httpserver::http_response**) override;

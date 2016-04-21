@@ -15,13 +15,6 @@ std::string GenerateSimpleSelectTemplate(const std::string& iTableName,
     return os.str();
 }
 
-std::string GenerateSelectAllTemplate(const std::string& iTableName)
-{
-    std::ostringstream os;
-    os << "SELECT * FROM " << iTableName;
-    return os.str();
-}
-
 } /* namespace db */
 } /* namespace utils */
 } /* namespace myroomies */

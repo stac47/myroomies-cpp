@@ -14,7 +14,7 @@ namespace services {
 class ServiceRegistry : public std::enable_shared_from_this<ServiceRegistry>
 {
 public:
-    ServiceRegistry(const myroomies::utils::Configuration& iConfig);
+    explicit ServiceRegistry(const myroomies::utils::Configuration& iConfig);
 
     ServiceRegistry(const ServiceRegistry&) = delete;
     ServiceRegistry& operator=(const ServiceRegistry&) = delete;

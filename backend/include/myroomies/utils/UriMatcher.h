@@ -27,7 +27,7 @@ public:
 class UriMatcher
 {
 public:
-    UriMatcher(const std::string& iRegex);
+    explicit UriMatcher(const std::string& iRegex);
     UriMatcher(const UriMatcher&) = delete;
     UriMatcher& operator=(const UriMatcher&) = delete;
 

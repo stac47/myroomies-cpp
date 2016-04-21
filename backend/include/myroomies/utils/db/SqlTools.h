@@ -22,8 +22,6 @@ std::string GenerateInsertTemplate(const std::string& iTableName, Args&&... iCol
 std::string GenerateSimpleSelectTemplate(const std::string& iTableName,
                                          const std::string& iColName);
 
-std::string GenerateSelectAllTemplate(const std::string& iTableName);
-
 } /* namespace db */
 } /* namespace utils */
 } /* namespace myroomies */

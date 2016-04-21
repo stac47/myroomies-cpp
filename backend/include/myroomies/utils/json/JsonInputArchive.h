@@ -31,7 +31,7 @@ class JsonInputArchive
     rapidjson::Document doc_;
 
 public:
-    JsonInputArchive(const std::string& iJsonStr)
+    explicit JsonInputArchive(const std::string& iJsonStr)
     {
         doc_.Parse(iJsonStr);
     }

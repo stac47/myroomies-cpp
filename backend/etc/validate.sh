@@ -1,5 +1,11 @@
 #! /usr/bin/env zsh
 
+echo "CppCheck"
+echo "--------"
+cppcheck -I include --enable=all --error-exitcode=1 src
+if [[ $? -ne 0 ]]; then exit 1; fi
+
+echo "\n--------"
 echo "Clean up"
 echo "--------"
 scons --compile-tests --toolchain=clang -Q -c

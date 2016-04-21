@@ -28,7 +28,7 @@ namespace json {
 class JsonOutputArchive
 {
 public:
-    JsonOutputArchive(std::ostream& oStream)
+    explicit JsonOutputArchive(std::ostream& oStream)
       : os_(oStream)
     {}
 

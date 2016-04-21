@@ -13,7 +13,7 @@ namespace services {
 class UserCache
 {
 public:
-    UserCache(const std::chrono::seconds& iTimeToLive);
+    explicit UserCache(const std::chrono::seconds& iTimeToLive);
 
     std::unique_ptr<myroomies::model::User> check(const std::string& iLogin);
     void push(const myroomies::model::User& iUser);
