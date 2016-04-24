@@ -22,7 +22,7 @@ private:
     struct CompareUsers
     {
         bool operator()(const myroomies::model::User& iUser1,
-                        const myroomies::model::User& iUser2)
+                        const myroomies::model::User& iUser2) const
         {
             return iUser1.id < iUser2.id;
         }
