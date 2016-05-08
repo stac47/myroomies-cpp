@@ -29,6 +29,7 @@ test_files += Glob('test/unit/model/*.cpp')
 test_files += Glob('test/unit/services/*.cpp')
 
 libs = ['pthread',
+        'sqlite3',
         'soci_core',
         'boost_thread',
         'boost_system',
@@ -56,8 +57,10 @@ base_env = Environment(CXXFLAGS=cxx_flags,
                        LIBPATH='.',
                        CPPPATH='#include')
 
-base_env['ENV']['CPATH'] = os.environ['CPATH']
-base_env['ENV']['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
+if 'CPATH' in os.environ:
+    base_env['ENV']['CPATH'] = os.environ['CPATH']
+if 'LIBRARY_PATH' in os.environ:
+    base_env['ENV']['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
 base_env.Replace(TOOLCHAIN=GetOption('toolchain'))
 if base_env['TOOLCHAIN'] == 'clang':
     base_env.Replace(CXX='clang++')
