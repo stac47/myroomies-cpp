@@ -14,6 +14,7 @@ starting working on this project.
 * compiler: gcc 4.6/clang 3.5
 * build: Scons 2.4
 * Python 3.4
+* CppCheck 1.73
 
 #### Libraries
 
@@ -83,15 +84,14 @@ if you work on __Jessie__ or a prior version, you will have to install the lib
 by yourself. Hereafter is the procedure we can use for MyRoomies project. For
 more information, go to http://soci.sourceforge.net/doc/3.2/installation.html .
 
-Download https://sourceforge.net/projects/soci/files/soci/ and untar the last
-version of the library in <path/to/soci>.
-
+    git clone https://github.com/SOCI/soci.git
     mkdir build
     cd build
     cmake -G"Unix Makefiles" -DWITH_BOOST=ON -DSOCI_TESTS=ON \
-    -DCMAKE_INSTALL_PREFIX=$HOME/local -DSOCI_LIBDIR=lib -DWITH_SQLITE3=ON \
-    -DWITH_FIREBIRD=OFF -DWITH_MYSQL=OFF -DWITH_ODBC=OFF -DWITH_ORACLE=OFF \
-    -DWITH_POSTGRESQL=OFF -DWITH_DB2=OFF -DSOCI_HAVE_CXX_C11=ON <path/to/soci>
+    -DWITH_SQLITE3=ON -DWITH_FIREBIRD=OFF -DWITH_MYSQL=OFF \
+    -DWITH_ODBC=OFF -DWITH_ORACLE=OFF -DWITH_POSTGRESQL=OFF \
+    -DWITH_DB2=OFF -DSOCI_HAVE_CXX_C11=ON -DSOCI_CXX_C11=ON \
+    -DSOCI_LIBDIR=lib -DCMAKE_INSTALL_PREFIX=$HOME/local <path/to/soci>
     make
     make test
     make install
@@ -103,7 +103,7 @@ only compile the source. To link into an executable, use the option
 __--build-exe__. To use several compilation threads, you can use __-j <N>__
 option.
 
-    scons --build-exe -j8
+    scons --compile-tests --build-exe -j8
 
 ## Tests
 
